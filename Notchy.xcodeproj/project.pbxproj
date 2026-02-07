@@ -45,6 +45,10 @@
 		D1000002 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
 		E1000001 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
 		E1000002 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
+		L1000001 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* L10n.swift */; };
+		L1000002 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* L10n.swift */; };
+		L1000003 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = L3000001 /* Localizable.strings */; };
+		P1000001 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +111,7 @@
 		E2000001 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
 		L2000001 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
 		L2000002 /* en.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000003 /* pt-BR.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		L2000004 /* zh-Hans.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -210,6 +215,7 @@
 				D2000001 /* MarkdownHelpers.swift */,
 				E2000001 /* AppLogger.swift */,
 				L2000001 /* L10n.swift */,
+				P2000001 /* PreferredLanguageBundle.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -391,6 +397,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000008 /* Assets.xcassets in Resources */,
+				L1000003 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +438,8 @@
 				B1000003 /* ScriptStore.swift in Sources */,
 				D1000001 /* MarkdownHelpers.swift in Sources */,
 				E1000001 /* AppLogger.swift in Sources */,
+				L1000001 /* L10n.swift in Sources */,
+				P1000001 /* PreferredLanguageBundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -451,6 +460,7 @@
 				C1000013 /* InlineMarkdown.swift in Sources */,
 				D1000002 /* MarkdownHelpers.swift in Sources */,
 				E1000002 /* AppLogger.swift in Sources */,
+				L1000002 /* L10n.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

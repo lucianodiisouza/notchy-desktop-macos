@@ -45,6 +45,9 @@ enum NotchyKeys {
     static let textAlignment = "textAlignment"
     static let preferredDisplayID = "preferredDisplayID"
 
+    // Language (in-app override; empty = system default)
+    static let preferredLanguage = "preferredLanguage"
+
     // Scripts editor (Notchy Scripts app; use App Group if shared with main app)
     static let scriptEditorFontSize = "scriptEditorFontSize"
     static let scriptEditorTheme = "scriptEditorTheme"  // 0 = system, 1 = light, 2 = dark
