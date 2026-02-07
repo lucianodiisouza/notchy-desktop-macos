@@ -3,7 +3,8 @@ import SwiftUI
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var notchWindow: NotchWindow?
-    private var settingsWindow: NSWindow?
+    /// Usamos NSWindowController para evitar referência direta à NSWindow (evita EXC_BAD_ACCESS ao reabrir configs).
+    private var settingsWindowController: NSWindowController?
     private var statusItem: NSStatusItem?
     private var menu: NSMenu?
     private var closeTeleprompterItem: NSMenuItem?
@@ -84,30 +85,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func openSettings() {
-        // Sempre abrimos a janela de configurações do Notchy (SettingsView).
-        // Se a janela foi fechada pelo usuário, settingsWindow foi nulado no delegate → criamos uma nova.
-        if settingsWindow == nil {
+        // Se a janela foi fechada, o controller foi nulado no delegate → criamos uma nova.
+        if settingsWindowController == nil {
             let content = SettingsView()
             let win = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 380, height: 400),
+                contentRect: NSRect(x: 0, y: 0, width: 520, height: 480),
                 styleMask: [.titled, .closable],
                 backing: .buffered,
                 defer: false
             )
+            win.minSize = NSSize(width: 480, height: 420)
             win.title = "Configurações"
             win.contentView = NSHostingView(rootView: content)
             win.center()
             win.delegate = self
-            settingsWindow = win
+            settingsWindowController = NSWindowController(window: win)
         }
-        // Só elevar o nível quando o teleprompter está aberto, para a settings aparecer na frente. Nível alto o tempo todo pode fazer a janela fechar sozinha ao abrir do menu.
+        guard let wc = settingsWindowController, let win = wc.window else { return }
         if notchWindow != nil {
-            settingsWindow?.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.statusWindow)) + 2)
+            win.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.statusWindow)) + 2)
         } else {
-            settingsWindow?.level = .normal
+            win.level = .normal
         }
         NSApp.activate(ignoringOtherApps: true)
-        settingsWindow?.makeKeyAndOrderFront(nil)
+        wc.showWindow(nil)
     }
 
     @objc private func pinToNotch() {
@@ -131,13 +132,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate: NSWindowDelegate {
+    @objc(windowDidClose:)
     func windowDidClose(_ notification: Notification) {
-        guard let window = notification.object as? NSWindow, window === settingsWindow else { return }
-        // Limpar a referência só depois que a janela fechou, e no próximo ciclo do run loop,
-        // para não interferir no teardown do NSHostingView/SwiftUI (evita crash ao fechar).
-        DispatchQueue.main.async { [weak self] in
-            self?.settingsWindow = nil
-        }
+        guard let closedWindow = notification.object as? NSWindow,
+              let wc = settingsWindowController,
+              closedWindow === wc.window else { return }
+        closedWindow.delegate = nil
+        settingsWindowController = nil
     }
 }
 

@@ -282,7 +282,7 @@ struct ContentView: View {
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, sidePadding)
-                    // Barra de controles: mic, play, collapse, arrastar (ícones) — altura fixa e alinhados
+                    // Barra de controles: arrastar, mic, play, configurações, recolher (ícones) — altura fixa e alinhados
                     HStack(alignment: .center, spacing: 12) {
                         DragWindowButton(windowController: windowController)
                         ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
@@ -292,8 +292,12 @@ struct ContentView: View {
                         ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
                             autoScrollPlaying.toggle()
                         }
-                        .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade em Settings)")
+                        .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
                         Spacer(minLength: 0)
+                        ControlBarButton(icon: "gearshape", active: true) {
+                            NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+                        }
+                        .help("Abrir configurações")
                         ControlBarButton(icon: "chevron.up", active: true) {
                             windowController.collapseNow()
                         }

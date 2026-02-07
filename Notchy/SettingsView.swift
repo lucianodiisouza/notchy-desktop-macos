@@ -19,44 +19,32 @@ struct SettingsView: View {
     private let speedRange: ClosedRange<Double> = 10...120
     private let opacityRange: ClosedRange<Double> = 0...1
     private let fontSizeRange: ClosedRange<Double> = 10...32
-    /// 0 = auto (full notch width); 200–1200 = largura fixa em pontos.
     private let widthRange: ClosedRange<Double> = 0...1200
     private let heightRange: ClosedRange<Double> = 200...600
     private let sensitivityRange: ClosedRange<Double> = 0...100
 
     var body: some View {
+        TabView {
+            windowTab
+            voiceTab
+            textTab
+            scrollTab
+        }
+        .tabViewStyle(.automatic)
+        .frame(minWidth: 480, minHeight: 420)
+        .onChange(of: windowWidth) { _ in
+            NotchyState.shared.windowController.refreshWindowFrame()
+        }
+        .onChange(of: windowHeight) { _ in
+            NotchyState.shared.windowController.refreshWindowFrame()
+        }
+    }
+
+    // MARK: - Janela
+
+    private var windowTab: some View {
         Form {
-            Section("Voz / Microfone") {
-                Toggle("Controle por voz (rolar ao falar)", isOn: $voiceControlEnabled)
-                Text("Desligue se não quiser que o texto avance ao detectar voz (ex.: outras pessoas na sala).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                HStack {
-                    Text("Sensibilidade")
-                    Slider(value: $micSensitivity, in: sensitivityRange, step: 5)
-                    Text(sensitivityLabel)
-                        .frame(width: 56, alignment: .trailing)
-                }
-                Text("Menor = só voz mais alta aciona. Maior = qualquer som pode acionar.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Microfone usado: padrão do sistema")
-                        .font(.caption)
-                    if !AudioMonitor.inputDeviceNames().isEmpty {
-                        Text("Dispositivos: \(AudioMonitor.inputDeviceNames().joined(separator: ", "))")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
-                    }
-                    Button("Abrir Ajustes de Som do sistema") {
-                        openSoundSettings()
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.caption)
-                }
-            }
-            Section("Window") {
+            Section("Monitor e posição") {
                 Picker("Monitor", selection: $preferredDisplayID) {
                     ForEach(screensForSelection(), id: \.id) { screen in
                         Text(screen.name).tag(screen.id)
@@ -75,6 +63,28 @@ struct SettingsView: View {
                 Text("Volta a janela para o notch, largura automática e altura 320 pt.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+            Section("Tamanho") {
+                HStack {
+                    Text("Largura")
+                    Slider(value: $windowWidth, in: widthRange, step: 20)
+                    Text(widthLabel)
+                        .frame(width: 70, alignment: .trailing)
+                }
+                Text("0 = automática (largura total do notch). Defina um valor para largura fixa (centralizada).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack {
+                    Text("Altura expandida")
+                    Slider(value: $windowHeight, in: heightRange, step: 20)
+                    Text("\(Int(windowHeight)) pt")
+                        .frame(width: 70, alignment: .trailing)
+                }
+                Text("Altura da janela do teleprompter quando expandida (200–600 pt).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Section("Aparência da janela") {
                 Toggle("Aparecer em gravação de tela", isOn: $showInScreenCapture)
                     .onChange(of: showInScreenCapture) { _ in
                         NotchyState.shared.windowController.applySharingType()
@@ -83,7 +93,7 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Opacidade")
+                    Text("Opacidade da janela")
                     Slider(value: $windowOpacity, in: opacityRange, step: 0.05)
                     Text("\(Int(round(windowOpacity * 100)))%")
                         .frame(width: 36, alignment: .trailing)
@@ -94,6 +104,8 @@ struct SettingsView: View {
                 Text("Transparência da janela do Notchy (0–100%).")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+            Section("Botões e ícones") {
                 ColorPicker("Cor dos botões", selection: Binding(
                     get: { colorFromHex(buttonColorHex) },
                     set: { buttonColorHex = hexFromColor($0) }
@@ -110,34 +122,58 @@ struct SettingsView: View {
                 Text("Transparência dos botões e ícones da barra.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                HStack {
-                    Text("Width")
-                    Slider(value: $windowWidth, in: widthRange, step: 20)
-                    Text(widthLabel)
-                        .frame(width: 70, alignment: .trailing)
-                }
-                Text("0 = auto (full notch width). Set a value to fix the width (centered).")
+            }
+        }
+        .formStyle(.grouped)
+        .tabItem { Label("Janela", systemImage: "macwindow") }
+    }
+
+    // MARK: - Voz
+
+    private var voiceTab: some View {
+        Form {
+            Section("Controle por voz") {
+                Toggle("Controle por voz (rolar ao falar)", isOn: $voiceControlEnabled)
+                Text("Desligue se não quiser que o texto avance ao detectar voz (ex.: outras pessoas na sala).")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Height")
-                    Slider(value: $windowHeight, in: heightRange, step: 20)
-                    Text("\(Int(windowHeight)) pt")
-                        .frame(width: 70, alignment: .trailing)
+                    Text("Sensibilidade")
+                    Slider(value: $micSensitivity, in: sensitivityRange, step: 5)
+                    Text(sensitivityLabel)
+                        .frame(width: 56, alignment: .trailing)
                 }
-                Text("Height of the expanded teleprompter window (200–600 pt).")
+                Text("Menor = só voz mais alta aciona. Maior = qualquer som pode acionar.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Scroll") {
-                HStack {
-                    Text("Speed")
-                    Slider(value: $scrollSpeed, in: speedRange, step: 5)
-                    Text("\(Int(scrollSpeed)) pt/s")
-                        .frame(width: 44, alignment: .trailing)
+            Section("Microfone") {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Microfone usado: padrão do sistema")
+                        .font(.caption)
+                    if !AudioMonitor.inputDeviceNames().isEmpty {
+                        Text("Dispositivos: \(AudioMonitor.inputDeviceNames().joined(separator: ", "))")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                    Button("Abrir Ajustes de Som do sistema") {
+                        openSoundSettings()
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.caption)
                 }
             }
-            Section("Texto") {
+        }
+        .formStyle(.grouped)
+        .tabItem { Label("Voz", systemImage: "mic.fill") }
+    }
+
+    // MARK: - Texto
+
+    private var textTab: some View {
+        Form {
+            Section("Fonte e cor") {
                 HStack {
                     Text("Tamanho da fonte")
                     Slider(value: $fontSize, in: fontSizeRange, step: 1)
@@ -147,7 +183,7 @@ struct SettingsView: View {
                 Text("Ajuste o tamanho do texto do teleprompter.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                ColorPicker("Color", selection: Binding(
+                ColorPicker("Cor do texto", selection: Binding(
                     get: { colorFromHex(textColorHex) },
                     set: { textColorHex = hexFromColor($0) }
                 ))
@@ -161,6 +197,26 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        }
+        .formStyle(.grouped)
+        .tabItem { Label("Texto", systemImage: "textformat") }
+    }
+
+    // MARK: - Scroll
+
+    private var scrollTab: some View {
+        Form {
+            Section("Velocidade") {
+                HStack {
+                    Text("Velocidade do scroll")
+                    Slider(value: $scrollSpeed, in: speedRange, step: 5)
+                    Text("\(Int(scrollSpeed)) pt/s")
+                        .frame(width: 44, alignment: .trailing)
+                }
+                Text("Velocidade com que o texto sobe durante a apresentação.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             Section {
                 Text("Com controle por voz ativo, o scroll começa ao falar e pausa após um breve silêncio. Use Shift+↑/↓ para mudar a velocidade durante a apresentação.")
                     .font(.caption)
@@ -168,14 +224,10 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 380, height: 400)
-        .onChange(of: windowWidth) { _ in
-            NotchyState.shared.windowController.refreshWindowFrame()
-        }
-        .onChange(of: windowHeight) { _ in
-            NotchyState.shared.windowController.refreshWindowFrame()
-        }
+        .tabItem { Label("Scroll", systemImage: "arrow.up.arrow.down") }
     }
+
+    // MARK: - Helpers
 
     private var widthLabel: String {
         if windowWidth <= 0 { return "Auto" }
@@ -198,7 +250,6 @@ struct SettingsView: View {
 
     private func openSoundSettings() {
         if #available(macOS 13.0, *) {
-            // Abre Ajustes do Sistema; usuário pode ir em Som > Entrada para trocar o microfone
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.sound")!)
         } else {
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.sound")!)

@@ -174,7 +174,6 @@ final class FloatingWindowController: ObservableObject {
         guard let window = window, let screen = targetScreen() else { return false }
         let frame = window.frame
         let full = screen.frame
-        let visible = screen.visibleFrame
         let notchMinX: CGFloat
         let notchMaxX: CGFloat
         if #available(macOS 12.0, *),
@@ -330,13 +329,12 @@ final class FloatingWindowController: ObservableObject {
         }
 
         if animated {
-            weak var weakWindow = window
             NSAnimationContext.runAnimationGroup({ ctx in
                 ctx.duration = 0.2
                 ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 window.animator().setFrame(targetFrame, display: true)
-            }, completionHandler: {
-                weakWindow?.orderFrontRegardless()
+            }, completionHandler: { [weak window] in
+                window?.orderFrontRegardless()
             })
         } else if isDragging {
             // During drag only move origin to avoid layout thrashing and jitter
