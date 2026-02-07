@@ -11,6 +11,10 @@ final class ScrollController: ObservableObject {
     var autoScrollPlayingBinding: Binding<Bool>? {
         didSet { setupTimer() }
     }
+    /// When set and wrappedValue is true, scroll is paused (e.g. pause on hover).
+    var pauseWhenHoveringBinding: Binding<Bool>? {
+        didSet { setupTimer() }
+    }
 
     @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
 
@@ -28,12 +32,16 @@ final class ScrollController: ObservableObject {
     }
 
     private func tick() {
+        if pauseWhenHoveringBinding?.wrappedValue == true { return }
         let voiceScroll = isSpeakingBinding?.wrappedValue == true
         let autoScroll = autoScrollPlayingBinding?.wrappedValue == true
         guard voiceScroll || autoScroll else { return }
         let speed = scrollSpeed * CGFloat(timerInterval)
         scrollOffset += speed
     }
+
+    /// Step size (pt) for keyboard arrow scroll. Used by ContentView.
+    static let keyboardScrollStep: CGFloat = 24
 
     func resetScroll() {
         scrollOffset = 0
