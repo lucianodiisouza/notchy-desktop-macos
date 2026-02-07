@@ -37,10 +37,10 @@
 		C1000006 /* ScriptsWindowContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000004 /* ScriptsWindowContent.swift */; };
 		C1000007 /* FolderTreeSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000005 /* FolderTreeSidebarView.swift */; };
 		C1000008 /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000006 /* ScriptEditorView.swift */; };
-		C1000012 /* RichParagraphEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000012 /* RichParagraphEditorView.swift */; };
-		C1000013 /* InlineMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* InlineMarkdown.swift */; };
 		C1000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
 		C1000010 /* ScriptEditorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000002 /* ScriptEditorSettingsView.swift */; };
+		C1000012 /* RichParagraphEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000012 /* RichParagraphEditorView.swift */; };
+		C1000013 /* InlineMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* InlineMarkdown.swift */; };
 		D1000001 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
 		D1000002 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
 		E1000001 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
@@ -97,15 +97,24 @@
 		B2000004 /* ScriptsWindowContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptsWindowContent.swift; sourceTree = "<group>"; };
 		B2000005 /* FolderTreeSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeSidebarView.swift; sourceTree = "<group>"; };
 		B2000006 /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
-		B2000012 /* RichParagraphEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichParagraphEditorView.swift; sourceTree = "<group>"; };
 		B2000007 /* NotchyScriptsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyScriptsApp.swift; sourceTree = "<group>"; };
-		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
 		B2000008 /* NotchyScripts-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NotchyScripts-Info.plist"; sourceTree = "<group>"; };
 		B2000009 /* Notchy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notchy.entitlements; sourceTree = "<group>"; };
 		B2000010 /* NotchyScripts.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotchyScripts.entitlements; sourceTree = "<group>"; };
+		B2000012 /* RichParagraphEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichParagraphEditorView.swift; sourceTree = "<group>"; };
 		D2000001 /* MarkdownHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownHelpers.swift; sourceTree = "<group>"; };
 		D2000002 /* ScriptEditorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorSettingsView.swift; sourceTree = "<group>"; };
 		E2000001 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
+		L2000001 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		L2000002 /* en.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000003 /* pt-BR.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		L2000004 /* zh-Hans.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		L2000005 /* ja.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000006 /* ru.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000007 /* es.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000008 /* fr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000009 /* hi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +187,7 @@
 				A2000017 /* NotchShapes.swift */,
 				D2000001 /* MarkdownHelpers.swift */,
 				E2000001 /* AppLogger.swift */,
+				L2000001 /* L10n.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -248,6 +258,7 @@
 			isa = PBXGroup;
 			children = (
 				A2000008 /* Assets.xcassets */,
+				L3000001 /* Localizable.strings */,
 				B2000008 /* NotchyScripts-Info.plist */,
 				B2000009 /* Notchy.entitlements */,
 				B2000010 /* NotchyScripts.entitlements */,
@@ -311,6 +322,13 @@
 			knownRegions = (
 				en,
 				Base,
+				"pt-BR",
+				"zh-Hans",
+				ja,
+				ru,
+				es,
+				fr,
+				hi,
 			);
 			mainGroup = A4000000;
 			productRefGroup = A4000002 /* Products */;
@@ -329,6 +347,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000008 /* Assets.xcassets in Resources */,
+				L1000003 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,6 +356,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1000009 /* Assets.xcassets in Resources */,
+				L1000004 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +389,7 @@
 				B1000003 /* ScriptStore.swift in Sources */,
 				D1000001 /* MarkdownHelpers.swift in Sources */,
 				E1000001 /* AppLogger.swift in Sources */,
+				L1000001 /* L10n.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +410,7 @@
 				C1000013 /* InlineMarkdown.swift in Sources */,
 				D1000002 /* MarkdownHelpers.swift in Sources */,
 				E1000002 /* AppLogger.swift in Sources */,
+				L1000002 /* L10n.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +423,24 @@
 			targetProxy = A9000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		L3000001 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				L2000002 /* en.lproj/Localizable.strings */,
+				L2000003 /* pt-BR.lproj/Localizable.strings */,
+				L2000004 /* zh-Hans.lproj/Localizable.strings */,
+				L2000005 /* ja.lproj/Localizable.strings */,
+				L2000006 /* ru.lproj/Localizable.strings */,
+				L2000007 /* es.lproj/Localizable.strings */,
+				L2000008 /* fr.lproj/Localizable.strings */,
+				L2000009 /* hi.lproj/Localizable.strings */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		A8000001 /* Debug */ = {
