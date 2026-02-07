@@ -11,31 +11,31 @@ struct NotchyApp: App {
         .commands {
             CommandGroup(replacing: .newItem) { }
             CommandGroup(after: .appInfo) {
-                Button("Show Teleprompter") {
+                Button(String(localized: "menu_open_teleprompter")) {
                     NotchyState.shared.windowController.showTeleprompter()
                 }
                 .keyboardShortcut("t", modifiers: [.command, .shift])
-                Button("Abrir Roteiros") {
+                Button(String(localized: "menu_open_scripts")) {
                     AppDelegate.launchScriptsApp()
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
-                Button("Fixar no notch") {
+                Button(String(localized: "menu_pin_to_notch")) {
                     NotchyState.shared.windowController.pinWindowToNotch()
                 }
                 .keyboardShortcut("d", modifiers: [.command, .shift])
-                .help("Recoloca a janela no notch (útil depois de arrastar)")
+                .help(String(localized: "menu_pin_to_notch_help"))
             }
             CommandGroup(after: .windowSize) {
-                Button("Reset Scroll") {
+                Button(String(localized: "menu_reset_scroll")) {
                     NotchyState.shared.scrollController.resetScroll()
                 }
                 .keyboardShortcut("0", modifiers: .command)
                 Divider()
-                Button("Faster") {
+                Button(String(localized: "menu_faster")) {
                     scrollSpeed = min(120, scrollSpeed + 10)
                 }
                 .keyboardShortcut(.upArrow, modifiers: .shift)
-                Button("Slower") {
+                Button(String(localized: "menu_slower")) {
                     scrollSpeed = max(10, scrollSpeed - 10)
                 }
                 .keyboardShortcut(.downArrow, modifiers: .shift)
