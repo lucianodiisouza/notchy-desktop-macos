@@ -60,6 +60,8 @@ struct SettingsView: View {
                     }
                 }
                 .onChange(of: preferredLanguage) { _ in
+                    // Force UserDefaults to disk so the new language is applied after restart.
+                    UserDefaults.standard.synchronize()
                     showLanguageRestartAlert = true
                 }
                 Text(String(localized: "language_restart_help"))
@@ -67,7 +69,11 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
             .alert(String(localized: "language_restart_title"), isPresented: $showLanguageRestartAlert) {
-                Button(String(localized: "ok")) { showLanguageRestartAlert = false }
+                Button(String(localized: "language_restart_button")) {
+                    showLanguageRestartAlert = false
+                    restartNotchyToApplyLanguage()
+                }
+                Button(String(localized: "ok"), role: .cancel) { showLanguageRestartAlert = false }
             } message: {
                 Text(String(localized: "language_restart_message"))
             }
@@ -269,7 +275,7 @@ struct SettingsView: View {
     }
 
     private func localeDisplayName(for localeId: String) -> String {
-        Locale.current.localizedString(forLocaleIdentifier: localeId) ?? localeId
+        Locale.current.localizedString(forIdentifier: localeId) ?? localeId
     }
 
     private var widthLabel: String {
@@ -281,6 +287,20 @@ struct SettingsView: View {
         if micSensitivity < 25 { return String(localized: "sensitivity_low") }
         if micSensitivity < 75 { return String(localized: "sensitivity_medium") }
         return String(localized: "sensitivity_high")
+    }
+
+    /// Quits the app and relaunches it so the new language takes effect.
+    private func restartNotchyToApplyLanguage() {
+        UserDefaults.standard.synchronize()
+        let url = Bundle.main.bundleURL
+        let path = url.path
+        let escapedPath = path.replacingOccurrences(of: "'", with: "'\"'\"'")
+        let script = "sleep 1.2 && open '\(escapedPath)'"
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+        process.arguments = ["-c", script]
+        try? process.run()
+        NSApp.terminate(nil)
     }
 
     private func resetNotchy() {
