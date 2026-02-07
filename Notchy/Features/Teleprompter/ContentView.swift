@@ -198,7 +198,17 @@ struct ContentView: View {
                     get: { UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying) },
                     set: { UserDefaults.standard.set($0, forKey: NotchyKeys.autoScrollPlaying) }
                 )
+                // Só pede permissão de microfone quando o controle por voz está ligado (evita prompt a cada abertura).
+                if voiceControlEnabled {
+                    audioMonitor.start()
+                }
+            }
+        }
+        .onChange(of: voiceControlEnabled) { enabled in
+            if enabled {
                 audioMonitor.start()
+            } else {
+                audioMonitor.stop()
             }
         }
         .onChange(of: scriptStore.currentScriptBody) { newValue in
