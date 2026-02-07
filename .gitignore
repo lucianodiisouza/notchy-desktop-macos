@@ -14,3 +14,9 @@ xcuserdata/
 # Xcode build
 build/
 DerivedData/
+
+# DMG build (staging, temp e artefato final)
+build-dmg-staging/
+.dmg-mount/
+*-temp.dmg
+*.dmg
