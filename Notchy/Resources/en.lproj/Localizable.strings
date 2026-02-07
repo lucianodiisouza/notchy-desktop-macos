@@ -96,6 +96,8 @@
 "show_in_capture_help" = "Turn off \"stealth\" so Notchy appears in recordings and screenshots.";
 "label_window_opacity" = "Window opacity";
 "window_opacity_help" = "Notchy window transparency (0–100%).";
+"picker_notch_background" = "Notch bar background (collapsed)";
+"notch_background_help" = "Background color of the bar when collapsed in the notch strip. Use to match your wallpaper for screenshots.";
 "picker_button_color" = "Button color";
 "button_color_help" = "Bar icon color (mic, play, collapse, drag).";
 "label_button_opacity" = "Button opacity";
@@ -124,6 +126,16 @@
 "label_scroll_speed" = "Scroll speed";
 "scroll_speed_help" = "How fast the text moves up during presentation.";
 "voice_scroll_help" = "With voice control on, scroll starts when you speak and pauses after a short silence. Use Shift+↑/↓ to change speed during presentation.";
+"section_behavior" = "Behavior";
+"toggle_pause_on_hover" = "Pause when hovering over text";
+"pause_on_hover_help" = "Scroll pauses while the pointer is over the teleprompter text. Space = play/pause, ↑/↓ = step scroll.";
+
+/* Onboarding */
+"onboarding_title" = "Quick start";
+"onboarding_paste" = "Paste your script with Cmd+V or type directly.";
+"onboarding_speak" = "Speak to scroll; it pauses after a short silence.";
+"onboarding_collapse" = "Click the arrow to collapse the bar to the notch strip.";
+"onboarding_got_it" = "Got it";
 
 /* Scripts - folders & sidebar */
 "folders_header" = "Folders";
@@ -143,6 +155,11 @@
 "root" = "Root";
 "new_script" = "New script";
 "new_subfolder" = "New subfolder";
+"export_script" = "Export…";
+"export_script_help" = "Export this script as a plain text file.";
+"export_all_scripts" = "Export all…";
+"export_all_scripts_help" = "Export all scripts to a folder (plain text, preserving folders).";
+"export_choose_folder" = "Choose Folder";
 "use_in_teleprompter" = "Use in Teleprompter";
 "duplicate" = "Duplicate";
 "delete" = "Delete";
