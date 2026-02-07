@@ -16,6 +16,10 @@ struct NotchyApp: App {
                     NotchyState.shared.windowController.showTeleprompter()
                 }
                 .keyboardShortcut("t", modifiers: [.command, .shift])
+                Button("Abrir Roteiros") {
+                    AppDelegate.launchScriptsApp()
+                }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
                 Button("Fixar no notch") {
                     NotchyState.shared.windowController.pinWindowToNotch()
                 }

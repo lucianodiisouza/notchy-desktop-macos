@@ -38,6 +38,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         showOnItem.submenu = showOnSubmenu
         menu?.addItem(showOnItem)
         menu?.addItem(NSMenuItem(title: "Configurações…", action: #selector(openSettings), keyEquivalent: ","))
+        menu?.addItem(NSMenuItem(title: "Abrir Roteiros", action: #selector(openScripts), keyEquivalent: "r"))
+        menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
         pinToNotchItem = NSMenuItem(title: "Fixar no notch", action: #selector(pinToNotch), keyEquivalent: "d")
         pinToNotchItem?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(pinToNotchItem!)
@@ -82,6 +84,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func closeTeleprompter() {
         notchWindow?.orderOut(nil)
         updateMenuVisibility()
+    }
+
+    @objc private func openScripts() {
+        Self.launchScriptsApp()
+    }
+
+    /// Launches the Notchy Scripts app (embedded or by bundle id). Call from menu or SwiftUI commands.
+    static func launchScriptsApp() {
+        let scriptsAppName = "Notchy Scripts.app"
+        let scriptsURL = Bundle.main.bundleURL
+            .appendingPathComponent("Contents/Applications")
+            .appendingPathComponent(scriptsAppName)
+        if FileManager.default.fileExists(atPath: scriptsURL.path) {
+            NSWorkspace.shared.open(scriptsURL)
+            return
+        }
+        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.notchy.scripts") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     @objc private func openSettings() {
@@ -140,8 +161,10 @@ extension AppDelegate: NSWindowDelegate {
         settingsWindowController = nil
     }
 
-    // Stub to satisfy optional NSWindowDelegate requirement and avoid "nearly matches windowDidExpose" warning
+    // Stubs to satisfy optional NSWindowDelegate requirements and avoid "nearly matches" warnings
     func windowDidExpose(_ notification: Notification) {}
+    func windowDidMove(_ notification: Notification) {}
+    func windowWillClose(_ notification: Notification) {}
 }
 
 extension AppDelegate: NSMenuDelegate {

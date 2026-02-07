@@ -1,9 +1,15 @@
 import SwiftUI
 import AppKit
 
+/// Notification when user pastes in the teleprompter. userInfo["pastedText"] = pasted string.
+extension Notification.Name {
+    static let teleprompterDidPaste = Notification.Name("teleprompterDidPaste")
+}
+
 /// NSTextView que, ao colar, insere apenas texto puro (sem formatação), mantendo quebras de linha.
 /// Também desativa o scroll automático para seleção/range, evitando o "salto" ao mudar de parágrafo
 /// quando o monitor de voz está ativo (o scroll é controlado apenas pelo ScrollController).
+/// Posts .teleprompterDidPaste so the app can create a script from the pasted text.
 private final class PlainTextPasteTextView: NSTextView {
     override func paste(_ sender: Any?) {
         guard let pasteboard = NSPasteboard.general.string(forType: .string), !pasteboard.isEmpty else {
@@ -11,6 +17,11 @@ private final class PlainTextPasteTextView: NSTextView {
             return
         }
         replaceCharacters(in: selectedRange(), with: pasteboard)
+        NotificationCenter.default.post(
+            name: .teleprompterDidPaste,
+            object: self,
+            userInfo: ["pastedText": pasteboard]
+        )
     }
 
     override func scrollRangeToVisible(_ range: NSRange) {

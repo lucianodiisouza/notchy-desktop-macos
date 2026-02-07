@@ -21,8 +21,14 @@ struct ContentView: View {
     @EnvironmentObject var windowController: FloatingWindowController
     @EnvironmentObject var audioMonitor: AudioMonitor
     @EnvironmentObject var scrollController: ScrollController
+    @ObservedObject private var scriptStore = ScriptStore.shared
 
-    @AppStorage(NotchyKeys.prompterText) private var prompterText = ""
+    private var prompterText: Binding<String> {
+        Binding(
+            get: { scriptStore.currentScriptBody },
+            set: { scriptStore.updateCurrentScriptBody($0) }
+        )
+    }
     @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
     @AppStorage(NotchyKeys.fontSize) private var fontSize: Double = 16
     @AppStorage(NotchyKeys.textColor) private var textColorHex = "FFFFFF"
@@ -116,7 +122,7 @@ struct ContentView: View {
                     // Padding para o texto começar abaixo do notch (referência da câmera)
                     Color.clear.frame(height: notchTopPadding)
                     TeleprompterTextView(
-                        text: $prompterText,
+                        text: prompterText,
                         scrollOffset: Binding(
                             get: { scrollController.scrollOffset },
                             set: { scrollController.scrollOffset = $0 }
@@ -178,7 +184,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            windowController.setHasPrompterText(!prompterText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            windowController.setHasPrompterText(!scriptStore.currentScriptBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             DispatchQueue.main.async {
                 scrollController.isSpeakingBinding = Binding(
                     get: {
@@ -194,8 +200,13 @@ struct ContentView: View {
                 audioMonitor.start()
             }
         }
-        .onChange(of: prompterText) { newValue in
+        .onChange(of: scriptStore.currentScriptBody) { newValue in
             windowController.setHasPrompterText(!newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .teleprompterDidPaste)) { notification in
+            guard let pasted = notification.userInfo?["pastedText"] as? String, !pasted.isEmpty else { return }
+            _ = scriptStore.createScript(fromPaste: pasted)
+            scrollController.resetScroll()
         }
         .overlay(WindowAccessor(windowController: windowController))
         .overlay(alignment: .top) {

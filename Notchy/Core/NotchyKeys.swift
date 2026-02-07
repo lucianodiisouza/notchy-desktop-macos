@@ -3,9 +3,15 @@ import Foundation
 /// Centralized UserDefaults keys for Notchy. Use these everywhere so we have a single place to see
 /// what is persisted — useful for future sync/backend when scripts are synced.
 enum NotchyKeys {
+    /// App Group identifier for sharing scripts and selectedScriptId between Notchy and Notchy Scripts.
+    static let appGroupIdentifier = "group.com.notchy"
     // Scroll & teleprompter
     static let scrollSpeed = "scrollSpeed"
     static let prompterText = "prompterText"
+
+    // Scripts (App Group)
+    static let selectedScriptId = "selectedScriptId"
+    static let scriptsMigrationDone = "scriptsMigrationDone"
 
     // Text appearance
     static let fontSize = "fontSize"
