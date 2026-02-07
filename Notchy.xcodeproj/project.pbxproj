@@ -115,6 +115,28 @@
 		L2000007 /* es.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000008 /* fr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000009 /* hi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = hi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000010 /* de.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000011 /* he.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000012 /* ar.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000013 /* el.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000014 /* uk.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000015 /* nb.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000016 /* da.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000017 /* it.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000018 /* sk.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000019 /* sr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000020 /* sv.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000021 /* cs.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000022 /* ko.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000023 /* hu.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000024 /* tr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000025 /* pl.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000026 /* vi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000027 /* af.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = af.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000028 /* fi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000029 /* nl.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000030 /* ro.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
+		L2000031 /* ca.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -329,6 +351,28 @@
 				es,
 				fr,
 				hi,
+				de,
+				he,
+				ar,
+				el,
+				uk,
+				nb,
+				da,
+				it,
+				sk,
+				sr,
+				sv,
+				cs,
+				ko,
+				hu,
+				tr,
+				pl,
+				vi,
+				af,
+				fi,
+				nl,
+				ro,
+				ca,
 			);
 			mainGroup = A4000000;
 			productRefGroup = A4000002 /* Products */;
@@ -347,7 +391,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000008 /* Assets.xcassets in Resources */,
-				L1000003 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,7 +399,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1000009 /* Assets.xcassets in Resources */,
-				L1000004 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,7 +431,6 @@
 				B1000003 /* ScriptStore.swift in Sources */,
 				D1000001 /* MarkdownHelpers.swift in Sources */,
 				E1000001 /* AppLogger.swift in Sources */,
-				L1000001 /* L10n.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,7 +451,6 @@
 				C1000013 /* InlineMarkdown.swift in Sources */,
 				D1000002 /* MarkdownHelpers.swift in Sources */,
 				E1000002 /* AppLogger.swift in Sources */,
-				L1000002 /* L10n.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +476,28 @@
 				L2000007 /* es.lproj/Localizable.strings */,
 				L2000008 /* fr.lproj/Localizable.strings */,
 				L2000009 /* hi.lproj/Localizable.strings */,
+				L2000010 /* de.lproj/Localizable.strings */,
+				L2000011 /* he.lproj/Localizable.strings */,
+				L2000012 /* ar.lproj/Localizable.strings */,
+				L2000013 /* el.lproj/Localizable.strings */,
+				L2000014 /* uk.lproj/Localizable.strings */,
+				L2000015 /* nb.lproj/Localizable.strings */,
+				L2000016 /* da.lproj/Localizable.strings */,
+				L2000017 /* it.lproj/Localizable.strings */,
+				L2000018 /* sk.lproj/Localizable.strings */,
+				L2000019 /* sr.lproj/Localizable.strings */,
+				L2000020 /* sv.lproj/Localizable.strings */,
+				L2000021 /* cs.lproj/Localizable.strings */,
+				L2000022 /* ko.lproj/Localizable.strings */,
+				L2000023 /* hu.lproj/Localizable.strings */,
+				L2000024 /* tr.lproj/Localizable.strings */,
+				L2000025 /* pl.lproj/Localizable.strings */,
+				L2000026 /* vi.lproj/Localizable.strings */,
+				L2000027 /* af.lproj/Localizable.strings */,
+				L2000028 /* fi.lproj/Localizable.strings */,
+				L2000029 /* nl.lproj/Localizable.strings */,
+				L2000030 /* ro.lproj/Localizable.strings */,
+				L2000031 /* ca.lproj/Localizable.strings */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
