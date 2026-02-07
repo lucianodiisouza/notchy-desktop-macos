@@ -135,6 +135,8 @@ private struct ResizeHandleView: View {
 /// no SwiftUI, ao mover a janela a view acompanha e o DragGesture "reseta" a tradução, causando vai-e-volta.
 private final class DragHandleMouseView: NSView {
     weak var windowController: FloatingWindowController?
+    var onMouseEnter: (() -> Void)?
+    var onMouseExit: (() -> Void)?
     private var dragStartWindowOrigin: CGPoint?
     private var dragStartScreenLocation: NSPoint?
     private var didDrag = false
@@ -155,10 +157,12 @@ private final class DragHandleMouseView: NSView {
 
     override func mouseEntered(with event: NSEvent) {
         NSCursor.openHand.push()
+        onMouseEnter?()
     }
 
     override func mouseExited(with event: NSEvent) {
         NSCursor.pop()
+        onMouseExit?()
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -201,15 +205,21 @@ private final class DragHandleMouseView: NSView {
 
 private struct DragHandleRepresentable: NSViewRepresentable {
     let windowController: FloatingWindowController
+    var onMouseEnter: (() -> Void)? = nil
+    var onMouseExit: (() -> Void)? = nil
 
     func makeNSView(context: Context) -> DragHandleMouseView {
         let v = DragHandleMouseView()
         v.windowController = windowController
+        v.onMouseEnter = onMouseEnter
+        v.onMouseExit = onMouseExit
         return v
     }
 
     func updateNSView(_ nsView: DragHandleMouseView, context: Context) {
         nsView.windowController = windowController
+        nsView.onMouseEnter = onMouseEnter
+        nsView.onMouseExit = onMouseExit
     }
 }
 
@@ -282,26 +292,31 @@ struct ContentView: View {
                     )
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, sidePadding)
-                    // Barra de controles: arrastar, mic, play, configurações, recolher (ícones) — altura fixa e alinhados
-                    HStack(alignment: .center, spacing: 12) {
-                        DragWindowButton(windowController: windowController)
-                        ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
-                            voiceControlEnabled.toggle()
+                    // Barra de controles: fundo arrastável; botões (arrastar, mic, play, config, recolher) por cima
+                    ZStack {
+                        DragHandleRepresentable(windowController: windowController)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 36)
+                        HStack(alignment: .center, spacing: 12) {
+                            DragWindowButton(windowController: windowController)
+                            ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
+                                voiceControlEnabled.toggle()
+                            }
+                            .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
+                            ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
+                                autoScrollPlaying.toggle()
+                            }
+                            .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
+                            Spacer(minLength: 0)
+                            ControlBarButton(icon: "gearshape", active: true) {
+                                NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+                            }
+                            .help("Abrir configurações")
+                            ControlBarButton(icon: "chevron.up", active: true) {
+                                windowController.collapseNow()
+                            }
+                            .help("Recolher")
                         }
-                        .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
-                        ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
-                            autoScrollPlaying.toggle()
-                        }
-                        .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
-                        Spacer(minLength: 0)
-                        ControlBarButton(icon: "gearshape", active: true) {
-                            NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
-                        }
-                        .help("Abrir configurações")
-                        ControlBarButton(icon: "chevron.up", active: true) {
-                            windowController.collapseNow()
-                        }
-                        .help("Recolher")
                     }
                     .frame(height: 36)
                     .padding(.horizontal, sidePadding)
@@ -338,6 +353,18 @@ struct ContentView: View {
             windowController.setHasPrompterText(!newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
         .overlay(WindowAccessor(windowController: windowController))
+        .overlay(alignment: .top) {
+            // Qualquer ponto da faixa do notch (que não seja botão/área de texto) serve para arrastar a janela.
+            if windowController.isExpanded {
+                DragHandleRepresentable(
+                    windowController: windowController,
+                    onMouseEnter: { windowController.setExpanded(true) },
+                    onMouseExit: { windowController.setExpanded(false) }
+                )
+                .frame(height: notchTopPadding)
+                .frame(maxWidth: .infinity)
+            }
+        }
         .onDisappear {
             DispatchQueue.main.async {
                 audioMonitor.stop()

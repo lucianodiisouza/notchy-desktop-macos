@@ -41,6 +41,23 @@ func screenForPreferredDisplayID(_ preferredID: Int) -> NSScreen? {
     return screens.first { Int($0.displayID ?? 0) == preferredID } ?? NSScreen.main
 }
 
+/// Screen that contains the window (by center point). Used to detect current monitor when docking or after drag.
+func screenContaining(window: NSWindow) -> NSScreen? {
+    let center = CGPoint(x: window.frame.midX, y: window.frame.midY)
+    return NSScreen.screens.first { $0.frame.contains(center) }
+}
+
+/// Union of all screens' visible frames (same coordinate system). Use when window is in free position so it can be dragged to any monitor.
+func combinedVisibleFrameOfAllScreens() -> CGRect {
+    let screens = NSScreen.screens
+    guard let first = screens.first else { return .zero }
+    var combined = first.visibleFrame
+    for screen in screens.dropFirst() {
+        combined = combined.union(screen.visibleFrame)
+    }
+    return combined
+}
+
 final class FloatingWindowController: ObservableObject {
     weak var window: NSWindow?
     private var screenObserver: NSObjectProtocol?
@@ -149,14 +166,22 @@ final class FloatingWindowController: ObservableObject {
     }
 
     /// Call when drag ends to commit the final position to UserDefaults.
+    /// Also updates preferred display to the screen where the window ended up, so the app "knows" which monitor it's on.
     func commitWindowFreeOrigin(_ origin: CGPoint) {
         UserDefaults.standard.set(origin.x, forKey: Self.windowFreeOriginXKey)
         UserDefaults.standard.set(origin.y, forKey: Self.windowFreeOriginYKey)
         temporaryFreeOrigin = nil
+        if let window = window, let screen = screenContaining(window: window), let displayID = screen.displayID {
+            UserDefaults.standard.set(Int(displayID), forKey: preferredDisplayIDKey)
+        }
     }
 
     /// Pin the window back to the notch (e.g. from a menu or double‑click on drag handle).
+    /// If the window is on a different monitor, we update preferred display so it docks on the current screen.
     func pinWindowToNotch() {
+        if let window = window, let screen = screenContaining(window: window), let displayID = screen.displayID {
+            UserDefaults.standard.set(Int(displayID), forKey: preferredDisplayIDKey)
+        }
         UserDefaults.standard.set(true, forKey: Self.windowPinnedToNotchKey)
         setExpanded(true)
         updateWindowFrame(animated: true)
@@ -322,8 +347,8 @@ final class FloatingWindowController: ObservableObject {
                 origin = CGPoint(x: freeX, y: freeY)
             }
             targetFrame.origin = origin
-            // Clamp to visible area so the window doesn't go off-screen
-            let visible = screen.visibleFrame
+            // Clamp to the union of all screens' visible frames so the window can be dragged to any monitor
+            let visible = combinedVisibleFrameOfAllScreens()
             targetFrame.origin.x = min(max(visible.minX, targetFrame.origin.x), visible.maxX - targetFrame.width)
             targetFrame.origin.y = min(max(visible.minY, targetFrame.origin.y), visible.maxY - targetFrame.height)
         }
