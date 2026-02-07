@@ -5,6 +5,8 @@ struct Script: Identifiable, Codable, Equatable {
     var id: UUID
     var title: String
     var body: String
+    /// RTF data for rich text (bold, italic, etc.). When nil, editor uses plain body.
+    var bodyRTF: Data?
     /// Folder path in tree, e.g. "" = root, "Trabalho" = top-level folder, "Trabalho/2025" = subfolder.
     var folderPath: String
     var createdAt: Date
@@ -14,6 +16,7 @@ struct Script: Identifiable, Codable, Equatable {
         id: UUID = UUID(),
         title: String,
         body: String,
+        bodyRTF: Data? = nil,
         folderPath: String = "",
         createdAt: Date = Date(),
         updatedAt: Date = Date()
@@ -21,6 +24,7 @@ struct Script: Identifiable, Codable, Equatable {
         self.id = id
         self.title = title
         self.body = body
+        self.bodyRTF = bodyRTF
         self.folderPath = folderPath
         self.createdAt = createdAt
         self.updatedAt = updatedAt
