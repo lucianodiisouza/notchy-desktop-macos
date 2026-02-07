@@ -104,12 +104,17 @@ final class ScriptStore: ObservableObject {
 
     // MARK: - CRUD
 
-    func createScript(title: String, body: String, folderPath: String = "") {
+    /// Creates a script and reloads. Returns the new script's id on success, nil on failure.
+    @discardableResult
+    func createScript(title: String, body: String, folderPath: String = "") -> UUID? {
         let script = Script(title: title, body: body, folderPath: folderPath)
         do {
             try repository.create(script)
             load()
-        } catch {}
+            return script.id
+        } catch {
+            return nil
+        }
     }
 
     /// Create a script from pasted text (e.g. in teleprompter). Title from first line or date; folderPath = "".
