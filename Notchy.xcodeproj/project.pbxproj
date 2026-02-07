@@ -37,7 +37,15 @@
 		C1000006 /* ScriptsWindowContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000004 /* ScriptsWindowContent.swift */; };
 		C1000007 /* FolderTreeSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000005 /* FolderTreeSidebarView.swift */; };
 		C1000008 /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000006 /* ScriptEditorView.swift */; };
+		C1000011 /* ScriptBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000011 /* ScriptBlock.swift */; };
+		C1000012 /* RichParagraphEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000012 /* RichParagraphEditorView.swift */; };
+		C1000013 /* InlineMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* InlineMarkdown.swift */; };
 		C1000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
+		C1000010 /* ScriptEditorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000002 /* ScriptEditorSettingsView.swift */; };
+		D1000001 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
+		D1000002 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
+		E1000001 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
+		E1000002 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,10 +98,16 @@
 		B2000004 /* ScriptsWindowContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptsWindowContent.swift; sourceTree = "<group>"; };
 		B2000005 /* FolderTreeSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeSidebarView.swift; sourceTree = "<group>"; };
 		B2000006 /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
+		B2000011 /* ScriptBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptBlock.swift; sourceTree = "<group>"; };
+		B2000012 /* RichParagraphEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichParagraphEditorView.swift; sourceTree = "<group>"; };
 		B2000007 /* NotchyScriptsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyScriptsApp.swift; sourceTree = "<group>"; };
+		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
 		B2000008 /* NotchyScripts-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NotchyScripts-Info.plist"; sourceTree = "<group>"; };
 		B2000009 /* Notchy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notchy.entitlements; sourceTree = "<group>"; };
 		B2000010 /* NotchyScripts.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotchyScripts.entitlements; sourceTree = "<group>"; };
+		D2000001 /* MarkdownHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownHelpers.swift; sourceTree = "<group>"; };
+		D2000002 /* ScriptEditorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorSettingsView.swift; sourceTree = "<group>"; };
+		E2000001 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,9 +174,12 @@
 				A2000012 /* NotchyState.swift */,
 				A2000014 /* NotchyKeys.swift */,
 				A2000015 /* Color+Hex.swift */,
+				F2000001 /* InlineMarkdown.swift */,
 				B2000001 /* Script.swift */,
 				A2000016 /* ScreenLayout.swift */,
 				A2000017 /* NotchShapes.swift */,
+				D2000001 /* MarkdownHelpers.swift */,
+				E2000001 /* AppLogger.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -215,6 +232,9 @@
 				B2000004 /* ScriptsWindowContent.swift */,
 				B2000005 /* FolderTreeSidebarView.swift */,
 				B2000006 /* ScriptEditorView.swift */,
+				B2000012 /* RichParagraphEditorView.swift */,
+				B2000011 /* ScriptBlock.swift */,
+				D2000002 /* ScriptEditorSettingsView.swift */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -350,6 +370,8 @@
 				B1000001 /* Script.swift in Sources */,
 				B1000002 /* ScriptRepository.swift in Sources */,
 				B1000003 /* ScriptStore.swift in Sources */,
+				D1000001 /* MarkdownHelpers.swift in Sources */,
+				E1000001 /* AppLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +387,12 @@
 				C1000006 /* ScriptsWindowContent.swift in Sources */,
 				C1000007 /* FolderTreeSidebarView.swift in Sources */,
 				C1000008 /* ScriptEditorView.swift in Sources */,
+				C1000012 /* RichParagraphEditorView.swift in Sources */,
+				C1000011 /* ScriptBlock.swift in Sources */,
+				C1000010 /* ScriptEditorSettingsView.swift in Sources */,
+				C1000013 /* InlineMarkdown.swift in Sources */,
+				D1000002 /* MarkdownHelpers.swift in Sources */,
+				E1000002 /* AppLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
