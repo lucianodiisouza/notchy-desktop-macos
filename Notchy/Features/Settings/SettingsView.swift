@@ -12,12 +12,14 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.windowOpacity) private var windowOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonOpacity) private var buttonOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
+    @AppStorage(NotchyKeys.notchBackgroundColorHex) private var notchBackgroundColorHex = "000000"
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled: Bool = true
     @AppStorage(NotchyKeys.micSensitivity) private var micSensitivity: Double = 50
     @AppStorage(NotchyKeys.preferredMicrophoneUID) private var preferredMicrophoneUID: String = ""
     @AppStorage(NotchyKeys.preferredDisplayID) private var preferredDisplayID: Int = 0
     @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
     @AppStorage(NotchyKeys.contentPadding) private var contentPadding: Double = 14
+    @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover: Bool = true
 
     @State private var showLanguageRestartAlert = false
 
@@ -139,6 +141,13 @@ struct SettingsView: View {
                     NotchyState.shared.windowController.applyWindowOpacity()
                 }
                 Text(String(localized: "window_opacity_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ColorPicker(String(localized: "picker_notch_background"), selection: Binding(
+                    get: { colorFromHex(notchBackgroundColorHex) },
+                    set: { notchBackgroundColorHex = hexFromColor($0) }
+                ))
+                Text(String(localized: "notch_background_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -264,6 +273,12 @@ struct SettingsView: View {
                         .frame(width: 44, alignment: .trailing)
                 }
                 Text(String(localized: "scroll_speed_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Section(String(localized: "section_behavior")) {
+                Toggle(String(localized: "toggle_pause_on_hover"), isOn: $pauseOnHover)
+                Text(String(localized: "pause_on_hover_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
