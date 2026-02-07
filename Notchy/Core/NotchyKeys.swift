@@ -38,10 +38,13 @@ enum NotchyKeys {
     // Control bar
     static let buttonColorHex = "buttonColorHex"
     static let buttonOpacity = "buttonOpacity"
+    /// Cor de fundo da barra quando recolhida na faixa do notch (hex); útil para combinar com o wallpaper no screenshot.
+    static let notchBackgroundColorHex = "notchBackgroundColorHex"
 
     // Voice & behavior
     static let voiceControlEnabled = "voiceControlEnabled"
     static let autoScrollPlaying = "autoScrollPlaying"
+    static let pauseOnHover = "pauseOnHover"
     static let micSensitivity = "micSensitivity"
     /// Preferred microphone UID (Core Audio); empty = system default.
     static let preferredMicrophoneUID = "preferredMicrophoneUID"
@@ -57,6 +60,9 @@ enum NotchyKeys {
 
     // Language (in-app override; empty = system default)
     static let preferredLanguage = "preferredLanguage"
+
+    // Onboarding (first run)
+    static let onboardingCompleted = "onboardingCompleted"
 
     // Scripts editor (Notchy Scripts app; use App Group if shared with main app)
     static let scriptEditorFontSize = "scriptEditorFontSize"
