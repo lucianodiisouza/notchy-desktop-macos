@@ -60,6 +60,21 @@ struct ScriptsWindowContent: View {
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button {
+                    if let id = store.createScript(
+                        title: String(localized: "script_untitled"),
+                        body: "",
+                        folderPath: selectedFolderPath
+                    ) {
+                        selectedScriptId = id
+                        store.selectScript(id: id)
+                    }
+                } label: {
+                    Image(systemName: "plus")
+                }
+                .help(String(localized: "new_script"))
+            }
+            ToolbarItem(placement: .automatic) {
+                Button {
                     showScriptsSettings = true
                 } label: {
                     Image(systemName: "gearshape")
