@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Xcode user state (schemes, UI state – per-developer)
+*.xcuserstate
+xcuserdata/
+
+# Cursor IDE
+.cursor/
+
+# Localization temp files
+**/Localizable.strings.tmp
+
+# Xcode build
+build/
+DerivedData/
