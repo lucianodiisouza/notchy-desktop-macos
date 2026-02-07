@@ -42,14 +42,20 @@
 
 /* Menu bar (AppDelegate) */
 "menu_tooltip" = "Notchy – Teleprompter";
+"menu_toggle_prompter" = "Abrir/fechar teleprompter";
 "menu_open_teleprompter" = "Abrir Teleprompter";
 "menu_close_teleprompter" = "Fechar Teleprompter";
 "menu_show_on" = "Mostrar em";
 "menu_settings" = "Configurações…";
-"menu_open_scripts" = "Abrir Roteiros";
-"menu_pin_to_notch" = "Fixar no notch";
+"menu_open_scripts" = "Abrir o Notchy Scripts";
+"menu_pin_to_notch" = "Fixar teleprompter no notch";
 "menu_quit" = "Sair";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Recoloca a janela no notch (útil depois de arrastar).";
+"menu_reset_scroll" = "Resetar scroll";
+"menu_faster" = "Mais rápido";
+"menu_slower" = "Mais devagar";
+"menu_editor_settings" = "Configurações do editor…";
 "window_title_settings" = "Configurações";
 
 /* Settings - Language */
@@ -60,6 +66,9 @@
 "language_restart_title" = "Reiniciar para aplicar";
 "language_restart_message" = "Saia e abra o Notchy novamente para usar o idioma escolhido.";
 "language_restart_button" = "Reiniciar";
+/* Do not translate "Notchy" or "Notchy Scripts" — they are product names. */
+"language_restart_scripts_help" = "Reinicie o Notchy Scripts e o Notchy para o novo idioma valer nos dois apps.";
+"language_restart_scripts_message" = "Saia e abra os dois apps novamente para usar o idioma escolhido em todo lugar.";
 
 /* Settings - Window tab */
 "settings_tab_window" = "Janela";
@@ -99,6 +108,10 @@
 "sensitivity_high" = "Alta";
 "sensitivity_help" = "Menor = só voz mais alta aciona. Maior = qualquer som pode acionar.";
 "mic_used_default" = "Microfone usado: padrão do sistema";
+"mic_devices_list" = "Dispositivos: %@";
+"picker_microphone" = "Microfone";
+"mic_system_default" = "Padrão do sistema";
+"mic_picker_help" = "Escolha qual microfone usar para o scroll controlado por voz.";
 "button_open_sound_settings" = "Abrir Ajustes de Som do sistema";
 "label_font_size" = "Tamanho da fonte";
 "font_size_help" = "Ajuste o tamanho do texto do teleprompter.";

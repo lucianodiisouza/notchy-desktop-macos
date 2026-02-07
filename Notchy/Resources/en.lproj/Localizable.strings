@@ -42,14 +42,20 @@
 
 /* Menu bar (AppDelegate) */
 "menu_tooltip" = "Notchy – Teleprompter";
+"menu_toggle_prompter" = "Toggle prompter";
 "menu_open_teleprompter" = "Open Teleprompter";
 "menu_close_teleprompter" = "Close Teleprompter";
 "menu_show_on" = "Show on";
 "menu_settings" = "Settings…";
-"menu_open_scripts" = "Open Scripts";
-"menu_pin_to_notch" = "Pin to notch";
+"menu_open_scripts" = "Open Notchy Scripts";
+"menu_pin_to_notch" = "Pin prompter to notch";
 "menu_quit" = "Quit";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Put window back on notch (useful after dragging).";
+"menu_reset_scroll" = "Reset Scroll";
+"menu_faster" = "Faster";
+"menu_slower" = "Slower";
+"menu_editor_settings" = "Editor settings…";
 "window_title_settings" = "Settings";
 
 /* Settings - Language */
@@ -60,6 +66,9 @@
 "language_restart_title" = "Restart to apply";
 "language_restart_message" = "Quit and reopen Notchy to use the selected language.";
 "language_restart_button" = "Restart";
+/* Do not translate "Notchy" or "Notchy Scripts" — they are product names. */
+"language_restart_scripts_help" = "Restart Notchy Scripts and Notchy for the new language to apply to both apps.";
+"language_restart_scripts_message" = "Quit and reopen both apps to use the selected language everywhere.";
 
 /* Settings - Window tab */
 "settings_tab_window" = "Window";
@@ -99,6 +108,10 @@
 "sensitivity_high" = "High";
 "sensitivity_help" = "Lower = only louder voice triggers. Higher = any sound may trigger.";
 "mic_used_default" = "Microphone used: system default";
+"mic_devices_list" = "Devices: %@";
+"picker_microphone" = "Microphone";
+"mic_system_default" = "System default";
+"mic_picker_help" = "Choose which microphone to use for voice-controlled scrolling.";
 "button_open_sound_settings" = "Open System Sound Settings";
 "label_font_size" = "Font size";
 "font_size_help" = "Adjust teleprompter text size.";

@@ -7,7 +7,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindowController: NSWindowController?
     private var statusItem: NSStatusItem?
     private var menu: NSMenu?
-    private var closeTeleprompterItem: NSMenuItem?
     private var pinToNotchItem: NSMenuItem?
     private var showOnSubmenu: NSMenu?
     private var selectedScriptObserver: NSObjectProtocol?
@@ -50,21 +49,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         button.toolTip = NSLocalizedString("menu_tooltip", comment: "")
 
         menu = NSMenu()
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_teleprompter", comment: ""), action: #selector(openTeleprompter), keyEquivalent: "t"))
-        menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        closeTeleprompterItem = NSMenuItem(title: NSLocalizedString("menu_close_teleprompter", comment: ""), action: #selector(closeTeleprompter), keyEquivalent: "")
-        menu?.addItem(closeTeleprompterItem!)
-        menu?.addItem(NSMenuItem.separator())
-        let showOnItem = NSMenuItem(title: NSLocalizedString("menu_show_on", comment: ""), action: nil, keyEquivalent: "")
-        showOnSubmenu = NSMenu()
-        showOnItem.submenu = showOnSubmenu
-        menu?.addItem(showOnItem)
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_scripts", comment: ""), action: #selector(openScripts), keyEquivalent: "r"))
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_toggle_prompter", comment: ""), action: #selector(toggleTeleprompter), keyEquivalent: "t"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
         pinToNotchItem = NSMenuItem(title: NSLocalizedString("menu_pin_to_notch", comment: ""), action: #selector(pinToNotch), keyEquivalent: "d")
         pinToNotchItem?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(pinToNotchItem!)
+        let showOnItem = NSMenuItem(title: NSLocalizedString("menu_show_on", comment: ""), action: nil, keyEquivalent: "")
+        showOnSubmenu = NSMenu()
+        showOnItem.submenu = showOnSubmenu
+        menu?.addItem(showOnItem)
+        menu?.addItem(NSMenuItem.separator())
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
+        menu?.items.last?.keyEquivalentModifierMask = .command
+        menu?.addItem(NSMenuItem.separator())
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_scripts", comment: ""), action: #selector(openScripts), keyEquivalent: "r"))
+        menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(NSMenuItem.separator())
         menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_quit", comment: ""), action: #selector(quit), keyEquivalent: "q"))
 
@@ -78,8 +77,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func updateMenuVisibility() {
         let hasWindow = notchWindow != nil
-        let isVisible = notchWindow?.isVisible ?? false
-        closeTeleprompterItem?.isEnabled = hasWindow && isVisible
         pinToNotchItem?.isEnabled = hasWindow
     }
 
@@ -96,15 +93,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         notchWindow = window
     }
 
+    @objc private func toggleTeleprompter() {
+        let isVisible = notchWindow?.isVisible ?? false
+        if isVisible {
+            notchWindow?.orderOut(nil)
+        } else {
+            ensureTeleprompterWindow()
+            NotchyState.shared.windowController.showTeleprompter()
+            notchWindow?.makeKeyAndOrderFront(nil)
+        }
+        updateMenuVisibility()
+    }
+
     @objc private func openTeleprompter() {
         ensureTeleprompterWindow()
         NotchyState.shared.windowController.showTeleprompter()
         notchWindow?.makeKeyAndOrderFront(nil)
-        updateMenuVisibility()
-    }
-
-    @objc private func closeTeleprompter() {
-        notchWindow?.orderOut(nil)
         updateMenuVisibility()
     }
 
@@ -173,13 +177,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 
-    func application(_ application: NSApplication, open urls: [URL]) -> Bool {
+    func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls where url.scheme == "notchy" && url.host == "openTeleprompter" {
             NSApp.activate(ignoringOtherApps: true)
             openTeleprompter()
-            return true
+            return
         }
-        return false
     }
 }
 
