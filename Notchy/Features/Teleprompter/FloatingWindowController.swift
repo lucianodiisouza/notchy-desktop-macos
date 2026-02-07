@@ -217,8 +217,8 @@ final class FloatingWindowController: ObservableObject {
         window.isOpaque = false
         window.hasShadow = false
         window.backgroundColor = .clear
-        (window.contentView as? NSView)?.wantsLayer = true
-        (window.contentView as? NSView)?.layer?.backgroundColor = NSColor.clear.cgColor
+        window.contentView?.wantsLayer = true
+        window.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
         window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         // Nível será ajustado em updateWindowFrame: recolhido = acima da menu bar para hover; expandido = mesmo nível.
         applySharingType()

@@ -282,7 +282,7 @@ struct ControlBarView: View {
             .help(alignmentHelp)
             Spacer(minLength: 0)
             ControlBarButton(icon: "gearshape", active: true) {
-                NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+                NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil)
             }
             .help(String(localized: "open_settings"))
             ControlBarButton(icon: "chevron.up", active: true) {
@@ -316,7 +316,7 @@ struct ControlBarView: View {
             HStack(alignment: .center, spacing: 10) {
                 Spacer(minLength: 0)
                 ControlBarButton(icon: "gearshape", active: true) {
-                    NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+                    NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil)
                 }
                 .help(String(localized: "open_settings"))
                 ControlBarButton(icon: "chevron.up", active: true) {
@@ -351,7 +351,7 @@ struct ControlBarView: View {
                     Button(String(localized: "align_justified")) { textAlignment = 3 }
                 }
                 Divider()
-                Button(action: { NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil) }) {
+                Button(action: { NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil) }) {
                     Label(String(localized: "settings"), systemImage: "gearshape")
                 }
                 Button(action: { windowController.collapseNow() }) {

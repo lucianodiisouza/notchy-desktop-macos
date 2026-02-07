@@ -135,7 +135,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    @objc private func openSettings() {
+    @objc func openSettings() {
         // Se a janela foi fechada, o controller foi nulado no delegate → criamos uma nova.
         if settingsWindowController == nil {
             let content = SettingsView()
