@@ -384,12 +384,12 @@ final class FloatingWindowController: ObservableObject {
             // During drag only move origin to avoid layout thrashing and jitter
             window.setFrameOrigin(targetFrame.origin)
         } else if isResizing {
-            // Durante o resize: manter o canto superior-esquerdo fixo e só mudar largura/altura,
-            // senão a janela "pula" (o frame é recalculado e a origem muda a cada frame).
+            // Durante o resize: manter o centro horizontal fixo para a janela crescer dos dois lados;
+            // manter o topo fixo na vertical para crescer só para baixo.
             let cur = window.frame
             let top = cur.origin.y + cur.height
-            let left = cur.origin.x
-            let newOrigin = CGPoint(x: left, y: top - targetFrame.height)
+            let centerX = cur.origin.x + cur.width / 2
+            let newOrigin = CGPoint(x: centerX - targetFrame.width / 2, y: top - targetFrame.height)
             let smoothFrame = CGRect(origin: newOrigin, size: CGSize(width: targetFrame.width, height: targetFrame.height))
             window.setFrame(smoothFrame, display: false)
         } else {
