@@ -9,9 +9,11 @@ pkill -x "Notchy" 2>/dev/null || true
 pkill -x "Notchy Scripts" 2>/dev/null || true
 sleep 1
 
-echo "=== Removendo app de /Applications ==="
+echo "=== Removendo apps de /Applications ==="
 rm -rf "/Applications/Notchy.app"
 echo "  Removido /Applications/Notchy.app"
+rm -rf "/Applications/Notchy Scripts.app"
+echo "  Removido /Applications/Notchy Scripts.app"
 
 echo "=== Removendo preferências (UserDefaults) ==="
 rm -f "$HOME/Library/Preferences/com.notchy.app.plist"
