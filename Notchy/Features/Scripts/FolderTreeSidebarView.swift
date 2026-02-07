@@ -43,7 +43,7 @@ struct FolderTreeSidebarView: View {
                     folderSection(path: subpath)
                 }
             } header: {
-                Text("folders_header")
+                Text(String(localized: "folders_header"))
             }
         }
         .listStyle(.sidebar)
@@ -139,7 +139,7 @@ struct FolderTreeSidebarView: View {
                 HStack {
                     Image(systemName: "folder.fill")
                         .foregroundStyle(.yellow)
-                    Text("root")
+                    Text(String(localized: "root"))
                 }
             }
             .buttonStyle(.plain)
@@ -298,7 +298,7 @@ struct ScriptRowView: View {
                     Text(script.title.isEmpty ? String(localized: "script_untitled") : script.title)
                         .lineLimit(1)
                     if isSelectedForPrompter {
-                        Text("in_teleprompter")
+                        Text(String(localized: "in_teleprompter"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

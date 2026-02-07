@@ -4,7 +4,7 @@ import ObjectiveC
 /// Bundle subclass that localizes using the user's preferred app language (Settings) when set,
 /// so the app can use a different language than the system without restart.
 /// Installed in AppDelegate applicationWillFinishLaunching.
-final class PreferredLanguageBundle: Bundle {
+final class PreferredLanguageBundle: Bundle, @unchecked Sendable {
 
     override func localizedString(forKey key: String, value: String?, table tableName: String?) -> String {
         guard let preferredId = UserDefaults.standard.string(forKey: NotchyKeys.preferredLanguage),

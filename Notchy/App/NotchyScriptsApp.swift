@@ -5,6 +5,20 @@ struct NotchyScriptsApp: App {
     @FocusedValue(\.selectedScriptId) private var selectedScriptId
     @State private var showScriptsSettings = false
 
+    init() {
+        // Use same language as main Notchy app (synced via App Group). Set before any UI loads.
+        let suite = UserDefaults(suiteName: NotchyKeys.appGroupIdentifier)
+        let pref = suite?.string(forKey: NotchyKeys.preferredLanguage) ?? ""
+        if !pref.isEmpty {
+            UserDefaults.standard.set(pref, forKey: NotchyKeys.preferredLanguage)
+            UserDefaults.standard.set([pref, "en"], forKey: "AppleLanguages")
+        } else {
+            UserDefaults.standard.removeObject(forKey: NotchyKeys.preferredLanguage)
+            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+        }
+        PreferredLanguageBundle.installIfNeeded()
+    }
+
     var body: some Scene {
         WindowGroup {
             ScriptsWindowContent(showScriptsSettings: $showScriptsSettings)
@@ -12,7 +26,7 @@ struct NotchyScriptsApp: App {
         }
         .commands {
             CommandGroup(after: .newItem) {
-                Button("Usar no Teleprompter") {
+                Button(String(localized: "use_in_teleprompter")) {
                     if let id = selectedScriptId {
                         ScriptStore.shared.selectScript(id: id)
                         ScriptStore.openTeleprompterInMainApp()
@@ -22,7 +36,7 @@ struct NotchyScriptsApp: App {
                 .disabled(selectedScriptId == nil)
             }
             CommandGroup(after: .appSettings) {
-                Button("Configurações do editor…") {
+                Button(String(localized: "menu_editor_settings")) {
                     showScriptsSettings = true
                 }
                 .keyboardShortcut(",", modifiers: .command)
