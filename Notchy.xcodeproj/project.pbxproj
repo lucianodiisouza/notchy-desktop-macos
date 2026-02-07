@@ -37,7 +37,6 @@
 		C1000006 /* ScriptsWindowContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000004 /* ScriptsWindowContent.swift */; };
 		C1000007 /* FolderTreeSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000005 /* FolderTreeSidebarView.swift */; };
 		C1000008 /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000006 /* ScriptEditorView.swift */; };
-		C1000011 /* ScriptBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000011 /* ScriptBlock.swift */; };
 		C1000012 /* RichParagraphEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000012 /* RichParagraphEditorView.swift */; };
 		C1000013 /* InlineMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* InlineMarkdown.swift */; };
 		C1000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
@@ -98,7 +97,6 @@
 		B2000004 /* ScriptsWindowContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptsWindowContent.swift; sourceTree = "<group>"; };
 		B2000005 /* FolderTreeSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeSidebarView.swift; sourceTree = "<group>"; };
 		B2000006 /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
-		B2000011 /* ScriptBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptBlock.swift; sourceTree = "<group>"; };
 		B2000012 /* RichParagraphEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichParagraphEditorView.swift; sourceTree = "<group>"; };
 		B2000007 /* NotchyScriptsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyScriptsApp.swift; sourceTree = "<group>"; };
 		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
@@ -233,7 +231,6 @@
 				B2000005 /* FolderTreeSidebarView.swift */,
 				B2000006 /* ScriptEditorView.swift */,
 				B2000012 /* RichParagraphEditorView.swift */,
-				B2000011 /* ScriptBlock.swift */,
 				D2000002 /* ScriptEditorSettingsView.swift */,
 			);
 			path = Scripts;
@@ -388,7 +385,6 @@
 				C1000007 /* FolderTreeSidebarView.swift in Sources */,
 				C1000008 /* ScriptEditorView.swift in Sources */,
 				C1000012 /* RichParagraphEditorView.swift in Sources */,
-				C1000011 /* ScriptBlock.swift in Sources */,
 				C1000010 /* ScriptEditorSettingsView.swift in Sources */,
 				C1000013 /* InlineMarkdown.swift in Sources */,
 				D1000002 /* MarkdownHelpers.swift in Sources */,
