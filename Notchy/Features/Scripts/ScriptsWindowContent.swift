@@ -13,10 +13,21 @@ extension FocusedValues {
 
 /// Root view for Notchy Scripts: sidebar (folder tree + script list) + editor.
 struct ScriptsWindowContent: View {
+    @Binding var showScriptsSettings: Bool
+
     @StateObject private var store = ScriptStore.shared
     @State private var selectedScriptId: UUID?
     @State private var selectedFolderPath: String = ""
     @State private var expandedFolderPaths: Set<String> = []
+    @AppStorage(NotchyKeys.scriptEditorTheme) private var themeRaw: Int = 0
+
+    private var colorScheme: ColorScheme? {
+        switch themeRaw {
+        case 1: return .light
+        case 2: return .dark
+        default: return nil
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -28,7 +39,7 @@ struct ScriptsWindowContent: View {
             )
         } detail: {
             if let id = selectedScriptId, let script = store.scripts.first(where: { $0.id == id }) {
-                ScriptEditorView(store: store, script: script)
+                ScriptEditorView(store: store, script: script, onOpenSettings: { showScriptsSettings = true })
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "doc.text")
@@ -46,5 +57,19 @@ struct ScriptsWindowContent: View {
         }
         .navigationTitle(selectedScriptId.flatMap { id in store.scripts.first(where: { $0.id == id })?.title } ?? "Roteiros")
         .focusedValue(\.selectedScriptId, selectedScriptId)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    showScriptsSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+                .help("Configurações do editor")
+            }
+        }
+        .sheet(isPresented: $showScriptsSettings) {
+            ScriptEditorSettingsView()
+        }
+        .preferredColorScheme(colorScheme)
     }
 }

@@ -1,4 +1,8 @@
 import SwiftUI
+import UniformTypeIdentifiers
+
+/// Drag payload: plain text with this prefix so we recognise script drops. Value = "notchy-script:" + uuidString.
+private let scriptDragPrefix = "notchy-script:"
 
 struct FolderTreeSidebarView: View {
     @ObservedObject var store: ScriptStore
@@ -151,6 +155,9 @@ struct FolderTreeSidebarView: View {
             }
         }
         .buttonStyle(.plain)
+        .onDrop(of: [.plainText], isTargeted: nil) { providers in
+            acceptScriptDrop(providers: providers, folderPath: path)
+        }
         .contextMenu {
             if !path.isEmpty {
                 Button("Renomear pasta") {
@@ -171,6 +178,23 @@ struct FolderTreeSidebarView: View {
         }
     }
 
+    private func acceptScriptDrop(providers: [NSItemProvider], folderPath: String) -> Bool {
+        guard let provider = providers.first else { return false }
+        guard provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) else { return false }
+        provider.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { item, _ in
+            let string: String? = (item as? String) ?? (item as? Data).flatMap { String(data: $0, encoding: .utf8) }
+            guard let raw = string?.trimmingCharacters(in: .whitespaces),
+                  raw.hasPrefix(scriptDragPrefix),
+                  let id = UUID(uuidString: String(raw.dropFirst(scriptDragPrefix.count))) else { return }
+            DispatchQueue.main.async {
+                store.moveScript(id: id, newFolderPath: folderPath)
+                if !folderPath.isEmpty { expandedFolderPaths.insert(folderPath) }
+                selectedFolderPath = folderPath
+            }
+        }
+        return true
+    }
+
     @ViewBuilder
     private func folderSection(path: String) -> some View {
         let name = folderName(for: path)
@@ -186,13 +210,16 @@ struct FolderTreeSidebarView: View {
                 selectedFolderPath = path
                 selectedScriptId = nil
             } label: {
-                HStack {
-                    Image(systemName: "folder.fill")
-                        .foregroundStyle(.yellow)
-                    Text(name)
-                }
+            HStack {
+                Image(systemName: "folder.fill")
+                    .foregroundStyle(.yellow)
+                Text(name)
+            }
             }
             .buttonStyle(.plain)
+        }
+        .onDrop(of: [.plainText], isTargeted: nil) { providers in
+            acceptScriptDrop(providers: providers, folderPath: path)
         }
         .contextMenu {
             Button("Renomear pasta") {
@@ -240,6 +267,9 @@ struct ScriptRowView: View {
             }
         }
         .buttonStyle(.plain)
+        .onDrag {
+            NSItemProvider(object: (scriptDragPrefix + script.id.uuidString) as NSString)
+        }
         .contextMenu {
             Button("Usar no Teleprompter") {
                 store.selectScript(id: script.id)

@@ -126,13 +126,17 @@ final class ScriptStore: ObservableObject {
         }
     }
 
-    func updateScript(id: UUID, title: String?, body: String?) {
+    /// When `clearRTF` is true, sets `script.bodyRTF = nil`. Otherwise if `bodyRTF` is non-nil, sets it.
+    func updateScript(id: UUID, title: String?, body: String?, bodyRTF: Data? = nil, clearRTF: Bool = false) {
         guard var script = scripts.first(where: { $0.id == id }) else { return }
         let titleChanged = title.map { $0 != script.title } ?? false
         let bodyChanged = body.map { $0 != script.body } ?? false
-        guard titleChanged || bodyChanged else { return }
+        let rtfChanged: Bool = clearRTF ? (script.bodyRTF != nil) : (bodyRTF.map { $0 != script.bodyRTF } ?? false)
+        guard titleChanged || bodyChanged || rtfChanged else { return }
         if let t = title { script.title = t }
         if let b = body { script.body = b }
+        if clearRTF { script.bodyRTF = nil }
+        else if let rtf = bodyRTF { script.bodyRTF = rtf }
         script.updatedAt = Date()
         do {
             try repository.update(script)
@@ -160,6 +164,7 @@ final class ScriptStore: ObservableObject {
         let copy = Script(
             title: script.title + " (cópia)",
             body: script.body,
+            bodyRTF: script.bodyRTF,
             folderPath: script.folderPath
         )
         do {
