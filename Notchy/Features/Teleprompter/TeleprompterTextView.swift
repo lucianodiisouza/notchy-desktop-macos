@@ -14,9 +14,12 @@ private final class PlainTextPasteTextView: NSTextView {
     }
 
     override func scrollRangeToVisible(_ range: NSRange) {
-        // Não fazer scroll automático para a seleção/range — evita o mini salto ao fim do parágrafo
-        // (ex.: linha em branco) que colocava o novo parágrafo no topo e confundia durante a leitura.
-        // O scroll fica exclusivamente a cargo do ScrollController (voz ou automático).
+        // Só faz scroll para manter o cursor de edição visível (insertion point).
+        // Para seleções (range.length > 0), não fazemos scroll — evita o mini salto ao mudar de
+        // parágrafo quando o monitor de voz está ativo; o scroll de leitura fica a cargo do ScrollController.
+        if range.length == 0 {
+            super.scrollRangeToVisible(range)
+        }
     }
 }
 

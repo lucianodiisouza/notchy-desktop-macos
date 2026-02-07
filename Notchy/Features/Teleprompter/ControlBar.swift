@@ -58,7 +58,7 @@ fileprivate final class ResizeHandleMouseView: NSView {
     }
 
     override func mouseDragged(with event: NSEvent) {
-        guard windowController != nil, let window = window else { return }
+        guard windowController != nil, let _ = window else { return }
         let current = NSEvent.mouseLocation
         let deltaX = current.x - dragStartLocation.x
         let deltaY = dragStartLocation.y - current.y
