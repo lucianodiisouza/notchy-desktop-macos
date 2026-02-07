@@ -153,7 +153,7 @@ extension AppDelegate: NSMenuDelegate {
     private func rebuildShowOnSubmenu() {
         guard let submenu = showOnSubmenu else { return }
         submenu.removeAllItems()
-        let current = UserDefaults.standard.integer(forKey: preferredDisplayIDKey)
+        let current = UserDefaults.standard.integer(forKey: NotchyKeys.preferredDisplayID)
         for screen in screensForSelection() {
             let item = NSMenuItem(title: screen.name, action: #selector(selectScreenForNotchy(_:)), keyEquivalent: "")
             item.target = self

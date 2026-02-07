@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct NotchyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @AppStorage("scrollSpeed") private var scrollSpeed: Double = 40
+    @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
 
     var body: some Scene {
         Settings {

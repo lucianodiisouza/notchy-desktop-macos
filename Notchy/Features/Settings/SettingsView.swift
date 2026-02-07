@@ -2,19 +2,19 @@ import SwiftUI
 import AppKit
 
 struct SettingsView: View {
-    @AppStorage("scrollSpeed") private var scrollSpeed: Double = 40
-    @AppStorage("fontSize") private var fontSize: Double = 16
-    @AppStorage("textColor") private var textColorHex = "FFFFFF"
-    @AppStorage("textOpacity") private var textOpacity: Double = 1
-    @AppStorage("windowWidth") private var windowWidth: Double = 0
-    @AppStorage("windowHeight") private var windowHeight: Double = 320
-    @AppStorage("showInScreenCapture") private var showInScreenCapture: Bool = false
-    @AppStorage("windowOpacity") private var windowOpacity: Double = 1
-    @AppStorage("buttonOpacity") private var buttonOpacity: Double = 1
-    @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
-    @AppStorage("voiceControlEnabled") private var voiceControlEnabled: Bool = true
-    @AppStorage("micSensitivity") private var micSensitivity: Double = 50
-    @AppStorage(preferredDisplayIDKey) private var preferredDisplayID: Int = 0
+    @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
+    @AppStorage(NotchyKeys.fontSize) private var fontSize: Double = 16
+    @AppStorage(NotchyKeys.textColor) private var textColorHex = "FFFFFF"
+    @AppStorage(NotchyKeys.textOpacity) private var textOpacity: Double = 1
+    @AppStorage(NotchyKeys.windowWidth) private var windowWidth: Double = 0
+    @AppStorage(NotchyKeys.windowHeight) private var windowHeight: Double = 320
+    @AppStorage(NotchyKeys.showInScreenCapture) private var showInScreenCapture: Bool = false
+    @AppStorage(NotchyKeys.windowOpacity) private var windowOpacity: Double = 1
+    @AppStorage(NotchyKeys.buttonOpacity) private var buttonOpacity: Double = 1
+    @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
+    @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled: Bool = true
+    @AppStorage(NotchyKeys.micSensitivity) private var micSensitivity: Double = 50
+    @AppStorage(NotchyKeys.preferredDisplayID) private var preferredDisplayID: Int = 0
 
     private let speedRange: ClosedRange<Double> = 10...120
     private let opacityRange: ClosedRange<Double> = 0...1
@@ -248,7 +248,7 @@ struct SettingsView: View {
     private func resetNotchy() {
         windowWidth = 0
         windowHeight = 320
-        UserDefaults.standard.set(true, forKey: "windowPinnedToNotch")
+        UserDefaults.standard.set(true, forKey: NotchyKeys.windowPinnedToNotch)
         NotchyState.shared.windowController.setTemporaryResize(width: nil, height: nil)
         NotchyState.shared.windowController.pinWindowToNotch()
     }
@@ -261,21 +261,4 @@ struct SettingsView: View {
         }
     }
 
-    private func colorFromHex(_ hex: String) -> Color {
-        let s = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: s).scanHexInt64(&int)
-        let r = Double((int >> 16) & 0xFF) / 255
-        let g = Double((int >> 8) & 0xFF) / 255
-        let b = Double(int & 0xFF) / 255
-        return Color(red: r, green: g, blue: b)
-    }
-
-    private func hexFromColor(_ color: Color) -> String {
-        let ns = NSColor(color)
-        let r = Int((ns.redComponent * 255).rounded())
-        let g = Int((ns.greenComponent * 255).rounded())
-        let b = Int((ns.blueComponent * 255).rounded())
-        return String(format: "%02X%02X%02X", r, g, b)
-    }
 }

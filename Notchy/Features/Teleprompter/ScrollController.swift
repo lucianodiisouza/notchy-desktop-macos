@@ -12,7 +12,7 @@ final class ScrollController: ObservableObject {
         didSet { setupTimer() }
     }
 
-    @AppStorage("scrollSpeed") private var scrollSpeed: Double = 40
+    @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
 
     private var timer: Timer?
     private let timerInterval: TimeInterval = 0.05

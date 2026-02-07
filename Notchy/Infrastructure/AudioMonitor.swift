@@ -2,11 +2,11 @@ import AVFoundation
 import Combine
 import SwiftUI
 
-/// Sensitivity 0–100 in UserDefaults "micSensitivity"; we map to threshold (high sensitivity = low threshold).
+/// Sensitivity 0–100 in UserDefaults; we map to threshold (high sensitivity = low threshold).
+/// Call from main thread only (UserDefaults read).
 private func currentSpeechThreshold() -> Float {
-    let s = UserDefaults.standard.double(forKey: "micSensitivity")
+    let s = UserDefaults.standard.double(forKey: NotchyKeys.micSensitivity)
     let normalized = max(0, min(100, s))
-    // 0 = menos sensível (threshold 0.08); 100 = mais sensível (0.005)
     return Float(0.08 - (normalized / 100) * 0.075)
 }
 
@@ -17,6 +17,8 @@ final class AudioMonitor: ObservableObject {
     private let silenceDurationToStop: TimeInterval = 0.6
     private var lastSpeechTime = Date()
     private var isConfigured = false
+    /// Cached threshold; updated on main thread so we never read UserDefaults from the audio tap callback.
+    private var cachedSpeechThreshold: Float = 0.04
 
     func start() {
         guard !isConfigured else { return }
@@ -73,6 +75,7 @@ final class AudioMonitor: ObservableObject {
         do {
             try audioEngine.start()
             isConfigured = true
+            cachedSpeechThreshold = currentSpeechThreshold()
         } catch {
             // Permission denied or device error
         }
@@ -93,7 +96,7 @@ final class AudioMonitor: ObservableObject {
         let count = frameLength * channelCount
         let average = count > 0 ? sum / Float(count) : 0
 
-        let threshold = currentSpeechThreshold()
+        let threshold = cachedSpeechThreshold
         let speaking = average > threshold
         let now = Date()
 
@@ -105,6 +108,7 @@ final class AudioMonitor: ObservableObject {
         let shouldBeSpeaking = speaking || silenceDuration < silenceDurationToStop
 
         DispatchQueue.main.async { [weak self] in
+            self?.cachedSpeechThreshold = currentSpeechThreshold()
             self?.isSpeaking = shouldBeSpeaking
         }
     }

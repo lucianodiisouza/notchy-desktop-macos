@@ -1,63 +1,6 @@
 import AppKit
 import SwiftUI
 
-/// Height of the menu bar strip when the Mac has no notch (fallback).
-private let fallbackNotchHeight: CGFloat = 28
-
-/// UserDefaults key for preferred display (0 = main screen; otherwise CGDirectDisplayID as Int).
-let preferredDisplayIDKey = "preferredDisplayID"
-
-extension NSScreen {
-    /// CGDirectDisplayID for this screen (from deviceDescription).
-    var displayID: UInt32? {
-        (deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value
-    }
-}
-
-/// List of (displayID, displayName) for all screens, for picker/submenu. Option 0 = main; then one per screen.
-func screensForSelection() -> [(id: Int, name: String)] {
-    var list: [(id: Int, name: String)] = [(0, "Principal (tela do menu)")]
-    let screens = NSScreen.screens
-    let main = NSScreen.main
-    for screen in screens {
-        guard let did = screen.displayID else { continue }
-        let id = Int(did)
-        let name: String
-        if #available(macOS 10.15, *) {
-            name = screen.localizedName
-        } else {
-            name = "Display \(id)"
-        }
-        let isMain = screen === main
-        list.append((id: id, name: isMain ? "\(name) (principal)" : name))
-    }
-    return list
-}
-
-/// Resolve NSScreen from stored preferred display ID (0 = main).
-func screenForPreferredDisplayID(_ preferredID: Int) -> NSScreen? {
-    if preferredID == 0 { return NSScreen.main }
-    let screens = NSScreen.screens
-    return screens.first { Int($0.displayID ?? 0) == preferredID } ?? NSScreen.main
-}
-
-/// Screen that contains the window (by center point). Used to detect current monitor when docking or after drag.
-func screenContaining(window: NSWindow) -> NSScreen? {
-    let center = CGPoint(x: window.frame.midX, y: window.frame.midY)
-    return NSScreen.screens.first { $0.frame.contains(center) }
-}
-
-/// Union of all screens' visible frames (same coordinate system). Use when window is in free position so it can be dragged to any monitor.
-func combinedVisibleFrameOfAllScreens() -> CGRect {
-    let screens = NSScreen.screens
-    guard let first = screens.first else { return .zero }
-    var combined = first.visibleFrame
-    for screen in screens.dropFirst() {
-        combined = combined.union(screen.visibleFrame)
-    }
-    return combined
-}
-
 final class FloatingWindowController: ObservableObject {
     weak var window: NSWindow?
     private var screenObserver: NSObjectProtocol?
@@ -128,10 +71,10 @@ final class FloatingWindowController: ObservableObject {
         guard let window = window, isExpanded else { return }
         let frame = window.frame
         if frame.width >= Self.minWindowWidth {
-            UserDefaults.standard.set(frame.width, forKey: "windowWidth")
+            UserDefaults.standard.set(frame.width, forKey: NotchyKeys.windowWidth)
         }
         if frame.height >= 200 {
-            UserDefaults.standard.set(frame.height, forKey: "windowHeight")
+            UserDefaults.standard.set(frame.height, forKey: NotchyKeys.windowHeight)
         }
     }
 
@@ -142,21 +85,16 @@ final class FloatingWindowController: ObservableObject {
 
     /// Set which display the notch window should appear on (0 = main). Repositions immediately if pinned to notch.
     func setPreferredDisplayID(_ displayID: Int) {
-        UserDefaults.standard.set(displayID, forKey: preferredDisplayIDKey)
+        UserDefaults.standard.set(displayID, forKey: NotchyKeys.preferredDisplayID)
         if isPinnedToNotch {
             updateWindowFrame(animated: true)
         }
     }
 
-    /// When the user drags the window via the drag button, we use a free position instead of the notch.
-    private static let windowPinnedToNotchKey = "windowPinnedToNotch"
-    private static let windowFreeOriginXKey = "windowFreeOriginX"
-    private static let windowFreeOriginYKey = "windowFreeOriginY"
-
     /// Whether the window is pinned to the notch (true) or placed freely (false).
     var isPinnedToNotch: Bool {
-        get { UserDefaults.standard.object(forKey: Self.windowPinnedToNotchKey) as? Bool ?? true }
-        set { UserDefaults.standard.set(newValue, forKey: Self.windowPinnedToNotchKey) }
+        get { UserDefaults.standard.object(forKey: NotchyKeys.windowPinnedToNotch) as? Bool ?? true }
+        set { UserDefaults.standard.set(newValue, forKey: NotchyKeys.windowPinnedToNotch) }
     }
 
     /// During drag we keep origin in memory to avoid UserDefaults + full update every frame (causes jitter).
@@ -165,9 +103,9 @@ final class FloatingWindowController: ObservableObject {
     /// Set the window's free position (used when not pinned to notch). Call from the drag button gesture.
     /// During drag, use setWindowFreeOriginForDrag so we don't write to UserDefaults every frame.
     func setWindowFreeOrigin(_ origin: CGPoint) {
-        UserDefaults.standard.set(origin.x, forKey: Self.windowFreeOriginXKey)
-        UserDefaults.standard.set(origin.y, forKey: Self.windowFreeOriginYKey)
-        UserDefaults.standard.set(false, forKey: Self.windowPinnedToNotchKey)
+        UserDefaults.standard.set(origin.x, forKey: NotchyKeys.windowFreeOriginX)
+        UserDefaults.standard.set(origin.y, forKey: NotchyKeys.windowFreeOriginY)
+        UserDefaults.standard.set(false, forKey: NotchyKeys.windowPinnedToNotch)
         temporaryFreeOrigin = nil
         updateWindowFrame(animated: false)
     }
@@ -175,7 +113,7 @@ final class FloatingWindowController: ObservableObject {
     /// Update window position during drag only in memory; avoids jitter from UserDefaults + full layout each frame.
     func setWindowFreeOriginForDrag(_ origin: CGPoint) {
         if temporaryFreeOrigin == nil {
-            UserDefaults.standard.set(false, forKey: Self.windowPinnedToNotchKey)
+            UserDefaults.standard.set(false, forKey: NotchyKeys.windowPinnedToNotch)
         }
         temporaryFreeOrigin = origin
         updateWindowFrame(animated: false)
@@ -184,11 +122,11 @@ final class FloatingWindowController: ObservableObject {
     /// Call when drag ends to commit the final position to UserDefaults.
     /// Also updates preferred display to the screen where the window ended up, so the app "knows" which monitor it's on.
     func commitWindowFreeOrigin(_ origin: CGPoint) {
-        UserDefaults.standard.set(origin.x, forKey: Self.windowFreeOriginXKey)
-        UserDefaults.standard.set(origin.y, forKey: Self.windowFreeOriginYKey)
+        UserDefaults.standard.set(origin.x, forKey: NotchyKeys.windowFreeOriginX)
+        UserDefaults.standard.set(origin.y, forKey: NotchyKeys.windowFreeOriginY)
         temporaryFreeOrigin = nil
         if let window = window, let screen = screenContaining(window: window), let displayID = screen.displayID {
-            UserDefaults.standard.set(Int(displayID), forKey: preferredDisplayIDKey)
+            UserDefaults.standard.set(Int(displayID), forKey: NotchyKeys.preferredDisplayID)
         }
     }
 
@@ -196,16 +134,16 @@ final class FloatingWindowController: ObservableObject {
     /// If the window is on a different monitor, we update preferred display so it docks on the current screen.
     func pinWindowToNotch() {
         if let window = window, let screen = screenContaining(window: window), let displayID = screen.displayID {
-            UserDefaults.standard.set(Int(displayID), forKey: preferredDisplayIDKey)
+            UserDefaults.standard.set(Int(displayID), forKey: NotchyKeys.preferredDisplayID)
         }
-        UserDefaults.standard.set(true, forKey: Self.windowPinnedToNotchKey)
+        UserDefaults.standard.set(true, forKey: NotchyKeys.windowPinnedToNotch)
         setExpanded(true)
         updateWindowFrame(animated: true)
     }
 
     /// Screen where the notch window should appear (from preferences or main).
     func targetScreen() -> NSScreen? {
-        let preferred = UserDefaults.standard.integer(forKey: preferredDisplayIDKey)
+        let preferred = UserDefaults.standard.integer(forKey: NotchyKeys.preferredDisplayID)
         return screenForPreferredDisplayID(preferred)
     }
 
@@ -241,7 +179,7 @@ final class FloatingWindowController: ObservableObject {
 
     /// Apply "show in screen capture" preference. When off (stealth), window is excluded from recordings/screenshots.
     func applySharingType() {
-        let showInCapture = UserDefaults.standard.bool(forKey: "showInScreenCapture")
+        let showInCapture = UserDefaults.standard.bool(forKey: NotchyKeys.showInScreenCapture)
         window?.sharingType = showInCapture ? .readOnly : .none
     }
 
@@ -293,8 +231,8 @@ final class FloatingWindowController: ObservableObject {
     func commitResize(width: CGFloat, height: CGFloat) {
         let w = min(1200, max(Self.minWindowWidth, width))
         let h = min(600, max(200, height))
-        UserDefaults.standard.set(w, forKey: "windowWidth")
-        UserDefaults.standard.set(h, forKey: "windowHeight")
+        UserDefaults.standard.set(w, forKey: NotchyKeys.windowWidth)
+        UserDefaults.standard.set(h, forKey: NotchyKeys.windowHeight)
         setTemporaryResize(width: nil, height: nil)
     }
 
@@ -307,7 +245,7 @@ final class FloatingWindowController: ObservableObject {
             if w <= 0 { return 0 }
             return min(1200, max(Self.minWindowWidth, w))
         }
-        let w = UserDefaults.standard.double(forKey: "windowWidth")
+        let w = UserDefaults.standard.double(forKey: NotchyKeys.windowWidth)
         if w > 0 { return min(1200, max(Self.minWindowWidth, CGFloat(w))) }
         return 0
     }
@@ -317,7 +255,7 @@ final class FloatingWindowController: ObservableObject {
         if let h = temporaryResizeHeight {
             return min(600, max(200, h))
         }
-        let h = UserDefaults.standard.double(forKey: "windowHeight")
+        let h = UserDefaults.standard.double(forKey: NotchyKeys.windowHeight)
         if h > 0 { return min(600, max(200, CGFloat(h))) }
         return 320
     }
@@ -396,8 +334,8 @@ final class FloatingWindowController: ObservableObject {
             if let temp = temporaryFreeOrigin {
                 origin = temp
             } else {
-                let freeX = CGFloat(UserDefaults.standard.double(forKey: Self.windowFreeOriginXKey))
-                let freeY = CGFloat(UserDefaults.standard.double(forKey: Self.windowFreeOriginYKey))
+                let freeX = CGFloat(UserDefaults.standard.double(forKey: NotchyKeys.windowFreeOriginX))
+                let freeY = CGFloat(UserDefaults.standard.double(forKey: NotchyKeys.windowFreeOriginY))
                 origin = CGPoint(x: freeX, y: freeY)
             }
             // Never open at (0,0) — treat as "use notch" so window opens centered in notch, not in corner
