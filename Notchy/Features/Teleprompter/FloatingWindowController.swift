@@ -39,8 +39,11 @@ final class FloatingWindowController: ObservableObject {
                 guard let self = self else { return }
                 guard self.isExpanded else { return }
                 self.persistCurrentWindowSizeBeforeCollapse()
+                self.isCollapseAnimationInProgress = true
                 self.isExpanded = false
-                self.updateWindowFrame(animated: true)
+                self.updateWindowFrame(animated: true) { [weak self] in
+                    self?.isCollapseAnimationInProgress = false
+                }
             }
             collapseWorkItem = item
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.55, execute: item)
@@ -152,6 +155,19 @@ final class FloatingWindowController: ObservableObject {
         return screenForPreferredDisplayID(preferred)
     }
 
+    /// When the screen has a camera notch, returns (width, height) to cut out from the collapsed bar so it doesn’t cover the notch. Nil when there is no notch.
+    func notchCutoutSize() -> (width: CGFloat, height: CGFloat)? {
+        guard let screen = targetScreen() else { return nil }
+        if #available(macOS 12.0, *) {
+            let top = screen.safeAreaInsets.top
+            guard top > 0 else { return nil }
+            /// Largura generosa para evitar rebarbas (barra visível nas orelhas ao lado do notch físico).
+            let width: CGFloat = 280
+            return (width, top)
+        }
+        return nil
+    }
+
     /// Returns true if the window is currently near the notch strip (e.g. user dragged it back up).
     /// When true, the drag button can snap the window back into the notch on drop.
     func shouldSnapToNotch() -> Bool {
@@ -201,6 +217,8 @@ final class FloatingWindowController: ObservableObject {
         window.isOpaque = false
         window.hasShadow = false
         window.backgroundColor = .clear
+        (window.contentView as? NSView)?.wantsLayer = true
+        (window.contentView as? NSView)?.layer?.backgroundColor = NSColor.clear.cgColor
         window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         // Nível será ajustado em updateWindowFrame: recolhido = acima da menu bar para hover; expandido = mesmo nível.
         applySharingType()
@@ -287,9 +305,9 @@ final class FloatingWindowController: ObservableObject {
         let visible = screen.visibleFrame
         let menuBarHeight = full.maxY - visible.maxY
         let notchHeight = menuBarHeight > 0 ? menuBarHeight : fallbackNotchHeight
+        let isCollapsed = (height <= notchHeight + 1) // collapsed = only the strip
         let useHeight = height > notchHeight ? height : notchHeight
         let y = full.maxY - useHeight
-        let isCollapsed = (height <= notchHeight + 1) // collapsed = only the strip
 
         let hasNotch: Bool
         let notchMinX: CGFloat
