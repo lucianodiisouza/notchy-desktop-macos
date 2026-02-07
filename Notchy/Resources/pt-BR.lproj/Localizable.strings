@@ -59,6 +59,7 @@
 "language_restart_help" = "Reinicie o Notchy para o novo idioma ter efeito.";
 "language_restart_title" = "Reiniciar para aplicar";
 "language_restart_message" = "Saia e abra o Notchy novamente para usar o idioma escolhido.";
+"language_restart_button" = "Reiniciar";
 
 /* Settings - Window tab */
 "settings_tab_window" = "Janela";
