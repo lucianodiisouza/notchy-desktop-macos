@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		M1000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* main.swift */; };
 		A1000001 /* NotchyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* NotchyApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* FloatingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000003 /* FloatingWindowController.swift */; };
@@ -76,6 +77,7 @@
 
 /* Begin PBXFileReference section */
 		A2000000 /* Notchy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notchy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		M2000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A2000001 /* NotchyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* FloatingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingWindowController.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 		A4000010 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				M2000001 /* main.swift */,
 				A2000001 /* NotchyApp.swift */,
 				A2000013 /* AppDelegate.swift */,
 				B2000007 /* NotchyScriptsApp.swift */,
@@ -416,6 +419,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				M1000001 /* main.swift in Sources */,
 				A1000001 /* NotchyApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
 				A1000003 /* FloatingWindowController.swift in Sources */,
