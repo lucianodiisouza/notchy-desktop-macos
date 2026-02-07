@@ -80,7 +80,7 @@ struct FolderTreeSidebarView: View {
                 folderToDelete = nil
             }
         } message: {
-            Text(folderToDelete.map { L10n.string("delete_folder_message", folderName(for: $0)) } ?? "")
+            Text(folderToDelete.map { String(format: NSLocalizedString("delete_folder_message", comment: ""), folderName(for: $0)) } ?? "")
         }
         .alert(String(localized: "rename_folder"), isPresented: $showRenameFolderAlert) {
             TextField(String(localized: "field_name"), text: $renamedFolderName)
@@ -150,7 +150,7 @@ struct FolderTreeSidebarView: View {
         .contextMenu {
             Button(String(localized: "new_script")) {
                 expandedFolderPaths.insert("")
-                store.createScript(title: L10n.string("script_untitled"), body: "", folderPath: "")
+                store.createScript(title: NSLocalizedString("script_untitled", comment: ""), body: "", folderPath: "")
                 if let newest = store.scripts(inFolderPath: "").max(by: { $0.createdAt < $1.createdAt }) {
                     selectedScriptId = newest.id
                 }
@@ -256,7 +256,7 @@ struct FolderTreeSidebarView: View {
         .contextMenu {
             Button(String(localized: "new_script")) {
                 expandedFolderPaths.insert(path)
-                store.createScript(title: L10n.string("script_untitled"), body: "", folderPath: path)
+                store.createScript(title: NSLocalizedString("script_untitled", comment: ""), body: "", folderPath: path)
                 if let newest = store.scripts(inFolderPath: path).max(by: { $0.createdAt < $1.createdAt }) {
                     selectedFolderPath = path
                     selectedScriptId = newest.id
@@ -329,7 +329,7 @@ struct ScriptRowView: View {
             }
             Button(String(localized: "cancel"), role: .cancel) {}
         } message: {
-            Text(L10n.string("delete_script_confirm_message", script.title))
+            Text(String(format: NSLocalizedString("delete_script_confirm_message", comment: ""), script.title))
         }
     }
 }
