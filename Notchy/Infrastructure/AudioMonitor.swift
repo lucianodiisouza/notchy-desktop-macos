@@ -17,19 +17,29 @@ final class AudioMonitor: ObservableObject {
     private let silenceDurationToStop: TimeInterval = 0.6
     private var lastSpeechTime = Date()
     private var isConfigured = false
+    /// When we override the system default input, we save it here to restore on stop().
+    private var savedDefaultInputDeviceID: AudioDeviceID?
     /// Cached threshold; updated on main thread so we never read UserDefaults from the audio tap callback.
     private var cachedSpeechThreshold: Float = 0.04
 
     func start() {
         guard !isConfigured else { return }
 
-        // Checar status primeiro: se já autorizado, não pedir de novo (evita diálogo a cada launch).
-        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        // Pedir permissão só na primeira execução: checar status e flag "já pedimos uma vez".
+        let status = AVCaptureDevice.authorizationStatus(for: .audio)
+        let alreadyRequestedOnce = UserDefaults.standard.bool(forKey: NotchyKeys.micPermissionRequestedOnce)
+
+        switch status {
         case .authorized:
             configureAndStart()
         case .denied:
             break
         case .notDetermined:
+            if alreadyRequestedOnce {
+                // Já pedimos uma vez; não mostrar o diálogo de novo.
+                break
+            }
+            UserDefaults.standard.set(true, forKey: NotchyKeys.micPermissionRequestedOnce)
             if #available(macOS 14.0, *) {
                 AVAudioApplication.requestRecordPermission { [weak self] allowed in
                     DispatchQueue.main.async {
@@ -57,6 +67,10 @@ final class AudioMonitor: ObservableObject {
     func stop() {
         guard isConfigured else { return }
         audioEngine.stop()
+        if let saved = savedDefaultInputDeviceID {
+            _ = AudioDeviceList.setDefaultInputDevice(saved)
+            savedDefaultInputDeviceID = nil
+        }
         isConfigured = false
         DispatchQueue.main.async { [weak self] in
             self?.isSpeaking = false
@@ -64,6 +78,14 @@ final class AudioMonitor: ObservableObject {
     }
 
     private func configureAndStart() {
+        if let preferredUID = UserDefaults.standard.string(forKey: NotchyKeys.preferredMicrophoneUID),
+           !preferredUID.isEmpty,
+           let deviceID = AudioDeviceList.deviceID(for: preferredUID) {
+            if let current = AudioDeviceList.currentDefaultInputDeviceID() {
+                savedDefaultInputDeviceID = current
+            }
+            _ = AudioDeviceList.setDefaultInputDevice(deviceID)
+        }
         let inputNode = audioEngine.inputNode
         let format = inputNode.inputFormat(forBus: 0)
         guard format.channelCount > 0 else { return }
@@ -113,20 +135,8 @@ final class AudioMonitor: ObservableObject {
         }
     }
 
-    /// Lista nomes dos dispositivos de entrada de áudio (para exibir nas configurações).
-    /// O Notchy usa sempre o microfone padrão do sistema; o usuário altera em Ajustes > Som.
-    static func inputDeviceNames() -> [String] {
-        let deviceTypes: [AVCaptureDevice.DeviceType]
-        if #available(macOS 14.0, *) {
-            deviceTypes = [.builtInMicrophone, .external]
-        } else {
-            deviceTypes = [.builtInMicrophone]
-        }
-        let session = AVCaptureDevice.DiscoverySession(
-            deviceTypes: deviceTypes,
-            mediaType: .audio,
-            position: .unspecified
-        )
-        return session.devices.map { $0.localizedName }
+    /// Input devices for the microphone picker (UID + name). Use preferredMicrophoneUID when empty = system default.
+    static func inputDevicesForPicker() -> [AudioDeviceList.Item] {
+        AudioDeviceList.inputDevices()
     }
 }

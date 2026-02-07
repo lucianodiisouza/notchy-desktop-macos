@@ -7,8 +7,12 @@ enum NotchyKeys {
     static let appGroupIdentifier = "group.com.notchy"
     /// Distributed notification posted by Notchy Scripts when selected script changes; Notchy (main app) observes it to refresh.
     static let selectedScriptDidChangeNotification = "com.notchy.selectedScriptDidChange"
+    /// Posted when preferred microphone changes so the audio monitor can restart with the new device.
+    static let preferredMicrophoneDidChangeNotification = "com.notchy.preferredMicrophoneDidChange"
     /// URL to open the main app’s teleprompter (used by Notchy Scripts so “Usar no Teleprompter” opens the window).
     static let openTeleprompterURLString = "notchy://openTeleprompter"
+    /// Main Notchy app bundle IDs (menu bar / teleprompter). Used by Scripts to restart both apps when changing language.
+    static let mainAppBundleIdentifiers = ["com.notchy.app", "dev.oprimo.notchy"]
     // Scroll & teleprompter
     static let scrollSpeed = "scrollSpeed"
     static let prompterText = "prompterText"
@@ -39,6 +43,10 @@ enum NotchyKeys {
     static let voiceControlEnabled = "voiceControlEnabled"
     static let autoScrollPlaying = "autoScrollPlaying"
     static let micSensitivity = "micSensitivity"
+    /// Preferred microphone UID (Core Audio); empty = system default.
+    static let preferredMicrophoneUID = "preferredMicrophoneUID"
+    /// True after we have asked for microphone permission once; avoids showing the system dialog again.
+    static let micPermissionRequestedOnce = "micPermissionRequestedOnce"
 
     // Layout
     static let mirrorMode = "mirrorMode"
