@@ -6,7 +6,6 @@ import AppKit
 struct ScriptEditorView: View {
     @ObservedObject var store: ScriptStore
     let script: Script
-    var onOpenSettings: (() -> Void)? = nil
 
     @AppStorage(NotchyKeys.scriptEditorFontSize) private var editorFontSize: Double = 14
     @AppStorage(NotchyKeys.scriptEditorTheme) private var themeRaw: Int = 0
@@ -43,7 +42,7 @@ struct ScriptEditorView: View {
 
                 Divider()
 
-                FormatToolbar(editorFontSize: editorFontSize, onOpenSettings: onOpenSettings)
+                FormatToolbar(editorFontSize: editorFontSize)
 
                 RichParagraphEditorView(
                     body: $editingBody,
@@ -128,20 +127,18 @@ private struct FormatButton: View {
     }
 }
 
-// MARK: - Toolbar (só formatação básica + configurações)
+// MARK: - Toolbar (só formatação básica)
 
 private let fontSizeRange: ClosedRange<Double> = 8...36
 
 private struct FormatToolbar: View {
     var editorFontSize: Double = 14
-    var onOpenSettings: (() -> Void)? = nil
 
     @State private var sizePopover = false
     @State private var chosenSize: Double
 
-    init(editorFontSize: Double = 14, onOpenSettings: (() -> Void)? = nil) {
+    init(editorFontSize: Double = 14) {
         self.editorFontSize = editorFontSize
-        self.onOpenSettings = onOpenSettings
         _chosenSize = State(initialValue: editorFontSize)
     }
 
@@ -195,17 +192,6 @@ private struct FormatToolbar: View {
             .clipShape(RoundedRectangle(cornerRadius: 6))
 
             Spacer(minLength: 8)
-
-            if let onOpenSettings = onOpenSettings {
-                Button(action: onOpenSettings) {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 13))
-                        .frame(width: 28, height: 24)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .help(String(localized: "help_editor_settings"))
-            }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)

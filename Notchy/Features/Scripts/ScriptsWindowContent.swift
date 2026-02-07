@@ -39,7 +39,7 @@ struct ScriptsWindowContent: View {
             )
         } detail: {
             if let id = selectedScriptId, let script = store.scripts.first(where: { $0.id == id }) {
-                ScriptEditorView(store: store, script: script, onOpenSettings: { showScriptsSettings = true })
+                ScriptEditorView(store: store, script: script)
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "doc.text")
@@ -55,7 +55,7 @@ struct ScriptsWindowContent: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle(selectedScriptId.flatMap { id in store.scripts.first(where: { $0.id == id })?.title } ?? String(localized: "scripts_nav_title"))
+        .navigationTitle("")
         .focusedValue(\.selectedScriptId, selectedScriptId)
         .toolbar {
             ToolbarItem(placement: .automatic) {
