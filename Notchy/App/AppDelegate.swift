@@ -37,26 +37,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             button.title = "N"
         }
-        button.toolTip = "Notchy – Teleprompter"
+        button.toolTip = L10n.string("menu_tooltip")
 
         menu = NSMenu()
-        menu?.addItem(NSMenuItem(title: "Abrir Teleprompter", action: #selector(openTeleprompter), keyEquivalent: "t"))
+        menu?.addItem(NSMenuItem(title: L10n.string("menu_open_teleprompter"), action: #selector(openTeleprompter), keyEquivalent: "t"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        closeTeleprompterItem = NSMenuItem(title: "Fechar Teleprompter", action: #selector(closeTeleprompter), keyEquivalent: "")
+        closeTeleprompterItem = NSMenuItem(title: L10n.string("menu_close_teleprompter"), action: #selector(closeTeleprompter), keyEquivalent: "")
         menu?.addItem(closeTeleprompterItem!)
         menu?.addItem(NSMenuItem.separator())
-        let showOnItem = NSMenuItem(title: "Mostrar em", action: nil, keyEquivalent: "")
+        let showOnItem = NSMenuItem(title: L10n.string("menu_show_on"), action: nil, keyEquivalent: "")
         showOnSubmenu = NSMenu()
         showOnItem.submenu = showOnSubmenu
         menu?.addItem(showOnItem)
-        menu?.addItem(NSMenuItem(title: "Configurações…", action: #selector(openSettings), keyEquivalent: ","))
-        menu?.addItem(NSMenuItem(title: "Abrir Roteiros", action: #selector(openScripts), keyEquivalent: "r"))
+        menu?.addItem(NSMenuItem(title: L10n.string("menu_settings"), action: #selector(openSettings), keyEquivalent: ","))
+        menu?.addItem(NSMenuItem(title: L10n.string("menu_open_scripts"), action: #selector(openScripts), keyEquivalent: "r"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        pinToNotchItem = NSMenuItem(title: "Fixar no notch", action: #selector(pinToNotch), keyEquivalent: "d")
+        pinToNotchItem = NSMenuItem(title: L10n.string("menu_pin_to_notch"), action: #selector(pinToNotch), keyEquivalent: "d")
         pinToNotchItem?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(pinToNotchItem!)
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: "Sair", action: #selector(quit), keyEquivalent: "q"))
+        menu?.addItem(NSMenuItem(title: L10n.string("menu_quit"), action: #selector(quit), keyEquivalent: "q"))
 
         for item in menu?.items ?? [] {
             item.target = self
@@ -128,7 +128,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 defer: false
             )
             win.minSize = NSSize(width: 480, height: 420)
-            win.title = "Configurações"
+            win.title = L10n.string("window_title_settings")
             win.contentView = NSHostingView(rootView: content)
             win.center()
             win.delegate = self

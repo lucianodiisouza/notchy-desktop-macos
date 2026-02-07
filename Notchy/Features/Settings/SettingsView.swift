@@ -49,8 +49,8 @@ struct SettingsView: View {
 
     private var windowTab: some View {
         Form {
-            Section("Monitor e posição") {
-                Picker("Monitor", selection: $preferredDisplayID) {
+            Section(String(localized: "section_monitor")) {
+                Picker(String(localized: "picker_monitor"), selection: $preferredDisplayID) {
                     ForEach(screensForSelection(), id: \.id) { screen in
                         Text(screen.name).tag(screen.id)
                     }
@@ -58,47 +58,47 @@ struct SettingsView: View {
                 .onChange(of: preferredDisplayID) { _ in
                     NotchyState.shared.windowController.setPreferredDisplayID(preferredDisplayID)
                 }
-                Text("Escolha em qual tela o Notchy aparece (na faixa do notch/menu bar).")
+                Text(String(localized: "monitor_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Button("Resetar Notchy") {
+                Button(String(localized: "button_reset_notchy")) {
                     resetNotchy()
                 }
                 .buttonStyle(.bordered)
-                Text("Volta a janela para o notch, largura automática e altura 320 pt.")
+                Text(String(localized: "reset_notchy_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Tamanho") {
+            Section(String(localized: "section_size")) {
                 HStack {
-                    Text("Largura")
+                    Text(String(localized: "label_width"))
                     Slider(value: $windowWidth, in: widthRange, step: 20)
                     Text(widthLabel)
                         .frame(width: 70, alignment: .trailing)
                 }
-                Text("0 = automática (largura total do notch). Largura fixa: 340–1200 pt (entre 340–380 pt os botões quebram em duas linhas).")
+                Text(String(localized: "width_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Altura expandida")
+                    Text(String(localized: "label_expanded_height"))
                     Slider(value: $windowHeight, in: heightRange, step: 20)
                     Text("\(Int(windowHeight)) pt")
                         .frame(width: 70, alignment: .trailing)
                 }
-                Text("Altura da janela do teleprompter quando expandida (200–600 pt).")
+                Text(String(localized: "expanded_height_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Aparência da janela") {
-                Toggle("Aparecer em gravação de tela", isOn: $showInScreenCapture)
+            Section(String(localized: "section_window_appearance")) {
+                Toggle(String(localized: "toggle_show_in_capture"), isOn: $showInScreenCapture)
                     .onChange(of: showInScreenCapture) { _ in
                         NotchyState.shared.windowController.applySharingType()
                     }
-                Text("Desative o \"stealth\" para que o Notchy apareça em gravações e screenshots.")
+                Text(String(localized: "show_in_capture_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Opacidade da janela")
+                    Text(String(localized: "label_window_opacity"))
                     Slider(value: $windowOpacity, in: opacityRange, step: 0.05)
                     Text("\(Int(round(windowOpacity * 100)))%")
                         .frame(width: 36, alignment: .trailing)
@@ -106,55 +106,55 @@ struct SettingsView: View {
                 .onChange(of: windowOpacity) { _ in
                     NotchyState.shared.windowController.applyWindowOpacity()
                 }
-                Text("Transparência da janela do Notchy (0–100%).")
+                Text(String(localized: "window_opacity_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Botões e ícones") {
-                ColorPicker("Cor dos botões", selection: Binding(
+            Section(String(localized: "section_buttons")) {
+                ColorPicker(String(localized: "picker_button_color"), selection: Binding(
                     get: { colorFromHex(buttonColorHex) },
                     set: { buttonColorHex = hexFromColor($0) }
                 ))
-                Text("Cor dos ícones da barra (mic, play, recolher, arrastar).")
+                Text(String(localized: "button_color_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Opacidade dos ícones")
+                    Text(String(localized: "label_button_opacity"))
                     Slider(value: $buttonOpacity, in: opacityRange, step: 0.05)
                     Text("\(Int(round(buttonOpacity * 100)))%")
                         .frame(width: 36, alignment: .trailing)
                 }
-                Text("Transparência dos botões e ícones da barra.")
+                Text(String(localized: "button_opacity_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        .tabItem { Label("Janela", systemImage: "macwindow") }
+        .tabItem { Label(String(localized: "settings_tab_window"), systemImage: "macwindow") }
     }
 
     // MARK: - Voz
 
     private var voiceTab: some View {
         Form {
-            Section("Controle por voz") {
-                Toggle("Controle por voz (rolar ao falar)", isOn: $voiceControlEnabled)
-                Text("Desligue se não quiser que o texto avance ao detectar voz (ex.: outras pessoas na sala).")
+            Section(String(localized: "section_voice_control")) {
+                Toggle(String(localized: "toggle_voice_control"), isOn: $voiceControlEnabled)
+                Text(String(localized: "voice_control_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Sensibilidade")
+                    Text(String(localized: "label_sensitivity"))
                     Slider(value: $micSensitivity, in: sensitivityRange, step: 5)
                     Text(sensitivityLabel)
                         .frame(width: 56, alignment: .trailing)
                 }
-                Text("Menor = só voz mais alta aciona. Maior = qualquer som pode acionar.")
+                Text(String(localized: "sensitivity_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Microfone") {
+            Section(String(localized: "section_microphone")) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Microfone usado: padrão do sistema")
+                    Text(String(localized: "mic_used_default"))
                         .font(.caption)
                     if !AudioMonitor.inputDeviceNames().isEmpty {
                         Text("Dispositivos: \(AudioMonitor.inputDeviceNames().joined(separator: ", "))")
@@ -162,7 +162,7 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(2)
                     }
-                    Button("Abrir Ajustes de Som do sistema") {
+                    Button(String(localized: "button_open_sound_settings")) {
                         openSoundSettings()
                     }
                     .buttonStyle(.borderless)
@@ -171,78 +171,78 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .tabItem { Label("Voz", systemImage: "mic.fill") }
+        .tabItem { Label(String(localized: "settings_tab_voice"), systemImage: "mic.fill") }
     }
 
     // MARK: - Texto
 
     private var textTab: some View {
         Form {
-            Section("Fonte e cor") {
+            Section(String(localized: "section_font_color")) {
                 HStack {
-                    Text("Tamanho da fonte")
+                    Text(String(localized: "label_font_size"))
                     Slider(value: $fontSize, in: fontSizeRange, step: 1)
                     Text("\(Int(fontSize)) pt")
                         .frame(width: 40, alignment: .trailing)
                 }
-                Text("Ajuste o tamanho do texto do teleprompter.")
+                Text(String(localized: "font_size_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                ColorPicker("Cor do texto", selection: Binding(
+                ColorPicker(String(localized: "picker_text_color"), selection: Binding(
                     get: { colorFromHex(textColorHex) },
                     set: { textColorHex = hexFromColor($0) }
                 ))
                 HStack {
-                    Text("Opacidade do texto")
+                    Text(String(localized: "label_text_opacity"))
                     Slider(value: $textOpacity, in: opacityRange, step: 0.05)
                     Text("\(Int(round(textOpacity * 100)))%")
                         .frame(width: 36, alignment: .trailing)
                 }
-                Text("Transparência apenas do texto do teleprompter.")
+                Text(String(localized: "text_opacity_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        .tabItem { Label("Texto", systemImage: "textformat") }
+        .tabItem { Label(String(localized: "settings_tab_text"), systemImage: "textformat") }
     }
 
     // MARK: - Scroll
 
     private var scrollTab: some View {
         Form {
-            Section("Velocidade") {
+            Section(String(localized: "section_speed")) {
                 HStack {
-                    Text("Velocidade do scroll")
+                    Text(String(localized: "label_scroll_speed"))
                     Slider(value: $scrollSpeed, in: speedRange, step: 5)
                     Text("\(Int(scrollSpeed)) pt/s")
                         .frame(width: 44, alignment: .trailing)
                 }
-                Text("Velocidade com que o texto sobe durante a apresentação.")
+                Text(String(localized: "scroll_speed_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Section {
-                Text("Com controle por voz ativo, o scroll começa ao falar e pausa após um breve silêncio. Use Shift+↑/↓ para mudar a velocidade durante a apresentação.")
+                Text(String(localized: "voice_scroll_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)
-        .tabItem { Label("Scroll", systemImage: "arrow.up.arrow.down") }
+        .tabItem { Label(String(localized: "settings_tab_scroll"), systemImage: "arrow.up.arrow.down") }
     }
 
     // MARK: - Helpers
 
     private var widthLabel: String {
-        if windowWidth <= 0 { return "Auto" }
+        if windowWidth <= 0 { return String(localized: "label_auto") }
         return "\(Int(windowWidth)) pt"
     }
 
     private var sensitivityLabel: String {
-        if micSensitivity < 25 { return "Baixa" }
-        if micSensitivity < 75 { return "Média" }
-        return "Alta"
+        if micSensitivity < 25 { return String(localized: "sensitivity_low") }
+        if micSensitivity < 75 { return String(localized: "sensitivity_medium") }
+        return String(localized: "sensitivity_high")
     }
 
     private func resetNotchy() {
