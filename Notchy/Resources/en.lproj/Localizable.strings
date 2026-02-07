@@ -59,6 +59,7 @@
 "language_restart_help" = "Restart Notchy for the new language to take effect.";
 "language_restart_title" = "Restart to apply";
 "language_restart_message" = "Quit and reopen Notchy to use the selected language.";
+"language_restart_button" = "Restart";
 
 /* Settings - Window tab */
 "settings_tab_window" = "Window";
