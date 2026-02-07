@@ -37,8 +37,10 @@ struct ContentView: View {
     @AppStorage(NotchyKeys.windowOpacity) private var windowOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonOpacity) private var buttonOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
+    @AppStorage(NotchyKeys.notchBackgroundColorHex) private var notchBackgroundColorHex = "000000"
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled = true
     @AppStorage(NotchyKeys.autoScrollPlaying) private var autoScrollPlaying = false
+    @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover = true
     /// 0 = normal, 1 = horizontal, 2 = vertical, 3 = horizontal+vertical (para teleprompter no reflexo do iPad)
     @AppStorage(NotchyKeys.mirrorMode) private var mirrorMode: Int = 0
     /// 0 = esquerda, 1 = centro, 2 = direita, 3 = justificado
@@ -49,6 +51,9 @@ struct ContentView: View {
     /// Congelados no início do resize para evitar a barra alternar 36↔76 e a área do prompter "pular".
     @State private var frozenBarWidth: CGFloat?
     @State private var frozenBarHeight: CGFloat?
+    @State private var isHoveringOverText = false
+    @State private var showOnboarding = false
+    @State private var keyMonitorToken: Any?
 
     /// Opacidade mínima para o fundo garante que a janela continue recebendo cliques quando o usuário escolhe 0%.
     private var effectiveWindowOpacity: Double {
@@ -109,8 +114,15 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // Opacidade da janela só no fundo; texto e controles usam suas próprias opacidades.
-            // Usamos effectiveWindowOpacity para que, mesmo em 0%, a janela ainda seja clicável (macOS ignora hit em views totalmente transparentes).
-            Color.black.opacity(effectiveWindowOpacity)
+            // Recolhido: usa cor configurável (Settings) para combinar com o wallpaper no screenshot.
+            Group {
+                if windowController.isExpanded {
+                    Color.black.opacity(effectiveWindowOpacity)
+                } else {
+                    colorFromHex(notchBackgroundColorHex).opacity(effectiveWindowOpacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.15), value: windowController.isExpanded)
 
             // Recolhido: indicador mínimo para saber onde está o app (hover para expandir)
             if !windowController.isExpanded {
@@ -137,6 +149,8 @@ struct ContentView: View {
                     .scaleEffect(x: mirrorScaleX, y: mirrorScaleY)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(CGFloat(contentPadding))
+                    .contentShape(Rectangle())
+                    .onHover { isHoveringOverText = $0 }
                     // Barra de controles: fundo arrastável; botões ou menu quando estreito
                     ControlBarView(
                             barWidth: effectiveBarWidth,
@@ -178,8 +192,12 @@ struct ContentView: View {
                 }
             }
         }
-        .clipShape(NotchBarShape(roundTopCorners: !windowController.isExpanded && !windowController.isCollapseAnimationInProgress))
-        .shadow(color: .black.opacity(0.18), radius: 8, x: 0, y: 2)
+        .clipShape(NotchBarShape(
+            roundTopCorners: !windowController.isExpanded && !windowController.isCollapseAnimationInProgress,
+            notchCutoutWidth: !windowController.isExpanded ? windowController.notchCutoutSize()?.width : nil,
+            notchCutoutHeight: !windowController.isExpanded ? windowController.notchCutoutSize()?.height : nil
+        ))
+        .shadow(color: .black.opacity(windowController.isExpanded ? 0.18 : 0), radius: windowController.isExpanded ? 8 : 0, x: 0, y: windowController.isExpanded ? 2 : 0)
         .overlay(alignment: .bottomTrailing) {
             if windowController.isExpanded {
                 ResizeHandleView()
@@ -199,6 +217,34 @@ struct ContentView: View {
                     get: { UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying) },
                     set: { UserDefaults.standard.set($0, forKey: NotchyKeys.autoScrollPlaying) }
                 )
+                scrollController.pauseWhenHoveringBinding = Binding(
+                    get: { pauseOnHover && isHoveringOverText },
+                    set: { _ in }
+                )
+                if !UserDefaults.standard.bool(forKey: NotchyKeys.onboardingCompleted) {
+                    showOnboarding = true
+                }
+                // Atalhos de teclado (Space = play/pause, ↑/↓ = passo) quando a janela do teleprompter é a key window.
+                let ourWindow = windowController.window
+                keyMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak scrollController] event in
+                    guard event.window === ourWindow else { return event }
+                    switch event.keyCode {
+                    case 49: // Space
+                        let current = UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying)
+                        UserDefaults.standard.set(!current, forKey: NotchyKeys.autoScrollPlaying)
+                        return nil
+                    case 126: // Up
+                        if let sc = scrollController {
+                            sc.scrollOffset = max(0, sc.scrollOffset - ScrollController.keyboardScrollStep)
+                        }
+                        return nil
+                    case 125: // Down
+                        scrollController?.scrollOffset += ScrollController.keyboardScrollStep
+                        return nil
+                    default:
+                        return event
+                    }
+                }
                 // Só pede permissão de microfone quando o controle por voz está ligado (evita prompt a cada abertura).
                 if voiceControlEnabled {
                     audioMonitor.start()
@@ -239,12 +285,73 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        .clipShape(NotchBarShape(
+            roundTopCorners: !windowController.isExpanded && !windowController.isCollapseAnimationInProgress,
+            notchCutoutWidth: !windowController.isExpanded ? windowController.notchCutoutSize()?.width : nil,
+            notchCutoutHeight: !windowController.isExpanded ? windowController.notchCutoutSize()?.height : nil
+        ))
         .onDisappear {
+            if let token = keyMonitorToken {
+                NSEvent.removeMonitor(token)
+                keyMonitorToken = nil
+            }
             DispatchQueue.main.async {
                 audioMonitor.stop()
                 scrollController.isSpeakingBinding = nil
                 scrollController.autoScrollPlayingBinding = nil
+                scrollController.pauseWhenHoveringBinding = nil
             }
+        }
+        .sheet(isPresented: $showOnboarding) {
+            OnboardingView {
+                showOnboarding = false
+                UserDefaults.standard.set(true, forKey: NotchyKeys.onboardingCompleted)
+            }
+        }
+    }
+}
+
+// MARK: - Onboarding
+
+private struct OnboardingView: View {
+    var onDismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "rectangle.topthird.inset.filled")
+                .font(.system(size: 48))
+                .foregroundStyle(.secondary)
+            Text(String(localized: "onboarding_title"))
+                .font(.title2.weight(.semibold))
+            VStack(alignment: .leading, spacing: 12) {
+                OnboardingRow(icon: "doc.on.clipboard", text: String(localized: "onboarding_paste"))
+                OnboardingRow(icon: "mic.fill", text: String(localized: "onboarding_speak"))
+                OnboardingRow(icon: "chevron.up", text: String(localized: "onboarding_collapse"))
+            }
+            .padding(.vertical, 8)
+            Button(String(localized: "onboarding_got_it")) {
+                onDismiss()
+            }
+            .buttonStyle(.borderedProminent)
+            .keyboardShortcut(.defaultAction)
+        }
+        .padding(32)
+        .frame(width: 360)
+    }
+}
+
+private struct OnboardingRow: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundStyle(.secondary)
+                .frame(width: 24, alignment: .center)
+            Text(text)
+                .font(.body)
         }
     }
 }
