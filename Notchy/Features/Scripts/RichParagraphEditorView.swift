@@ -1,80 +1,139 @@
 import AppKit
 import SwiftUI
 
-/// Notificação para a barra de formatação aplicar wrap na seleção do first responder.
-/// userInfo: "prefix" (String), "suffix" (String).
-extension Notification.Name {
-    static let scriptEditorApplyFormatWrap = Notification.Name("scriptEditorApplyFormatWrap")
+/// Format to apply to the current selection (rich text, no markdown).
+enum ScriptEditorFormat: String {
+    case bold
+    case italic
+    case underline
+    case fontSize
 }
 
-/// NSTextView que mostra markdown como atribuído (live preview) e converte de/para markdown.
+/// Notificação para a barra aplicar formatação real na seleção.
+/// userInfo: "format" (ScriptEditorFormat rawValue), "pointSize" (Int, só para .fontSize).
+extension Notification.Name {
+    static let scriptEditorApplyFormat = Notification.Name("scriptEditorApplyFormat")
+}
+
+/// NSTextView com rich text em tempo real. Persistência em RTF + plain body.
 final class RichParagraphNSTextView: NSTextView {
-    var onMarkdownDidChange: ((String) -> Void)?
+    var onContentDidChange: ((String, Data?) -> Void)?
     var baseFont: NSFont = .systemFont(ofSize: NSFont.systemFontSize)
     var textColorValue: NSColor = .labelColor
+    /// Quando true, o próximo didChangeText não reporta (evita commit ao carregar conteúdo).
+    var skipNextReport = false
 
     override func didChangeText() {
         super.didChangeText()
+        if skipNextReport {
+            skipNextReport = false
+            return
+        }
+        reportContent()
+    }
+
+    private func reportContent() {
         let att = attributedString()
-        let md = InlineMarkdown.markdown(from: att, baseFont: baseFont)
-        onMarkdownDidChange?(md)
+        let plain = att.string
+        let rtfData: Data? = {
+            guard att.length > 0 else { return nil }
+            let range = NSRange(location: 0, length: att.length)
+            return try? att.data(from: range, documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf])
+        }()
+        onContentDidChange?(plain, rtfData)
     }
 
     override func becomeFirstResponder() -> Bool {
         let ok = super.becomeFirstResponder()
-        if ok { startObservingFormatWrap() }
+        if ok { startObservingApplyFormat() }
         return ok
     }
 
     override func resignFirstResponder() -> Bool {
-        stopObservingFormatWrap()
+        stopObservingApplyFormat()
         return super.resignFirstResponder()
     }
 
-    private var formatWrapObserver: NSObjectProtocol?
+    private var formatObserver: NSObjectProtocol?
 
-    private func startObservingFormatWrap() {
-        stopObservingFormatWrap()
-        formatWrapObserver = NotificationCenter.default.addObserver(
-            forName: .scriptEditorApplyFormatWrap,
+    private func startObservingApplyFormat() {
+        stopObservingApplyFormat()
+        formatObserver = NotificationCenter.default.addObserver(
+            forName: .scriptEditorApplyFormat,
             object: nil,
             queue: .main
         ) { [weak self] notif in
             guard let self = self, self.window?.firstResponder === self else { return }
-            guard let prefix = (notif.userInfo?["prefix"] as? String),
-                  let suffix = (notif.userInfo?["suffix"] as? String) else { return }
-            self.wrapSelection(prefix: prefix, suffix: suffix)
+            guard let raw = notif.userInfo?["format"] as? String,
+                  let format = ScriptEditorFormat(rawValue: raw) else { return }
+            let pointSize = notif.userInfo?["pointSize"] as? Int
+            self.applyFormat(format, pointSize: pointSize)
         }
     }
 
-    private func stopObservingFormatWrap() {
-        if let o = formatWrapObserver {
+    private func stopObservingApplyFormat() {
+        if let o = formatObserver {
             NotificationCenter.default.removeObserver(o)
-            formatWrapObserver = nil
+            formatObserver = nil
         }
     }
 
-    private func wrapSelection(prefix: String, suffix: String) {
-        let r = selectedRange
-        let str = string as NSString
-        let selected = r.length > 0 ? str.substring(with: r) : ""
-        let replacement = prefix + selected + suffix
-        if shouldChangeText(in: r, replacementString: replacement) {
-            replaceCharacters(in: r, with: replacement)
-            didChangeText()
-            setSelectedRange(NSRange(location: r.location + prefix.count, length: selected.count))
+    private func applyFormat(_ format: ScriptEditorFormat, pointSize: Int?) {
+        guard let storage = textStorage else { return }
+        let range = selectedRange()
+        let effectiveRange = range.length > 0 ? range : NSRange(location: 0, length: storage.length)
+        guard effectiveRange.length > 0 else { return }
+
+        storage.beginEditing()
+        defer { storage.endEditing() }
+
+        switch format {
+        case .bold:
+            storage.enumerateAttribute(.font, in: effectiveRange) { value, range, _ in
+                let font = (value as? NSFont) ?? baseFont
+                let traits = font.fontDescriptor.symbolicTraits
+                let newFont = traits.contains(.bold)
+                    ? NSFontManager.shared.convert(font, toNotHaveTrait: .boldFontMask)
+                    : NSFontManager.shared.convert(font, toHaveTrait: .boldFontMask)
+                storage.addAttribute(.font, value: newFont, range: range)
+            }
+        case .italic:
+            storage.enumerateAttribute(.font, in: effectiveRange) { value, range, _ in
+                let font = (value as? NSFont) ?? baseFont
+                let traits = font.fontDescriptor.symbolicTraits
+                let newFont = traits.contains(.italic)
+                    ? NSFontManager.shared.convert(font, toNotHaveTrait: .italicFontMask)
+                    : NSFontManager.shared.convert(font, toHaveTrait: .italicFontMask)
+                storage.addAttribute(.font, value: newFont, range: range)
+            }
+        case .underline:
+            var hasUnderline = false
+            storage.enumerateAttribute(.underlineStyle, in: effectiveRange) { value, _, stop in
+                if (value as? Int) == NSUnderlineStyle.single.rawValue { hasUnderline = true; stop.pointee = true }
+            }
+            if hasUnderline {
+                storage.removeAttribute(.underlineStyle, range: effectiveRange)
+            } else {
+                storage.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: effectiveRange)
+            }
+        case .fontSize:
+            guard let size = pointSize, size >= 6, size <= 200 else { return }
+            let newFont = NSFont(descriptor: baseFont.fontDescriptor, size: CGFloat(size)) ?? baseFont
+            storage.addAttribute(.font, value: newFont, range: effectiveRange)
         }
+        reportContent()
     }
 
     deinit {
-        stopObservingFormatWrap()
+        stopObservingApplyFormat()
     }
 }
 
 // MARK: - SwiftUI wrapper
 
 struct RichParagraphEditorView: NSViewRepresentable {
-    @Binding var markdown: String
+    @Binding var body: String
+    @Binding var bodyRTF: Data?
     var fontSize: Double
     var fontName: String?
 
@@ -113,17 +172,29 @@ struct RichParagraphEditorView: NSViewRepresentable {
         let color = NSColor.labelColor
         textView.baseFont = font
         textView.textColorValue = color
-        let desired = InlineMarkdown.attributedString(from: markdown, font: font, color: color)
-        if context.coordinator.lastBoundMarkdown != markdown {
-            textView.textStorage?.setAttributedString(desired)
+
+        let contentMatch = context.coordinator.lastBoundBody == body && context.coordinator.lastBoundRTF == bodyRTF
+        if !contentMatch {
+            textView.skipNextReport = true
+            if let rtf = bodyRTF, !rtf.isEmpty,
+               let att = NSAttributedString(rtf: rtf, documentAttributes: nil) {
+                textView.textStorage?.setAttributedString(att)
+            } else {
+                let att = NSAttributedString(string: body, attributes: [.font: font, .foregroundColor: color])
+                textView.textStorage?.setAttributedString(att)
+            }
             textView.font = font
             textView.textColor = color
-            context.coordinator.lastBoundMarkdown = markdown
+            context.coordinator.lastBoundBody = body
+            context.coordinator.lastBoundRTF = bodyRTF
         }
-        textView.onMarkdownDidChange = { newMd in
-            if newMd != context.coordinator.lastBoundMarkdown {
-                context.coordinator.lastBoundMarkdown = newMd
-                self.markdown = newMd
+
+        textView.onContentDidChange = { plain, rtf in
+            if plain != context.coordinator.lastBoundBody || rtf != context.coordinator.lastBoundRTF {
+                context.coordinator.lastBoundBody = plain
+                context.coordinator.lastBoundRTF = rtf
+                self.body = plain
+                self.bodyRTF = rtf
             }
         }
     }
@@ -135,6 +206,7 @@ struct RichParagraphEditorView: NSViewRepresentable {
     class Coordinator: NSObject {
         var textView: NSTextView?
         var scrollView: NSScrollView?
-        var lastBoundMarkdown: String = ""
+        var lastBoundBody: String = ""
+        var lastBoundRTF: Data?
     }
 }

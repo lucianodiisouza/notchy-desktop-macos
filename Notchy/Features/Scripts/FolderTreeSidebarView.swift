@@ -38,38 +38,12 @@ struct FolderTreeSidebarView: View {
                 }
                 .buttonStyle(.borderless)
 
-                folderRow(path: "", displayName: "Raiz")
+                rootFolderSection()
                 ForEach(subfolders(under: ""), id: \.self) { subpath in
                     folderSection(path: subpath)
                 }
             } header: {
                 Text("Pastas")
-            }
-
-            Section {
-                ForEach(store.scripts(inFolderPath: selectedFolderPath)) { script in
-                    ScriptRowView(
-                        store: store,
-                        script: script,
-                        isSelectedForPrompter: store.selectedScriptId == script.id
-                    ) {
-                        selectedScriptId = script.id
-                    }
-                }
-            } header: {
-                HStack {
-                    Text(selectedFolderPath.isEmpty ? "Roteiros (raiz)" : selectedFolderPath)
-                    Spacer()
-                    Button {
-                        store.createScript(title: "Sem título", body: "", folderPath: selectedFolderPath)
-                        if let newest = store.scripts(inFolderPath: selectedFolderPath).max(by: { $0.createdAt < $1.createdAt }) {
-                            selectedScriptId = newest.id
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .buttonStyle(.borderless)
-                }
             }
         }
         .listStyle(.sidebar)
@@ -142,6 +116,54 @@ struct FolderTreeSidebarView: View {
     }
 
     @ViewBuilder
+    private func rootFolderSection() -> some View {
+        DisclosureGroup(isExpanded: Binding(
+            get: { expandedFolderPaths.contains("") },
+            set: { if $0 { expandedFolderPaths.insert("") } else { expandedFolderPaths.remove("") } }
+        )) {
+            ForEach(store.scripts(inFolderPath: "")) { script in
+                ScriptRowView(
+                    store: store,
+                    script: script,
+                    isSelectedForPrompter: store.selectedScriptId == script.id
+                ) {
+                    selectedFolderPath = ""
+                    selectedScriptId = script.id
+                }
+            }
+        } label: {
+            Button {
+                selectedFolderPath = ""
+                selectedScriptId = nil
+            } label: {
+                HStack {
+                    Image(systemName: "folder.fill")
+                        .foregroundStyle(.yellow)
+                    Text("Raiz")
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .onDrop(of: [.plainText], isTargeted: nil) { providers in
+            acceptScriptDrop(providers: providers, folderPath: "")
+        }
+        .contextMenu {
+            Button("Novo roteiro") {
+                expandedFolderPaths.insert("")
+                store.createScript(title: "Sem título", body: "", folderPath: "")
+                if let newest = store.scripts(inFolderPath: "").max(by: { $0.createdAt < $1.createdAt }) {
+                    selectedScriptId = newest.id
+                }
+            }
+            Button("Nova subpasta") {
+                newFolderParentPath = ""
+                newFolderName = ""
+                showNewFolderAlert = true
+            }
+        }
+    }
+
+    @ViewBuilder
     private func folderRow(path: String, displayName: String) -> some View {
         let name = path.isEmpty ? displayName : folderName(for: path)
         Button {
@@ -205,6 +227,16 @@ struct FolderTreeSidebarView: View {
             ForEach(subfolders(under: path), id: \.self) { subpath in
                 AnyView(folderSection(path: subpath))
             }
+            ForEach(store.scripts(inFolderPath: path)) { script in
+                ScriptRowView(
+                    store: store,
+                    script: script,
+                    isSelectedForPrompter: store.selectedScriptId == script.id
+                ) {
+                    selectedFolderPath = path
+                    selectedScriptId = script.id
+                }
+            }
         } label: {
             Button {
                 selectedFolderPath = path
@@ -222,6 +254,14 @@ struct FolderTreeSidebarView: View {
             acceptScriptDrop(providers: providers, folderPath: path)
         }
         .contextMenu {
+            Button("Novo roteiro") {
+                expandedFolderPaths.insert(path)
+                store.createScript(title: "Sem título", body: "", folderPath: path)
+                if let newest = store.scripts(inFolderPath: path).max(by: { $0.createdAt < $1.createdAt }) {
+                    selectedFolderPath = path
+                    selectedScriptId = newest.id
+                }
+            }
             Button("Renomear pasta") {
                 folderToRename = path
                 renamedFolderName = name
