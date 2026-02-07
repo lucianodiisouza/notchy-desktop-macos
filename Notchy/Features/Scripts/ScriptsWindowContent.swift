@@ -45,17 +45,17 @@ struct ScriptsWindowContent: View {
                     Image(systemName: "doc.text")
                         .font(.system(size: 48))
                         .foregroundStyle(.secondary)
-                    Text("Selecione um roteiro")
+                    Text(String(localized: "select_script_placeholder"))
                         .font(.title2)
                         .foregroundStyle(.secondary)
-                    Text("Escolha um roteiro na lista ou crie um novo.")
+                    Text(String(localized: "select_script_help"))
                         .font(.body)
                         .foregroundStyle(.tertiary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .navigationTitle(selectedScriptId.flatMap { id in store.scripts.first(where: { $0.id == id })?.title } ?? "Roteiros")
+        .navigationTitle(selectedScriptId.flatMap { id in store.scripts.first(where: { $0.id == id })?.title } ?? String(localized: "scripts_nav_title"))
         .focusedValue(\.selectedScriptId, selectedScriptId)
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -64,7 +64,7 @@ struct ScriptsWindowContent: View {
                 } label: {
                     Image(systemName: "gearshape")
                 }
-                .help("Configurações do editor")
+                .help(String(localized: "help_editor_settings"))
             }
         }
         .sheet(isPresented: $showScriptsSettings) {

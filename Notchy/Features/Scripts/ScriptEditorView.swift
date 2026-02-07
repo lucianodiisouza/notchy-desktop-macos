@@ -32,7 +32,7 @@ struct ScriptEditorView: View {
     var body: some View {
         if let s = currentScript {
             VStack(alignment: .leading, spacing: 0) {
-                TextField("Título", text: $title)
+                TextField(String(localized: "field_title"), text: $title)
                     .font(.title2)
                     .textFieldStyle(.plain)
                     .padding()
@@ -73,7 +73,7 @@ struct ScriptEditorView: View {
             .preferredColorScheme(colorScheme)
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
-                    Button("Usar no Teleprompter") {
+                    Button(String(localized: "use_in_teleprompter")) {
                         store.selectScript(id: s.id)
                         ScriptStore.openTeleprompterInMainApp()
                     }
@@ -85,7 +85,7 @@ struct ScriptEditorView: View {
                 Image(systemName: "doc.text")
                     .font(.system(size: 48))
                     .foregroundStyle(.secondary)
-                Text("Roteiro não encontrado")
+                Text(String(localized: "script_not_found"))
                     .font(.title2)
                     .foregroundStyle(.secondary)
             }
@@ -149,11 +149,11 @@ private struct FormatToolbar: View {
         HStack(spacing: 6) {
             HStack(spacing: 2) {
                 FormatButton(icon: "bold", action: { postApplyFormat(.bold) })
-                    .help("Negrito (⌘B)")
+                    .help(String(localized: "help_bold"))
                 FormatButton(icon: "italic", action: { postApplyFormat(.italic) })
-                    .help("Itálico (⌘I)")
+                    .help(String(localized: "help_italic"))
                 FormatButton(icon: "underline", action: { postApplyFormat(.underline) })
-                    .help("Sublinhado")
+                    .help(String(localized: "help_underline"))
                 Button {
                     sizePopover = true
                 } label: {
@@ -165,7 +165,7 @@ private struct FormatToolbar: View {
                 .buttonStyle(.plain)
                 .popover(isPresented: $sizePopover, arrowEdge: .bottom) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Tamanho da fonte")
+                        Text(String(localized: "label_font_size_editor"))
                             .font(.headline)
                         HStack(spacing: 8) {
                             Slider(value: $chosenSize, in: fontSizeRange, step: 1)
@@ -187,7 +187,7 @@ private struct FormatToolbar: View {
                 .onChange(of: sizePopover) { isOpen in
                     if isOpen { chosenSize = editorFontSize }
                 }
-                .help("Tamanho da fonte")
+                .help(String(localized: "label_font_size_editor"))
             }
             .padding(.horizontal, 4)
             .padding(.vertical, 2)
@@ -204,7 +204,7 @@ private struct FormatToolbar: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .help("Configurações do editor")
+                .help(String(localized: "help_editor_settings"))
             }
         }
         .padding(.horizontal, 10)

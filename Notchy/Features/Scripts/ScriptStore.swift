@@ -52,7 +52,7 @@ final class ScriptStore: ObservableObject {
         guard let text = standard.string(forKey: NotchyKeys.prompterText),
               !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         let script = Script(
-            title: "Roteiro inicial",
+            title: L10n.string("initial_script_title"),
             body: text,
             folderPath: ""
         )
@@ -163,7 +163,7 @@ final class ScriptStore: ObservableObject {
     func duplicateScript(id: UUID) {
         guard let script = scripts.first(where: { $0.id == id }) else { return }
         let copy = Script(
-            title: script.title + " (cópia)",
+            title: script.title + L10n.string("script_copy_suffix"),
             body: script.body,
             bodyRTF: script.bodyRTF,
             folderPath: script.folderPath

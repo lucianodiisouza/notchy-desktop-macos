@@ -34,7 +34,7 @@ struct FolderTreeSidebarView: View {
                     newFolderName = ""
                     showNewFolderAlert = true
                 } label: {
-                    Label("Nova pasta", systemImage: "folder.badge.plus")
+                    Label(String(localized: "new_folder"), systemImage: "folder.badge.plus")
                 }
                 .buttonStyle(.borderless)
 
@@ -43,17 +43,17 @@ struct FolderTreeSidebarView: View {
                     folderSection(path: subpath)
                 }
             } header: {
-                Text("Pastas")
+                Text("folders_header")
             }
         }
         .listStyle(.sidebar)
-        .alert("Nova pasta", isPresented: $showNewFolderAlert) {
-            TextField("Nome da pasta", text: $newFolderName)
-            Button("Cancelar", role: .cancel) {
+        .alert(String(localized: "new_folder"), isPresented: $showNewFolderAlert) {
+            TextField(String(localized: "folder_name"), text: $newFolderName)
+            Button(String(localized: "cancel"), role: .cancel) {
                 newFolderName = ""
                 newFolderParentPath = ""
             }
-            Button("Criar") {
+            Button(String(localized: "create")) {
                 let path = newFolderParentPath.isEmpty ? newFolderName : newFolderParentPath + "/" + newFolderName
                 store.createFolder(path: path)
                 expandedFolderPaths.insert(newFolderParentPath)
@@ -61,34 +61,34 @@ struct FolderTreeSidebarView: View {
                 newFolderParentPath = ""
             }
         } message: {
-            Text("Nome da nova pasta.")
+            Text(String(localized: "new_folder_message"))
         }
-        .alert("Apagar pasta", isPresented: $showDeleteFolderAlert) {
-            Button("Cancelar", role: .cancel) {
+        .alert(String(localized: "delete_folder"), isPresented: $showDeleteFolderAlert) {
+            Button(String(localized: "cancel"), role: .cancel) {
                 folderToDelete = nil
             }
-            Button("Mover roteiros para a pasta pai") {
+            Button(String(localized: "move_scripts_to_parent")) {
                 if let path = folderToDelete {
                     store.deleteFolder(path: path, moveScriptsToParent: true)
                 }
                 folderToDelete = nil
             }
-            Button("Apagar pasta e todos os roteiros", role: .destructive) {
+            Button(String(localized: "delete_folder_and_scripts"), role: .destructive) {
                 if let path = folderToDelete {
                     store.deleteFolder(path: path, moveScriptsToParent: false)
                 }
                 folderToDelete = nil
             }
         } message: {
-            Text(folderToDelete.map { "O que fazer com a pasta \"\(folderName(for: $0))\"?" } ?? "")
+            Text(folderToDelete.map { L10n.string("delete_folder_message", folderName(for: $0)) } ?? "")
         }
-        .alert("Renomear pasta", isPresented: $showRenameFolderAlert) {
-            TextField("Nome", text: $renamedFolderName)
-            Button("Cancelar", role: .cancel) {
+        .alert(String(localized: "rename_folder"), isPresented: $showRenameFolderAlert) {
+            TextField(String(localized: "field_name"), text: $renamedFolderName)
+            Button(String(localized: "cancel"), role: .cancel) {
                 folderToRename = nil
                 renamedFolderName = ""
             }
-            Button("OK") {
+            Button(String(localized: "ok")) {
                 if let oldPath = folderToRename {
                     let newPath = parentPath(of: oldPath).isEmpty ? renamedFolderName : parentPath(of: oldPath) + "/" + renamedFolderName
                     store.renameFolder(oldPath: oldPath, newPath: newPath)
@@ -97,7 +97,7 @@ struct FolderTreeSidebarView: View {
                 renamedFolderName = ""
             }
         } message: {
-            Text("Novo nome da pasta.")
+            Text(String(localized: "rename_folder_message"))
         }
     }
 
@@ -139,7 +139,7 @@ struct FolderTreeSidebarView: View {
                 HStack {
                     Image(systemName: "folder.fill")
                         .foregroundStyle(.yellow)
-                    Text("Raiz")
+                    Text("root")
                 }
             }
             .buttonStyle(.plain)
@@ -148,14 +148,14 @@ struct FolderTreeSidebarView: View {
             acceptScriptDrop(providers: providers, folderPath: "")
         }
         .contextMenu {
-            Button("Novo roteiro") {
+            Button(String(localized: "new_script")) {
                 expandedFolderPaths.insert("")
-                store.createScript(title: "Sem título", body: "", folderPath: "")
+                store.createScript(title: L10n.string("script_untitled"), body: "", folderPath: "")
                 if let newest = store.scripts(inFolderPath: "").max(by: { $0.createdAt < $1.createdAt }) {
                     selectedScriptId = newest.id
                 }
             }
-            Button("Nova subpasta") {
+            Button(String(localized: "new_subfolder")) {
                 newFolderParentPath = ""
                 newFolderName = ""
                 showNewFolderAlert = true
@@ -182,17 +182,17 @@ struct FolderTreeSidebarView: View {
         }
         .contextMenu {
             if !path.isEmpty {
-                Button("Renomear pasta") {
+                Button(String(localized: "rename_folder")) {
                     folderToRename = path
                     renamedFolderName = name
                     showRenameFolderAlert = true
                 }
-                Button("Nova subpasta") {
+                Button(String(localized: "new_subfolder")) {
                     newFolderParentPath = path
                     newFolderName = ""
                     showNewFolderAlert = true
                 }
-                Button("Apagar pasta", role: .destructive) {
+                Button(String(localized: "delete_folder"), role: .destructive) {
                     folderToDelete = path
                     showDeleteFolderAlert = true
                 }
@@ -254,25 +254,25 @@ struct FolderTreeSidebarView: View {
             acceptScriptDrop(providers: providers, folderPath: path)
         }
         .contextMenu {
-            Button("Novo roteiro") {
+            Button(String(localized: "new_script")) {
                 expandedFolderPaths.insert(path)
-                store.createScript(title: "Sem título", body: "", folderPath: path)
+                store.createScript(title: L10n.string("script_untitled"), body: "", folderPath: path)
                 if let newest = store.scripts(inFolderPath: path).max(by: { $0.createdAt < $1.createdAt }) {
                     selectedFolderPath = path
                     selectedScriptId = newest.id
                 }
             }
-            Button("Renomear pasta") {
+            Button(String(localized: "rename_folder")) {
                 folderToRename = path
                 renamedFolderName = name
                 showRenameFolderAlert = true
             }
-            Button("Nova subpasta") {
+            Button(String(localized: "new_subfolder")) {
                 newFolderParentPath = path
                 newFolderName = ""
                 showNewFolderAlert = true
             }
-            Button("Apagar pasta", role: .destructive) {
+            Button(String(localized: "delete_folder"), role: .destructive) {
                 folderToDelete = path
                 showDeleteFolderAlert = true
             }
@@ -295,10 +295,10 @@ struct ScriptRowView: View {
             HStack {
                 Image(systemName: "doc.text")
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(script.title.isEmpty ? "Sem título" : script.title)
+                    Text(script.title.isEmpty ? String(localized: "script_untitled") : script.title)
                         .lineLimit(1)
                     if isSelectedForPrompter {
-                        Text("No teleprompter")
+                        Text("in_teleprompter")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -311,25 +311,25 @@ struct ScriptRowView: View {
             NSItemProvider(object: (scriptDragPrefix + script.id.uuidString) as NSString)
         }
         .contextMenu {
-            Button("Usar no Teleprompter") {
+            Button(String(localized: "use_in_teleprompter")) {
                 store.selectScript(id: script.id)
                 ScriptStore.openTeleprompterInMainApp()
             }
-            Button("Duplicar") {
+            Button(String(localized: "duplicate")) {
                 store.duplicateScript(id: script.id)
             }
             Divider()
-            Button("Eliminar", role: .destructive) {
+            Button(String(localized: "delete"), role: .destructive) {
                 showDeleteConfirm = true
             }
         }
-        .confirmationDialog("Eliminar roteiro?", isPresented: $showDeleteConfirm) {
-            Button("Eliminar", role: .destructive) {
+        .confirmationDialog(String(localized: "delete_script_confirm_title"), isPresented: $showDeleteConfirm) {
+            Button(String(localized: "delete"), role: .destructive) {
                 store.deleteScript(id: script.id)
             }
-            Button("Cancelar", role: .cancel) {}
+            Button(String(localized: "cancel"), role: .cancel) {}
         } message: {
-            Text("O roteiro \"\(script.title)\" será eliminado.")
+            Text(L10n.string("delete_script_confirm_message", script.title))
         }
     }
 }

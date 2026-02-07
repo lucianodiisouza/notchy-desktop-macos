@@ -18,38 +18,38 @@ struct ScriptEditorSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Aparência do editor") {
+            Section(String(localized: "section_editor_appearance")) {
                 HStack {
-                    Text("Tamanho da fonte")
+                    Text(String(localized: "label_font_size_editor"))
                     Slider(value: $fontSize, in: fontSizeRange, step: 1)
                     Text("\(Int(fontSize)) pt")
                         .frame(width: 36, alignment: .trailing)
                 }
-                Picker("Tema do editor", selection: $themeRaw) {
-                    Text("Sistema").tag(0)
-                    Text("Claro").tag(1)
-                    Text("Escuro").tag(2)
+                Picker(String(localized: "picker_editor_theme"), selection: $themeRaw) {
+                    Text(String(localized: "theme_system")).tag(0)
+                    Text(String(localized: "theme_light")).tag(1)
+                    Text(String(localized: "theme_dark")).tag(2)
                 }
                 .pickerStyle(.segmented)
-                Text("Claro = fundo branco; Escuro = fundo preto. O tema só afeta esta janela do editor.")
+                Text(String(localized: "editor_theme_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {
-                    Text("Espaçamento entre linhas")
+                    Text(String(localized: "label_line_spacing"))
                     Slider(value: $lineSpacing, in: lineSpacingRange, step: 0.1)
                     Text(String(format: "%.1f", lineSpacing))
                         .frame(width: 28, alignment: .trailing)
                 }
             }
-            Section("Fonte") {
-                TextField("Nome da fonte (vazio = sistema)", text: $fontName)
+            Section(String(localized: "section_font")) {
+                TextField(String(localized: "field_font_name"), text: $fontName)
                     .textFieldStyle(.roundedBorder)
-                Text("Deixe em branco para usar a fonte do sistema. Ex.: Helvetica, Menlo.")
+                Text(String(localized: "font_name_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            Section("Markdown") {
-                Text("Nos blocos de texto você vê negrito, itálico, sublinhado e tamanho em tempo real. Use a barra (B, I, U, tamanho) ou digite **negrito**, *itálico*, %sublinhado% e [14]tamanho[/14]. O teleprompter exibe texto puro (formatação removida).")
+            Section(String(localized: "section_markdown")) {
+                Text(String(localized: "markdown_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -58,7 +58,7 @@ struct ScriptEditorSettingsView: View {
         .frame(minWidth: 360, minHeight: 320)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("OK") { dismiss() }
+                Button(String(localized: "ok")) { dismiss() }
                     .keyboardShortcut(.defaultAction)
             }
         }
