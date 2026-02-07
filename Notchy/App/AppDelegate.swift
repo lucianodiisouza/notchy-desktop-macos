@@ -41,7 +41,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
 
-        if #available(macOS 11.0, *) {
+        if let customImage = NSImage(named: "16") {
+            customImage.isTemplate = true
+            customImage.accessibilityDescription = NSLocalizedString("menu_tooltip", comment: "")
+            button.image = customImage
+        } else if #available(macOS 11.0, *) {
             button.image = NSImage(systemSymbolName: "rectangle.topthird.inset.filled", accessibilityDescription: NSLocalizedString("menu_tooltip", comment: ""))
         } else {
             button.title = NSLocalizedString("menu_bar_title", comment: "")
