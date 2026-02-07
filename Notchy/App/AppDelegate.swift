@@ -12,6 +12,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var showOnSubmenu: NSMenu?
     private var selectedScriptObserver: NSObjectProtocol?
 
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        PreferredLanguageBundle.installIfNeeded()
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBar()
         observeSelectedScriptChanges()
@@ -33,30 +37,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let button = statusItem?.button else { return }
 
         if #available(macOS 11.0, *) {
-            button.image = NSImage(systemSymbolName: "rectangle.topthird.inset.filled", accessibilityDescription: "Notchy")
+            button.image = NSImage(systemSymbolName: "rectangle.topthird.inset.filled", accessibilityDescription: NSLocalizedString("menu_tooltip", comment: ""))
         } else {
-            button.title = "N"
+            button.title = NSLocalizedString("menu_bar_title", comment: "")
         }
-        button.toolTip = L10n.string("menu_tooltip")
+        button.toolTip = NSLocalizedString("menu_tooltip", comment: "")
 
         menu = NSMenu()
-        menu?.addItem(NSMenuItem(title: L10n.string("menu_open_teleprompter"), action: #selector(openTeleprompter), keyEquivalent: "t"))
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_teleprompter", comment: ""), action: #selector(openTeleprompter), keyEquivalent: "t"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        closeTeleprompterItem = NSMenuItem(title: L10n.string("menu_close_teleprompter"), action: #selector(closeTeleprompter), keyEquivalent: "")
+        closeTeleprompterItem = NSMenuItem(title: NSLocalizedString("menu_close_teleprompter", comment: ""), action: #selector(closeTeleprompter), keyEquivalent: "")
         menu?.addItem(closeTeleprompterItem!)
         menu?.addItem(NSMenuItem.separator())
-        let showOnItem = NSMenuItem(title: L10n.string("menu_show_on"), action: nil, keyEquivalent: "")
+        let showOnItem = NSMenuItem(title: NSLocalizedString("menu_show_on", comment: ""), action: nil, keyEquivalent: "")
         showOnSubmenu = NSMenu()
         showOnItem.submenu = showOnSubmenu
         menu?.addItem(showOnItem)
-        menu?.addItem(NSMenuItem(title: L10n.string("menu_settings"), action: #selector(openSettings), keyEquivalent: ","))
-        menu?.addItem(NSMenuItem(title: L10n.string("menu_open_scripts"), action: #selector(openScripts), keyEquivalent: "r"))
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_scripts", comment: ""), action: #selector(openScripts), keyEquivalent: "r"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        pinToNotchItem = NSMenuItem(title: L10n.string("menu_pin_to_notch"), action: #selector(pinToNotch), keyEquivalent: "d")
+        pinToNotchItem = NSMenuItem(title: NSLocalizedString("menu_pin_to_notch", comment: ""), action: #selector(pinToNotch), keyEquivalent: "d")
         pinToNotchItem?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(pinToNotchItem!)
         menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: L10n.string("menu_quit"), action: #selector(quit), keyEquivalent: "q"))
+        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_quit", comment: ""), action: #selector(quit), keyEquivalent: "q"))
 
         for item in menu?.items ?? [] {
             item.target = self
@@ -128,7 +132,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 defer: false
             )
             win.minSize = NSSize(width: 480, height: 420)
-            win.title = L10n.string("window_title_settings")
+            win.title = NSLocalizedString("window_title_settings", comment: "")
             win.contentView = NSHostingView(rootView: content)
             win.center()
             win.delegate = self
