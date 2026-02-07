@@ -13,7 +13,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var selectedScriptObserver: NSObjectProtocol?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
+        // AppleLanguages is set in main.swift before any UI runs. Install bundle override for NSLocalizedString.
         PreferredLanguageBundle.installIfNeeded()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // Flush UserDefaults so preferred language and other settings persist before quit.
+        UserDefaults.standard.synchronize()
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
