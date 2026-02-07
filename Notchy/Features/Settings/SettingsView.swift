@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled: Bool = true
     @AppStorage(NotchyKeys.micSensitivity) private var micSensitivity: Double = 50
+    @AppStorage(NotchyKeys.preferredMicrophoneUID) private var preferredMicrophoneUID: String = ""
     @AppStorage(NotchyKeys.preferredDisplayID) private var preferredDisplayID: Int = 0
     @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
 
@@ -60,10 +61,11 @@ struct SettingsView: View {
                     }
                 }
                 .onChange(of: preferredLanguage) { _ in
-                    // Force UserDefaults to disk so the new language is applied after restart.
+                    syncPreferredLanguageToAppGroup()
                     UserDefaults.standard.synchronize()
                     showLanguageRestartAlert = true
                 }
+                .onAppear { syncPreferredLanguageToAppGroup() }
                 Text(String(localized: "language_restart_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -181,21 +183,23 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
             Section(String(localized: "section_microphone")) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(String(localized: "mic_used_default"))
-                        .font(.caption)
-                    if !AudioMonitor.inputDeviceNames().isEmpty {
-                        Text("Dispositivos: \(AudioMonitor.inputDeviceNames().joined(separator: ", "))")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                Picker(String(localized: "picker_microphone"), selection: $preferredMicrophoneUID) {
+                    Text(String(localized: "mic_system_default")).tag("")
+                    ForEach(AudioMonitor.inputDevicesForPicker()) { device in
+                        Text(device.name).tag(device.id)
                     }
-                    Button(String(localized: "button_open_sound_settings")) {
-                        openSoundSettings()
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.caption)
                 }
+                .onChange(of: preferredMicrophoneUID) { _ in
+                    NotificationCenter.default.post(name: Notification.Name(NotchyKeys.preferredMicrophoneDidChangeNotification), object: nil)
+                }
+                Text(String(localized: "mic_picker_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Button(String(localized: "button_open_sound_settings")) {
+                    openSoundSettings()
+                }
+                .buttonStyle(.borderless)
+                .font(.caption)
             }
         }
         .formStyle(.grouped)
@@ -289,6 +293,12 @@ struct SettingsView: View {
         return String(localized: "sensitivity_high")
     }
 
+    /// So Notchy Scripts (separate process) can use the same language.
+    private func syncPreferredLanguageToAppGroup() {
+        let value = UserDefaults.standard.string(forKey: NotchyKeys.preferredLanguage) ?? ""
+        UserDefaults(suiteName: NotchyKeys.appGroupIdentifier)?.set(value, forKey: NotchyKeys.preferredLanguage)
+    }
+
     /// Quits the app and relaunches it so the new language takes effect.
     private func restartNotchyToApplyLanguage() {
         UserDefaults.standard.synchronize()
@@ -304,11 +314,25 @@ struct SettingsView: View {
     }
 
     private func resetNotchy() {
+        // Sync language from App Group so language set in Notchy Scripts applies to Notchy too.
+        var languageChanged = false
+        if let suite = UserDefaults(suiteName: NotchyKeys.appGroupIdentifier),
+           let prefFromGroup = suite.string(forKey: NotchyKeys.preferredLanguage) {
+            if prefFromGroup != preferredLanguage {
+                preferredLanguage = prefFromGroup
+                syncPreferredLanguageToAppGroup()
+                languageChanged = true
+            }
+        }
         windowWidth = 0
         windowHeight = 320
         UserDefaults.standard.set(true, forKey: NotchyKeys.windowPinnedToNotch)
         NotchyState.shared.windowController.setTemporaryResize(width: nil, height: nil)
         NotchyState.shared.windowController.pinWindowToNotch()
+        UserDefaults.standard.synchronize()
+        if languageChanged {
+            restartNotchyToApplyLanguage()
+        }
     }
 
     private func openSoundSettings() {
