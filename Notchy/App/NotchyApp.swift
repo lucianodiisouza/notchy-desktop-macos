@@ -1,6 +1,5 @@
 import SwiftUI
 
-@main
 struct NotchyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
