@@ -74,6 +74,12 @@ struct ScriptsWindowContent: View {
                 .help(String(localized: "new_script"))
             }
             ToolbarItem(placement: .automatic) {
+                Button(String(localized: "export_all_scripts")) {
+                    _ = store.exportAllScriptsToFolder()
+                }
+                .help(String(localized: "export_all_scripts_help"))
+            }
+            ToolbarItem(placement: .automatic) {
                 Button {
                     showScriptsSettings = true
                 } label: {

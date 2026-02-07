@@ -72,6 +72,10 @@ struct ScriptEditorView: View {
             .preferredColorScheme(colorScheme)
             .toolbar {
                 ToolbarItemGroup(placement: .primaryAction) {
+                    Button(String(localized: "export_script")) {
+                        _ = store.exportScriptAsTXT(id: s.id)
+                    }
+                    .help(String(localized: "export_script_help"))
                     Button(String(localized: "use_in_teleprompter")) {
                         store.selectScript(id: s.id)
                         ScriptStore.openTeleprompterInMainApp()

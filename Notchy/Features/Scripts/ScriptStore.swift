@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import AppKit
+import UniformTypeIdentifiers
 
 /// Shared store for scripts and folder tree. Uses App Group for persistence.
 /// Used by both Notchy (read/write for teleprompter + paste) and Notchy Scripts (full UI).
@@ -260,5 +261,66 @@ final class ScriptStore: ObservableObject {
             }
         }
         return seen.sorted()
+    }
+
+    // MARK: - Export
+
+    /// Presents save panel and exports the script body as plain text. Returns true if user saved.
+    func exportScriptAsTXT(id: UUID) -> Bool {
+        guard let script = scripts.first(where: { $0.id == id }) else { return false }
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.plainText]
+        panel.nameFieldStringValue = sanitizedFileName(for: script.title) + ".txt"
+        panel.canCreateDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url else { return false }
+        do {
+            try script.body.write(to: url, atomically: true, encoding: .utf8)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    /// Presents open panel to choose a folder, then exports all scripts as .txt preserving folder structure. Returns true if exported.
+    func exportAllScriptsToFolder() -> Bool {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.canCreateDirectories = true
+        panel.prompt = NSLocalizedString("export_choose_folder", comment: "")
+        guard panel.runModal() == .OK, let baseURL = panel.url else { return false }
+        let exportFolder = baseURL.appendingPathComponent("Notchy Scripts Export", isDirectory: true)
+        let fileManager = FileManager.default
+        do {
+            if fileManager.fileExists(atPath: exportFolder.path) {
+                try fileManager.removeItem(at: exportFolder)
+            }
+            try fileManager.createDirectory(at: exportFolder, withIntermediateDirectories: true)
+            for script in scripts {
+                let folderPath = script.folderPath
+                let targetDir: URL
+                if folderPath.isEmpty {
+                    targetDir = exportFolder
+                } else {
+                    let subpath = folderPath.split(separator: "/").map(String.init).joined(separator: "/")
+                    targetDir = exportFolder.appendingPathComponent(subpath, isDirectory: true)
+                    try fileManager.createDirectory(at: targetDir, withIntermediateDirectories: true)
+                }
+                let fileName = sanitizedFileName(for: script.title) + ".txt"
+                let fileURL = targetDir.appendingPathComponent(fileName, isDirectory: false)
+                try script.body.write(to: fileURL, atomically: true, encoding: .utf8)
+            }
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    private func sanitizedFileName(for title: String) -> String {
+        let t = title
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: ":", with: "-")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return t.isEmpty ? "Untitled" : t
     }
 }
