@@ -1,21 +1,39 @@
 import SwiftUI
 
-/// Only the bottom edge is rounded so the bar looks docked into the top of the screen.
-/// Radius scales with window size so small windows don't lose rounding or clip icons.
+/// Bottom edge is always rounded (docked into the top of the screen).
+/// When collapsed, top corners are also rounded so the bar stays inside the camera notch's border radius.
 struct NotchBarShape: Shape {
+    /// When true (collapsed), top-left and top-right are rounded so the strip doesn't exceed the notch cutout.
+    var roundTopCorners: Bool = false
+
     private static let maxCornerRadius: CGFloat = 10
     private static let minCornerRadius: CGFloat = 4
 
     func path(in rect: CGRect) -> Path {
         let r = effectiveCornerRadius(for: rect)
         var path = Path()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: rect.maxX, y: 0))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - r))
-        path.addArc(center: CGPoint(x: rect.maxX - r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
-        path.addLine(to: CGPoint(x: r, y: rect.maxY))
-        path.addArc(center: CGPoint(x: r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
-        path.closeSubpath()
+        if roundTopCorners {
+            // Capsule/pill when collapsed: radius = half height so top is a full semicircle, no square corners.
+            let capR = min(rect.height / 2, rect.width / 2)
+            path.move(to: CGPoint(x: capR, y: 0))
+            path.addLine(to: CGPoint(x: rect.maxX - capR, y: 0))
+            path.addArc(center: CGPoint(x: rect.maxX - capR, y: capR), radius: capR, startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 0), clockwise: false)
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - capR))
+            path.addArc(center: CGPoint(x: rect.maxX - capR, y: rect.maxY - capR), radius: capR, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
+            path.addLine(to: CGPoint(x: capR, y: rect.maxY))
+            path.addArc(center: CGPoint(x: capR, y: rect.maxY - capR), radius: capR, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
+            path.addLine(to: CGPoint(x: 0, y: capR))
+            path.addArc(center: CGPoint(x: capR, y: capR), radius: capR, startAngle: Angle(degrees: 180), endAngle: Angle(degrees: 270), clockwise: false)
+            path.closeSubpath()
+        } else {
+            path.move(to: CGPoint(x: 0, y: 0))
+            path.addLine(to: CGPoint(x: rect.maxX, y: 0))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - r))
+            path.addArc(center: CGPoint(x: rect.maxX - r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
+            path.addLine(to: CGPoint(x: r, y: rect.maxY))
+            path.addArc(center: CGPoint(x: r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
+            path.closeSubpath()
+        }
         return path
     }
 

@@ -10,6 +10,8 @@ final class FloatingWindowController: ObservableObject {
     /// When true, the window expands below the notch so you can paste and see the teleprompter.
     /// When there's text, collapse only via button; when empty, collapse on mouse exit too.
     @Published private(set) var isExpanded = true
+    /// True from collapseNow() until the frame animation finishes; keeps bar shape (no capsule) during shrink.
+    @Published private(set) var isCollapseAnimationInProgress = false
     /// True while the user is dragging the resize grip; used to freeze bar layout and avoid height jump.
     @Published private(set) var isWindowResizing = false
     /// When true, we don't auto-collapse on mouse exit (so pasted text stays visible).
@@ -62,8 +64,11 @@ final class FloatingWindowController: ObservableObject {
         collapseWorkItem = nil
         guard isExpanded else { return }
         persistCurrentWindowSizeBeforeCollapse()
+        isCollapseAnimationInProgress = true
         isExpanded = false
-        updateWindowFrame(animated: true)
+        updateWindowFrame(animated: true) { [weak self] in
+            self?.isCollapseAnimationInProgress = false
+        }
     }
 
     /// Saves current window width/height so they are restored when expanding from collapsed.
@@ -327,7 +332,7 @@ final class FloatingWindowController: ObservableObject {
     }
 
     /// Positions the window: collapsed in the notch strip or expanded so you can edit.
-    private func updateWindowFrame(animated: Bool) {
+    private func updateWindowFrame(animated: Bool, completion: (() -> Void)? = nil) {
         guard let window = window, let screen = targetScreen() else { return }
 
         // Recolhido: janela acima da menu bar para receber hover no notch. Expandido: mesmo nível da menu bar.
@@ -373,6 +378,7 @@ final class FloatingWindowController: ObservableObject {
                 window.animator().setFrame(targetFrame, display: true)
             }, completionHandler: { [weak window] in
                 window?.orderFrontRegardless()
+                completion?()
             })
         } else if isDragging {
             // During drag only move origin to avoid layout thrashing and jitter

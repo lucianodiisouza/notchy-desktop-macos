@@ -113,7 +113,7 @@ struct ContentView: View {
 
             // Recolhido: indicador mínimo para saber onde está o app (hover para expandir)
             if !windowController.isExpanded {
-                Text("notchy_collapsed")
+                Text(String(localized: "notchy_collapsed"))
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(buttonColorFromHex(buttonColorHex).opacity(0.7 * buttonOpacity))
             }
@@ -177,7 +177,7 @@ struct ContentView: View {
                 }
             }
         }
-        .clipShape(NotchBarShape())
+        .clipShape(NotchBarShape(roundTopCorners: !windowController.isExpanded && !windowController.isCollapseAnimationInProgress))
         .shadow(color: .black.opacity(0.18), radius: 8, x: 0, y: 2)
         .overlay(alignment: .bottomTrailing) {
             if windowController.isExpanded {
@@ -218,6 +218,12 @@ struct ContentView: View {
             guard let pasted = notification.userInfo?["pastedText"] as? String, !pasted.isEmpty else { return }
             _ = scriptStore.createScript(fromPaste: pasted)
             scrollController.resetScroll()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NotchyKeys.preferredMicrophoneDidChangeNotification))) { _ in
+            audioMonitor.stop()
+            if voiceControlEnabled {
+                audioMonitor.start()
+            }
         }
         .overlay(WindowAccessor(windowController: windowController))
         .overlay(alignment: .top) {
