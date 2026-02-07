@@ -19,6 +19,8 @@ A minimal teleprompter for Mac that lives in the notch (menu bar strip). Text sc
 1. Open `Notchy.xcodeproj` in Xcode.
 2. Select the Notchy scheme and run (Cmd+R).
 
+**Development:** When running from Xcode, macOS may ask for microphone access every time you open the teleprompter (the system often doesn’t persist the choice for debug builds). To avoid that, either allow Notchy in **System Settings → Privacy & Security → Microphone**, or run the built app from the Products folder instead of using Run. The app only requests microphone permission when voice-controlled scroll is enabled.
+
 ## Usage
 
 1. Launch Notchy. The window appears in the notch (top strip).
