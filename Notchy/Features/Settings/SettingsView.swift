@@ -15,6 +15,9 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled: Bool = true
     @AppStorage(NotchyKeys.micSensitivity) private var micSensitivity: Double = 50
     @AppStorage(NotchyKeys.preferredDisplayID) private var preferredDisplayID: Int = 0
+    @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
+
+    @State private var showLanguageRestartAlert = false
 
     private let speedRange: ClosedRange<Double> = 10...120
     private let opacityRange: ClosedRange<Double> = 0...1
@@ -49,6 +52,25 @@ struct SettingsView: View {
 
     private var windowTab: some View {
         Form {
+            Section(String(localized: "section_language")) {
+                Picker(String(localized: "picker_language"), selection: $preferredLanguage) {
+                    Text(String(localized: "language_system_default")).tag("")
+                    ForEach(availableAppLocales, id: \.id) { locale in
+                        Text(locale.displayName).tag(locale.id)
+                    }
+                }
+                .onChange(of: preferredLanguage) { _ in
+                    showLanguageRestartAlert = true
+                }
+                Text(String(localized: "language_restart_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .alert(String(localized: "language_restart_title"), isPresented: $showLanguageRestartAlert) {
+                Button(String(localized: "ok")) { showLanguageRestartAlert = false }
+            } message: {
+                Text(String(localized: "language_restart_message"))
+            }
             Section(String(localized: "section_monitor")) {
                 Picker(String(localized: "picker_monitor"), selection: $preferredDisplayID) {
                     ForEach(screensForSelection(), id: \.id) { screen in
@@ -233,6 +255,22 @@ struct SettingsView: View {
     }
 
     // MARK: - Helpers
+
+    private struct AppLocale: Identifiable {
+        let id: String
+        let displayName: String
+    }
+
+    private var availableAppLocales: [AppLocale] {
+        let ids = Bundle.main.localizations
+            .filter { $0 != "Base" }
+            .sorted { localeDisplayName(for: $0).localizedCaseInsensitiveCompare(localeDisplayName(for: $1)) == .orderedAscending }
+        return ids.map { AppLocale(id: $0, displayName: localeDisplayName(for: $0)) }
+    }
+
+    private func localeDisplayName(for localeId: String) -> String {
+        Locale.current.localizedString(forLocaleIdentifier: localeId) ?? localeId
+    }
 
     private var widthLabel: String {
         if windowWidth <= 0 { return String(localized: "label_auto") }

@@ -49,9 +49,18 @@
 "menu_open_scripts" = "Open Scripts";
 "menu_pin_to_notch" = "Pin to notch";
 "menu_quit" = "Quit";
+"menu_bar_title" = "N";
 "window_title_settings" = "Settings";
 
 /* Settings - Window tab */
+/* Settings - Language */
+"section_language" = "Language";
+"picker_language" = "App language";
+"language_system_default" = "System default";
+"language_restart_help" = "Restart Notchy for the new language to take effect.";
+"language_restart_title" = "Restart to apply";
+"language_restart_message" = "Quit and reopen Notchy to use the selected language.";
+
 "settings_tab_window" = "Window";
 "settings_tab_voice" = "Voice";
 "settings_tab_text" = "Text";

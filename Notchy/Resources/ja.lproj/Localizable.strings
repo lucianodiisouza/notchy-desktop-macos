@@ -45,7 +45,16 @@
 "menu_open_scripts" = "スクリプトを開く";
 "menu_pin_to_notch" = "ノッチに固定";
 "menu_quit" = "終了";
+"menu_bar_title" = "N";
 "window_title_settings" = "設定";
+
+/* Settings - Language */
+"section_language" = "Language";
+"picker_language" = "App language";
+"language_system_default" = "System default";
+"language_restart_help" = "Restart Notchy for the new language to take effect.";
+"language_restart_title" = "Restart to apply";
+"language_restart_message" = "Quit and reopen Notchy to use the selected language.";
 
 "settings_tab_window" = "ウィンドウ";
 "settings_tab_voice" = "音声";

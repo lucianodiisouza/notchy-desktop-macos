@@ -49,7 +49,16 @@
 "menu_open_scripts" = "Abrir Roteiros";
 "menu_pin_to_notch" = "Fixar no notch";
 "menu_quit" = "Sair";
+"menu_bar_title" = "N";
 "window_title_settings" = "Configurações";
+
+/* Settings - Language */
+"section_language" = "Idioma";
+"picker_language" = "Idioma do app";
+"language_system_default" = "Padrão do sistema";
+"language_restart_help" = "Reinicie o Notchy para o novo idioma ter efeito.";
+"language_restart_title" = "Reiniciar para aplicar";
+"language_restart_message" = "Saia e abra o Notchy novamente para usar o idioma escolhido.";
 
 /* Settings - Window tab */
 "settings_tab_window" = "Janela";

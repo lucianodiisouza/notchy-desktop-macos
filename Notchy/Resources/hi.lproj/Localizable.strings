@@ -45,7 +45,16 @@
 "menu_open_scripts" = "स्क्रिप्ट खोलें";
 "menu_pin_to_notch" = "नॉच पर पिन करें";
 "menu_quit" = "बाहर निकलें";
+"menu_bar_title" = "N";
 "window_title_settings" = "सेटिंग्स";
+
+/* Settings - Language */
+"section_language" = "Language";
+"picker_language" = "App language";
+"language_system_default" = "System default";
+"language_restart_help" = "Restart Notchy for the new language to take effect.";
+"language_restart_title" = "Restart to apply";
+"language_restart_message" = "Quit and reopen Notchy to use the selected language.";
 
 "settings_tab_window" = "विंडो";
 "settings_tab_voice" = "वॉयस";
