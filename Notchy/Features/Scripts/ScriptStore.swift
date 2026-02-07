@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import AppKit
 
 /// Shared store for scripts and folder tree. Uses App Group for persistence.
 /// Used by both Notchy (read/write for teleprompter + paste) and Notchy Scripts (full UI).
@@ -74,6 +75,31 @@ final class ScriptStore: ObservableObject {
 
     func selectScript(id: UUID?) {
         persistSelectedScriptId(id)
+        DistributedNotificationCenter.default().post(name: Notification.Name(NotchyKeys.selectedScriptDidChangeNotification), object: nil)
+    }
+
+    /// Re-read scripts and selectedScriptId from App Group / disk (e.g. when Notchy Scripts changed selection). Call from main app when it receives selectedScriptDidChangeNotification.
+    func syncFromSharedStorage() {
+        load()
+    }
+
+    /// Call from Notchy Scripts when user chooses "Usar no Teleprompter". Opens the main Notchy app and shows the teleprompter (via notchy:// URL). Prefer opening with the parent app when Scripts is embedded so the URL is delivered reliably.
+    static func openTeleprompterInMainApp() {
+        guard let url = URL(string: NotchyKeys.openTeleprompterURLString) else { return }
+        // When Scripts is embedded (Notchy.app/Contents/Applications/Notchy Scripts.app), open the URL with the parent app so it receives application(_:open:).
+        let bundleURL = Bundle.main.bundleURL
+        let app = bundleURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let notchyAppName = "Notchy.app"
+        if app.lastPathComponent == notchyAppName, FileManager.default.fileExists(atPath: app.path) {
+            let config = NSWorkspace.OpenConfiguration()
+            NSWorkspace.shared.open([url], withApplicationAt: app, configuration: config) { _, error in
+                if error != nil {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+            return
+        }
+        NSWorkspace.shared.open(url)
     }
 
     // MARK: - CRUD
@@ -102,6 +128,9 @@ final class ScriptStore: ObservableObject {
 
     func updateScript(id: UUID, title: String?, body: String?) {
         guard var script = scripts.first(where: { $0.id == id }) else { return }
+        let titleChanged = title.map { $0 != script.title } ?? false
+        let bodyChanged = body.map { $0 != script.body } ?? false
+        guard titleChanged || bodyChanged else { return }
         if let t = title { script.title = t }
         if let b = body { script.body = b }
         script.updatedAt = Date()

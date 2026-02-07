@@ -46,6 +46,7 @@ struct ScriptEditorView: View {
                 ToolbarItemGroup(placement: .primaryAction) {
                     Button("Usar no Teleprompter") {
                         store.selectScript(id: s.id)
+                        ScriptStore.openTeleprompterInMainApp()
                     }
                     .disabled(store.selectedScriptId == s.id)
                 }

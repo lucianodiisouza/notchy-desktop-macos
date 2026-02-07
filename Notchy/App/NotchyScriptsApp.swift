@@ -14,6 +14,7 @@ struct NotchyScriptsApp: App {
                 Button("Usar no Teleprompter") {
                     if let id = selectedScriptId {
                         ScriptStore.shared.selectScript(id: id)
+                        ScriptStore.openTeleprompterInMainApp()
                     }
                 }
                 .keyboardShortcut("p", modifiers: [.command, .shift])

@@ -238,6 +238,8 @@ final class FloatingWindowController: ObservableObject {
 
     /// Largura mínima da janela expandida; abaixo disso as bordas e o conteúdo cortam.
     private static let minWindowWidth: CGFloat = 340
+    /// Largura da faixa recolhida em telas sem notch (monitor externo); evita full width.
+    private static let collapsedStripWidthNoNotch: CGFloat = 400
 
     /// Largura definida nas Settings (0 = automática = largura total do notch).
     private func customWindowWidth() -> CGFloat {
@@ -261,7 +263,7 @@ final class FloatingWindowController: ObservableObject {
     }
 
     /// Computes the window frame (notch strip only, or expanded downward).
-    /// When collapsed (height == notchHeight), always uses full notch width so the strip isn't tiny.
+    /// When collapsed: with notch uses full notch width; without notch (external display) uses a fixed strip width centered.
     /// When expanded, uses custom width but clamps so the window stays centered in the notch and doesn't open "to the side".
     private func notchFrame(screen: NSScreen, height: CGFloat) -> CGRect {
         let full = screen.frame
@@ -272,14 +274,17 @@ final class FloatingWindowController: ObservableObject {
         let y = full.maxY - useHeight
         let isCollapsed = (height <= notchHeight + 1) // collapsed = only the strip
 
+        let hasNotch: Bool
         let notchMinX: CGFloat
         let notchWidth: CGFloat
         if #available(macOS 12.0, *),
            let leftArea = screen.auxiliaryTopLeftArea,
            let rightArea = screen.auxiliaryTopRightArea {
+            hasNotch = true
             notchMinX = full.minX + leftArea.width
             notchWidth = full.width - leftArea.width - rightArea.width
         } else {
+            hasNotch = false
             notchMinX = full.minX
             notchWidth = full.width
         }
@@ -289,9 +294,17 @@ final class FloatingWindowController: ObservableObject {
         let windowWidth: CGFloat
         let windowX: CGFloat
         if isCollapsed {
-            // Docked in notch: always full width so the bar isn't "pequenininho"
-            windowWidth = notchWidth
-            windowX = notchMinX
+            if hasNotch {
+                // Com notch: largura total da faixa do notch
+                windowWidth = notchWidth
+                windowX = notchMinX
+            } else {
+                // Sem notch (monitor externo): faixa com largura fixa, centralizada
+                let w = min(Self.collapsedStripWidthNoNotch, visible.width)
+                windowWidth = max(Self.minWindowWidth, w)
+                let centerX = screenCenterX - windowWidth / 2
+                windowX = max(visible.minX, min(visible.maxX - windowWidth, centerX))
+            }
         } else if customW > 0 {
             // Expandido: largura custom; centralizado na tela (não na borda do notch) para crescer pelos dois lados
             let effectiveW = max(Self.minWindowWidth, min(1200, customW))

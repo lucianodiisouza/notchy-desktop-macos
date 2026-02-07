@@ -10,10 +10,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var closeTeleprompterItem: NSMenuItem?
     private var pinToNotchItem: NSMenuItem?
     private var showOnSubmenu: NSMenu?
+    private var selectedScriptObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupStatusBar()
-        // Não abre a janela do teleprompter ao iniciar — só pelo menu
+        observeSelectedScriptChanges()
+        openTeleprompter()
+    }
+
+    private func observeSelectedScriptChanges() {
+        selectedScriptObserver = DistributedNotificationCenter.default().addObserver(
+            forName: Notification.Name(NotchyKeys.selectedScriptDidChangeNotification),
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            ScriptStore.shared.syncFromSharedStorage()
+        }
     }
 
     private func setupStatusBar() {
@@ -149,6 +161,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func quit() {
         NSApp.terminate(nil)
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) -> Bool {
+        for url in urls where url.scheme == "notchy" && url.host == "openTeleprompter" {
+            NSApp.activate(ignoringOtherApps: true)
+            openTeleprompter()
+            return true
+        }
+        return false
     }
 }
 

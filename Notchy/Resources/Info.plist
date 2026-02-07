@@ -4,5 +4,18 @@
 <dict>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.notchy.openTeleprompter</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>notchy</string>
+			</array>
+			<key>CFBundleURLRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
 </dict>
 </plist>

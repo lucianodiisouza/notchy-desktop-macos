@@ -243,6 +243,7 @@ struct ScriptRowView: View {
         .contextMenu {
             Button("Usar no Teleprompter") {
                 store.selectScript(id: script.id)
+                ScriptStore.openTeleprompterInMainApp()
             }
             Button("Duplicar") {
                 store.duplicateScript(id: script.id)
