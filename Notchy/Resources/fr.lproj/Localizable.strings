@@ -46,6 +46,11 @@
 "menu_pin_to_notch" = "Épingler au notch";
 "menu_quit" = "Quitter";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Remettre la fenêtre sur l’encoche (utile après un glissement).";
+"menu_reset_scroll" = "Réinitialiser le défilement";
+"menu_faster" = "Plus rapide";
+"menu_slower" = "Plus lent";
+"menu_editor_settings" = "Réglages de l’éditeur…";
 "window_title_settings" = "Réglages";
 
 /* Settings - Language */
@@ -93,6 +98,7 @@
 "sensitivity_high" = "Élevée";
 "sensitivity_help" = "Plus bas = seule une voix plus forte déclenche. Plus haut = tout son peut déclencher.";
 "mic_used_default" = "Micro utilisé : défaut système";
+"mic_devices_list" = "Périphériques : %@";
 "button_open_sound_settings" = "Ouvrir Réglages Son du système";
 "label_font_size" = "Taille de police";
 "font_size_help" = "Ajustez la taille du texte du téléprompteur.";

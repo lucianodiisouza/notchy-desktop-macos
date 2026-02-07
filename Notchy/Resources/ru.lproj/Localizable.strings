@@ -46,6 +46,11 @@
 "menu_pin_to_notch" = "Закрепить у выреза";
 "menu_quit" = "Выход";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Вернуть окно на вырез (удобно после перетаскивания).";
+"menu_reset_scroll" = "Сбросить прокрутку";
+"menu_faster" = "Быстрее";
+"menu_slower" = "Медленнее";
+"menu_editor_settings" = "Настройки редактора…";
 "window_title_settings" = "Настройки";
 
 /* Settings - Language */
@@ -93,6 +98,7 @@
 "sensitivity_high" = "Высокая";
 "sensitivity_help" = "Ниже = срабатывает только громкий голос. Выше = любой звук может сработать.";
 "mic_used_default" = "Микрофон: системный по умолчанию";
+"mic_devices_list" = "Устройства: %@";
 "button_open_sound_settings" = "Открыть настройки звука системы";
 "label_font_size" = "Размер шрифта";
 "font_size_help" = "Размер текста суфлёра.";

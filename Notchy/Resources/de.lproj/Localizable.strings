@@ -50,6 +50,11 @@
 "menu_pin_to_notch" = "Pin to notch";
 "menu_quit" = "Quit";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Fenster zurück zur Notch bringen (nützlich nach dem Ziehen).";
+"menu_reset_scroll" = "Scroll zurücksetzen";
+"menu_faster" = "Schneller";
+"menu_slower" = "Langsamer";
+"menu_editor_settings" = "Editor-Einstellungen…";
 "window_title_settings" = "Settings";
 
 /* Settings - Window tab */
@@ -98,6 +103,10 @@
 "sensitivity_high" = "High";
 "sensitivity_help" = "Lower = only louder voice triggers. Higher = any sound may trigger.";
 "mic_used_default" = "Microphone used: system default";
+"mic_devices_list" = "Geräte: %@";
+"picker_microphone" = "Mikrofon";
+"mic_system_default" = "Systemstandard";
+"mic_picker_help" = "Wähle das Mikrofon für die sprachgesteuerte Bildlaufsteuerung.";
 "button_open_sound_settings" = "Open System Sound Settings";
 "label_font_size" = "Font size";
 "font_size_help" = "Adjust teleprompter text size.";

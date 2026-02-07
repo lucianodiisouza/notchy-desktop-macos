@@ -46,6 +46,11 @@
 "menu_pin_to_notch" = "固定到刘海";
 "menu_quit" = "退出";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "将窗口移回刘海区域（拖动后有用）。";
+"menu_reset_scroll" = "重置滚动";
+"menu_faster" = "更快";
+"menu_slower" = "更慢";
+"menu_editor_settings" = "编辑器设置…";
 "window_title_settings" = "设置";
 
 /* Settings - Language */
@@ -93,6 +98,7 @@
 "sensitivity_high" = "高";
 "sensitivity_help" = "越低 = 仅较大声音触发。越高 = 任何声音可能触发。";
 "mic_used_default" = "使用的麦克风：系统默认";
+"mic_devices_list" = "设备：%@";
 "button_open_sound_settings" = "打开系统声音设置";
 "label_font_size" = "字号";
 "font_size_help" = "调整提词器文字大小。";

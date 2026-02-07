@@ -46,6 +46,11 @@
 "menu_pin_to_notch" = "ノッチに固定";
 "menu_quit" = "終了";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "ウィンドウをノッチに戻す（ドラッグ後に便利）。";
+"menu_reset_scroll" = "スクロールをリセット";
+"menu_faster" = "速く";
+"menu_slower" = "遅く";
+"menu_editor_settings" = "エディタ設定…";
 "window_title_settings" = "設定";
 
 /* Settings - Language */
@@ -93,6 +98,7 @@
 "sensitivity_high" = "高";
 "sensitivity_help" = "低い＝大きい声のみ反応。高い＝小さな音でも反応することがあります。";
 "mic_used_default" = "使用マイク：システムデフォルト";
+"mic_devices_list" = "デバイス：%@";
 "button_open_sound_settings" = "システムのサウンド設定を開く";
 "label_font_size" = "フォントサイズ";
 "font_size_help" = "テレプロンプターの文字サイズを調整。";

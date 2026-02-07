@@ -50,6 +50,11 @@
 "menu_pin_to_notch" = "Pin to notch";
 "menu_quit" = "Quit";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "창을 노치로 다시 이동(드래그 후 유용).";
+"menu_reset_scroll" = "스크롤 초기화";
+"menu_faster" = "더 빠르게";
+"menu_slower" = "더 느리게";
+"menu_editor_settings" = "편집기 설정…";
 "window_title_settings" = "Settings";
 
 /* Settings - Window tab */
@@ -98,6 +103,7 @@
 "sensitivity_high" = "High";
 "sensitivity_help" = "Lower = only louder voice triggers. Higher = any sound may trigger.";
 "mic_used_default" = "Microphone used: system default";
+"mic_devices_list" = "Devices: %@";
 "button_open_sound_settings" = "Open System Sound Settings";
 "label_font_size" = "Font size";
 "font_size_help" = "Adjust teleprompter text size.";

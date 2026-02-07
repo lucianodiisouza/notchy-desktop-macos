@@ -46,6 +46,11 @@
 "menu_pin_to_notch" = "नॉच पर पिन करें";
 "menu_quit" = "बाहर निकलें";
 "menu_bar_title" = "N";
+"menu_pin_to_notch_help" = "Put window back on notch (useful after dragging).";
+"menu_reset_scroll" = "Reset Scroll";
+"menu_faster" = "Faster";
+"menu_slower" = "Slower";
+"menu_editor_settings" = "Editor settings…";
 "window_title_settings" = "सेटिंग्स";
 
 /* Settings - Language */
@@ -93,6 +98,7 @@
 "sensitivity_high" = "उच्च";
 "sensitivity_help" = "कम = सिर्फ जोरदार आवाज़ ट्रिगर। ज्यादा = कोई भी आवाज़ ट्रिगर कर सकती है।";
 "mic_used_default" = "माइक्रोफ़ोन: सिस्टम डिफ़ॉल्ट";
+"mic_devices_list" = "डिवाइस: %@";
 "button_open_sound_settings" = "सिस्टम साउंड सेटिंग्स खोलें";
 "label_font_size" = "फ़ॉन्ट आकार";
 "font_size_help" = "टेलीप्रॉम्प्टर टेक्स्ट का आकार समायोजित करें।";
