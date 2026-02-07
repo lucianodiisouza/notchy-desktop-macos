@@ -2,20 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSMinimumSystemVersion</key>
-	<string>13.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
 			<string>com.notchy.openTeleprompter</string>
+			<key>CFBundleURLRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>notchy</string>
 			</array>
-			<key>CFBundleURLRole</key>
-			<string>Editor</string>
 		</dict>
 	</array>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
 </dict>
 </plist>

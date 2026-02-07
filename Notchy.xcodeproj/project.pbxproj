@@ -7,12 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		M1000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* main.swift */; };
 		A1000001 /* NotchyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* NotchyApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
 		A1000003 /* FloatingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000003 /* FloatingWindowController.swift */; };
 		A1000004 /* AudioMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004 /* AudioMonitor.swift */; };
-		A1000019 /* AudioDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019 /* AudioDeviceList.swift */; };
 		A1000005 /* ScrollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* ScrollController.swift */; };
 		A1000006 /* TeleprompterTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006 /* TeleprompterTextView.swift */; };
 		A1000007 /* WindowBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* WindowBackgroundView.swift */; };
@@ -27,6 +25,7 @@
 		A1000016 /* ScreenLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016 /* ScreenLayout.swift */; };
 		A1000017 /* NotchShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000017 /* NotchShapes.swift */; };
 		A1000018 /* ControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018 /* ControlBar.swift */; };
+		A1000019 /* AudioDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019 /* AudioDeviceList.swift */; };
 		B1000001 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Script.swift */; };
 		B1000002 /* ScriptRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000002 /* ScriptRepository.swift */; };
 		B1000003 /* ScriptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000003 /* ScriptStore.swift */; };
@@ -51,6 +50,7 @@
 		L1000002 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* L10n.swift */; };
 		L1000003 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = L3000001 /* Localizable.strings */; };
 		L1000004 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = L3000001 /* Localizable.strings */; };
+		M1000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* main.swift */; };
 		P1000001 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
 		P1000002 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
 /* End PBXBuildFile section */
@@ -80,12 +80,10 @@
 
 /* Begin PBXFileReference section */
 		A2000000 /* Notchy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notchy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		M2000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		A2000001 /* NotchyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyApp.swift; sourceTree = "<group>"; };
 		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A2000003 /* FloatingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingWindowController.swift; sourceTree = "<group>"; };
 		A2000004 /* AudioMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMonitor.swift; sourceTree = "<group>"; };
-		A2000019 /* AudioDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceList.swift; sourceTree = "<group>"; };
 		A2000005 /* ScrollController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollController.swift; sourceTree = "<group>"; };
 		A2000006 /* TeleprompterTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeleprompterTextView.swift; sourceTree = "<group>"; };
 		A2000007 /* WindowBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowBackgroundView.swift; sourceTree = "<group>"; };
@@ -100,6 +98,7 @@
 		A2000016 /* ScreenLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLayout.swift; sourceTree = "<group>"; };
 		A2000017 /* NotchShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShapes.swift; sourceTree = "<group>"; };
 		A2000018 /* ControlBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBar.swift; sourceTree = "<group>"; };
+		A2000019 /* AudioDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceList.swift; sourceTree = "<group>"; };
 		B2000000 /* Notchy Scripts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notchy Scripts.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2000001 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		B2000002 /* ScriptRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptRepository.swift; sourceTree = "<group>"; };
@@ -117,7 +116,6 @@
 		E2000001 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
 		L2000001 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
-		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
 		L2000002 /* en.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000003 /* pt-BR.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		L2000004 /* zh-Hans.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -148,6 +146,8 @@
 		L2000029 /* nl.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000030 /* ro.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
 		L2000031 /* ca.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		M2000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -678,7 +678,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TJ7XUV6VQ9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Notchy/Resources/Info.plist;
@@ -691,7 +691,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.notchy.app;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyDesktop;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
