@@ -4,7 +4,7 @@ import SwiftUI
 /// Padding from the top so text starts below the notch (same reference as the notch strip).
 private let notchTopPadding: CGFloat = 32
 
-/// Horizontal padding so text isn't flush to the edges.
+/// Horizontal padding for control bar (fixed; script padding is in settings).
 private let sidePadding: CGFloat = 14
 
 private struct ControlBarWidthKey: PreferenceKey {
@@ -43,6 +43,7 @@ struct ContentView: View {
     @AppStorage(NotchyKeys.mirrorMode) private var mirrorMode: Int = 0
     /// 0 = esquerda, 1 = centro, 2 = direita, 3 = justificado
     @AppStorage(NotchyKeys.textAlignment) private var textAlignment: Int = 0
+    @AppStorage(NotchyKeys.contentPadding) private var contentPadding: Double = 14
     @State private var barWidth: CGFloat = 400
     @State private var controlBarHeight: CGFloat = 36
     /// Congelados no início do resize para evitar a barra alternar 36↔76 e a área do prompter "pular".
@@ -135,7 +136,7 @@ struct ContentView: View {
                     )
                     .scaleEffect(x: mirrorScaleX, y: mirrorScaleY)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.horizontal, sidePadding)
+                    .padding(CGFloat(contentPadding))
                     // Barra de controles: fundo arrastável; botões ou menu quando estreito
                     ControlBarView(
                             barWidth: effectiveBarWidth,

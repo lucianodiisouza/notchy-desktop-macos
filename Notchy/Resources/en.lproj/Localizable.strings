@@ -118,6 +118,9 @@
 "picker_text_color" = "Text color";
 "label_text_opacity" = "Text opacity";
 "text_opacity_help" = "Transparency of teleprompter text only.";
+"section_content_layout" = "Content layout";
+"label_content_padding" = "Content padding";
+"content_padding_help" = "Space between script text and window edges (0–40 pt).";
 "label_scroll_speed" = "Scroll speed";
 "scroll_speed_help" = "How fast the text moves up during presentation.";
 "voice_scroll_help" = "With voice control on, scroll starts when you speak and pauses after a short silence. Use Shift+↑/↓ to change speed during presentation.";

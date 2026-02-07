@@ -17,12 +17,14 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.preferredMicrophoneUID) private var preferredMicrophoneUID: String = ""
     @AppStorage(NotchyKeys.preferredDisplayID) private var preferredDisplayID: Int = 0
     @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
+    @AppStorage(NotchyKeys.contentPadding) private var contentPadding: Double = 14
 
     @State private var showLanguageRestartAlert = false
 
     private let speedRange: ClosedRange<Double> = 10...120
     private let opacityRange: ClosedRange<Double> = 0...1
     private let fontSizeRange: ClosedRange<Double> = 10...32
+    private let contentPaddingRange: ClosedRange<Double> = 0...40
     /// 0 = automática; mínimo 340 pt (abaixo disso corta bordas; entre 340–380 a barra quebra em duas linhas)
     private let widthRange: ClosedRange<Double> = 0...1200
     private let minWindowWidth: Double = 340
@@ -231,6 +233,17 @@ struct SettingsView: View {
                         .frame(width: 36, alignment: .trailing)
                 }
                 Text(String(localized: "text_opacity_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Section(String(localized: "section_content_layout")) {
+                HStack {
+                    Text(String(localized: "label_content_padding"))
+                    Slider(value: $contentPadding, in: contentPaddingRange, step: 2)
+                    Text("\(Int(contentPadding)) pt")
+                        .frame(width: 44, alignment: .trailing)
+                }
+                Text(String(localized: "content_padding_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

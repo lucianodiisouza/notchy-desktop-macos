@@ -118,6 +118,9 @@
 "picker_text_color" = "Cor do texto";
 "label_text_opacity" = "Opacidade do texto";
 "text_opacity_help" = "Transparência apenas do texto do teleprompter.";
+"section_content_layout" = "Layout do conteúdo";
+"label_content_padding" = "Padding do conteúdo";
+"content_padding_help" = "Espaço entre o texto do roteiro e as bordas da janela (0–40 pt).";
 "label_scroll_speed" = "Velocidade do scroll";
 "scroll_speed_help" = "Velocidade com que o texto sobe durante a apresentação.";
 "voice_scroll_help" = "Com controle por voz ativo, o scroll começa ao falar e pausa após um breve silêncio. Use Shift+↑/↓ para mudar a velocidade durante a apresentação.";

@@ -52,6 +52,8 @@ enum NotchyKeys {
     static let mirrorMode = "mirrorMode"
     static let textAlignment = "textAlignment"
     static let preferredDisplayID = "preferredDisplayID"
+    /// Padding (pt) around script content in the teleprompter (0–40).
+    static let contentPadding = "contentPadding"
 
     // Language (in-app override; empty = system default)
     static let preferredLanguage = "preferredLanguage"
