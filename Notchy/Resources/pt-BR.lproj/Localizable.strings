@@ -1,0 +1,156 @@
+/* Teleprompter - collapsed label */
+"notchy_collapsed" = "Notchy ▼";
+
+/* Mirror mode tooltips */
+"mirror_help_0" = "Espelhar para teleprompter (próximo: horizontal)";
+"mirror_help_1" = "Espelho horizontal (próximo: vertical)";
+"mirror_help_2" = "Espelho vertical (próximo: ambos)";
+"mirror_help_3" = "Espelho H+V (próximo: normal)";
+"mirror_help_default" = "Espelhar para teleprompter";
+
+/* Alignment tooltips */
+"alignment_help_0" = "Alinhamento: esquerda (próximo: centro)";
+"alignment_help_1" = "Alinhamento: centro (próximo: direita)";
+"alignment_help_2" = "Alinhamento: direita (próximo: justificado)";
+"alignment_help_3" = "Alinhamento: justificado (próximo: esquerda)";
+"alignment_help_default" = "Alinhamento do texto";
+
+/* Control bar */
+"drag_to_move_help" = "Arrastar para mover. Duplo clique para fixar de volta no notch.";
+"voice_disable" = "Desativar scroll por voz";
+"voice_enable" = "Ativar scroll por voz";
+"scroll_pause" = "Pausar scroll automático";
+"scroll_auto" = "Scroll automático (velocidade nas configurações)";
+"scroll_auto_short" = "Scroll automático";
+"scroll_pause_short" = "Pausar scroll";
+"open_settings" = "Abrir configurações";
+"collapse" = "Recolher";
+"voice_off" = "Desativar voz";
+"voice_on" = "Ativar voz";
+"mirror_menu" = "Espelho";
+"mirror_normal" = "Normal";
+"mirror_h" = "Horizontal";
+"mirror_v" = "Vertical";
+"mirror_hv" = "Horizontal + Vertical";
+"alignment_menu" = "Alinhamento";
+"align_left" = "Esquerda";
+"align_center" = "Centro";
+"align_right" = "Direita";
+"align_justified" = "Justificado";
+"settings" = "Configurações";
+"menu_compact_help" = "Menu (janela na largura mínima)";
+
+/* Menu bar (AppDelegate) */
+"menu_tooltip" = "Notchy – Teleprompter";
+"menu_open_teleprompter" = "Abrir Teleprompter";
+"menu_close_teleprompter" = "Fechar Teleprompter";
+"menu_show_on" = "Mostrar em";
+"menu_settings" = "Configurações…";
+"menu_open_scripts" = "Abrir Roteiros";
+"menu_pin_to_notch" = "Fixar no notch";
+"menu_quit" = "Sair";
+"window_title_settings" = "Configurações";
+
+/* Settings - Window tab */
+"settings_tab_window" = "Janela";
+"settings_tab_voice" = "Voz";
+"settings_tab_text" = "Texto";
+"settings_tab_scroll" = "Scroll";
+"section_monitor" = "Monitor e posição";
+"section_size" = "Tamanho";
+"section_window_appearance" = "Aparência da janela";
+"section_buttons" = "Botões e ícones";
+"section_voice_control" = "Controle por voz";
+"section_microphone" = "Microfone";
+"section_font_color" = "Fonte e cor";
+"section_speed" = "Velocidade";
+"picker_monitor" = "Monitor";
+"monitor_help" = "Escolha em qual tela o Notchy aparece (na faixa do notch/menu bar).";
+"button_reset_notchy" = "Resetar Notchy";
+"reset_notchy_help" = "Volta a janela para o notch, largura automática e altura 320 pt.";
+"label_width" = "Largura";
+"label_auto" = "Auto";
+"width_help" = "0 = automática (largura total do notch). Largura fixa: 340–1200 pt (entre 340–380 pt os botões quebram em duas linhas).";
+"label_expanded_height" = "Altura expandida";
+"expanded_height_help" = "Altura da janela do teleprompter quando expandida (200–600 pt).";
+"toggle_show_in_capture" = "Aparecer em gravação de tela";
+"show_in_capture_help" = "Desative o \"stealth\" para que o Notchy apareça em gravações e screenshots.";
+"label_window_opacity" = "Opacidade da janela";
+"window_opacity_help" = "Transparência da janela do Notchy (0–100%).";
+"picker_button_color" = "Cor dos botões";
+"button_color_help" = "Cor dos ícones da barra (mic, play, recolher, arrastar).";
+"label_button_opacity" = "Opacidade dos ícones";
+"button_opacity_help" = "Transparência dos botões e ícones da barra.";
+"toggle_voice_control" = "Controle por voz (rolar ao falar)";
+"voice_control_help" = "Desligue se não quiser que o texto avance ao detectar voz (ex.: outras pessoas na sala).";
+"label_sensitivity" = "Sensibilidade";
+"sensitivity_low" = "Baixa";
+"sensitivity_medium" = "Média";
+"sensitivity_high" = "Alta";
+"sensitivity_help" = "Menor = só voz mais alta aciona. Maior = qualquer som pode acionar.";
+"mic_used_default" = "Microfone usado: padrão do sistema";
+"button_open_sound_settings" = "Abrir Ajustes de Som do sistema";
+"label_font_size" = "Tamanho da fonte";
+"font_size_help" = "Ajuste o tamanho do texto do teleprompter.";
+"picker_text_color" = "Cor do texto";
+"label_text_opacity" = "Opacidade do texto";
+"text_opacity_help" = "Transparência apenas do texto do teleprompter.";
+"label_scroll_speed" = "Velocidade do scroll";
+"scroll_speed_help" = "Velocidade com que o texto sobe durante a apresentação.";
+"voice_scroll_help" = "Com controle por voz ativo, o scroll começa ao falar e pausa após um breve silêncio. Use Shift+↑/↓ para mudar a velocidade durante a apresentação.";
+
+/* Scripts - folders & sidebar */
+"folders_header" = "Pastas";
+"new_folder" = "Nova pasta";
+"folder_name" = "Nome da pasta";
+"cancel" = "Cancelar";
+"create" = "Criar";
+"new_folder_message" = "Nome da nova pasta.";
+"delete_folder" = "Apagar pasta";
+"move_scripts_to_parent" = "Mover roteiros para a pasta pai";
+"delete_folder_and_scripts" = "Apagar pasta e todos os roteiros";
+"delete_folder_message" = "O que fazer com a pasta \"%@\"?";
+"rename_folder" = "Renomear pasta";
+"field_name" = "Nome";
+"ok" = "OK";
+"rename_folder_message" = "Novo nome da pasta.";
+"root" = "Raiz";
+"new_script" = "Novo roteiro";
+"new_subfolder" = "Nova subpasta";
+"use_in_teleprompter" = "Usar no Teleprompter";
+"duplicate" = "Duplicar";
+"delete" = "Eliminar";
+"script_untitled" = "Sem título";
+"in_teleprompter" = "No teleprompter";
+"delete_script_confirm_title" = "Eliminar roteiro?";
+"delete_script_confirm_message" = "O roteiro \"%@\" será eliminado.";
+"initial_script_title" = "Roteiro inicial";
+"script_copy_suffix" = " (cópia)";
+
+/* Script editor */
+"field_title" = "Título";
+"script_not_found" = "Roteiro não encontrado";
+"help_bold" = "Negrito (⌘B)";
+"help_italic" = "Itálico (⌘I)";
+"help_underline" = "Sublinhado";
+"label_font_size_editor" = "Tamanho da fonte";
+"help_editor_settings" = "Configurações do editor";
+"select_script_placeholder" = "Selecione um roteiro";
+"select_script_help" = "Escolha um roteiro na lista ou crie um novo.";
+"scripts_nav_title" = "Roteiros";
+
+/* Script editor settings */
+"section_editor_appearance" = "Aparência do editor";
+"picker_editor_theme" = "Tema do editor";
+"theme_system" = "Sistema";
+"theme_light" = "Claro";
+"theme_dark" = "Escuro";
+"editor_theme_help" = "Claro = fundo branco; Escuro = fundo preto. O tema só afeta esta janela do editor.";
+"label_line_spacing" = "Espaçamento entre linhas";
+"section_font" = "Fonte";
+"field_font_name" = "Nome da fonte (vazio = sistema)";
+"font_name_help" = "Deixe em branco para usar a fonte do sistema. Ex.: Helvetica, Menlo.";
+"section_markdown" = "Markdown";
+"markdown_help" = "Nos blocos de texto você vê negrito, itálico, sublinhado e tamanho em tempo real. Use a barra (B, I, U, tamanho) ou digite **negrito**, *itálico*, %sublinhado% e [14]tamanho[/14]. O teleprompter exibe texto puro (formatação removida).";
+
+"NSMicrophoneUsageDescription" = "O Notchy usa o microfone para detectar quando você está falando e assim rolar o teleprompter automaticamente e pausar quando você parar.";
