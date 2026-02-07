@@ -91,6 +91,7 @@ final class FloatingWindowController: ObservableObject {
             let item = DispatchWorkItem { [weak self] in
                 guard let self = self else { return }
                 guard self.isExpanded else { return }
+                self.persistCurrentWindowSizeBeforeCollapse()
                 self.isExpanded = false
                 self.updateWindowFrame(animated: true)
             }
@@ -115,8 +116,21 @@ final class FloatingWindowController: ObservableObject {
         collapseWorkItem?.cancel()
         collapseWorkItem = nil
         guard isExpanded else { return }
+        persistCurrentWindowSizeBeforeCollapse()
         isExpanded = false
         updateWindowFrame(animated: true)
+    }
+
+    /// Saves current window width/height so they are restored when expanding from collapsed.
+    private func persistCurrentWindowSizeBeforeCollapse() {
+        guard let window = window, isExpanded else { return }
+        let frame = window.frame
+        if frame.width >= 128 {
+            UserDefaults.standard.set(frame.width, forKey: "windowWidth")
+        }
+        if frame.height >= 200 {
+            UserDefaults.standard.set(frame.height, forKey: "windowHeight")
+        }
     }
 
     /// Call when Settings change (e.g. window width) to reposition the window.
@@ -269,10 +283,10 @@ final class FloatingWindowController: ObservableObject {
     private func customWindowWidth() -> CGFloat {
         if let w = temporaryResizeWidth {
             if w <= 0 { return 0 }
-            return min(1200, max(200, w))
+            return min(1200, max(128, w))
         }
         let w = UserDefaults.standard.double(forKey: "windowWidth")
-        if w > 0 { return min(1200, max(200, CGFloat(w))) }
+        if w > 0 { return min(1200, max(128, CGFloat(w))) }
         return 0
     }
 

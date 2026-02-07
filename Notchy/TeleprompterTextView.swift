@@ -2,6 +2,8 @@ import SwiftUI
 import AppKit
 
 /// NSTextView que, ao colar, insere apenas texto puro (sem formatação), mantendo quebras de linha.
+/// Também desativa o scroll automático para seleção/range, evitando o "salto" ao mudar de parágrafo
+/// quando o monitor de voz está ativo (o scroll é controlado apenas pelo ScrollController).
 private final class PlainTextPasteTextView: NSTextView {
     override func paste(_ sender: Any?) {
         guard let pasteboard = NSPasteboard.general.string(forType: .string), !pasteboard.isEmpty else {
@@ -10,17 +12,34 @@ private final class PlainTextPasteTextView: NSTextView {
         }
         replaceCharacters(in: selectedRange(), with: pasteboard)
     }
+
+    override func scrollRangeToVisible(_ range: NSRange) {
+        // Não fazer scroll automático para a seleção/range — evita o mini salto ao fim do parágrafo
+        // (ex.: linha em branco) que colocava o novo parágrafo no topo e confundia durante a leitura.
+        // O scroll fica exclusivamente a cargo do ScrollController (voz ou automático).
+    }
 }
 
+/// 0 = left, 1 = center, 2 = right, 3 = justify
 struct TeleprompterTextView: NSViewRepresentable {
     @Binding var text: String
     @Binding var scrollOffset: CGFloat
     var fontSize: Double
     var textColor: Color
     var textOpacity: Double = 1
+    var alignmentMode: Int = 0
 
     private var effectiveTextColor: NSColor {
         NSColor(textColor).withAlphaComponent(CGFloat(min(1, max(0, textOpacity))))
+    }
+
+    private var nsAlignment: NSTextAlignment {
+        switch alignmentMode {
+        case 1: return .center
+        case 2: return .right
+        case 3: return .justified
+        default: return .left
+        }
     }
 
     func makeNSView(context: Context) -> NSScrollView {
@@ -47,6 +66,12 @@ struct TeleprompterTextView: NSViewRepresentable {
         textView.autoresizingMask = [.width]
         textView.textContainer?.containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
         textView.textContainer?.widthTracksTextView = true
+        textView.layoutManager?.allowsNonContiguousLayout = false  // layout contínuo evita re-layout ao rolar que pode causar salto
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = nsAlignment
+        textView.defaultParagraphStyle = paragraphStyle
+        textView.typingAttributes[.paragraphStyle] = paragraphStyle
 
         scrollView.documentView = textView
         textView.delegate = context.coordinator
@@ -76,12 +101,22 @@ struct TeleprompterTextView: NSViewRepresentable {
         textView.font = .systemFont(ofSize: fontSize)
         textView.textColor = effectiveTextColor
 
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = nsAlignment
+        textView.defaultParagraphStyle = paragraphStyle
+        textView.typingAttributes[.paragraphStyle] = paragraphStyle
+        let fullRange = NSRange(location: 0, length: (textView.string as NSString).length)
+        if fullRange.length > 0 {
+            textView.textStorage?.addAttribute(.paragraphStyle, value: paragraphStyle, range: fullRange)
+        }
+
         // Só aplica scrollOffset quando diferente da posição atual (evita resetar scroll manual do usuário).
         let currentY = scrollView.contentView.bounds.origin.y
         if abs(currentY - scrollOffset) > 0.5 {
             var clipViewBounds = scrollView.contentView.bounds
             clipViewBounds.origin.y = scrollOffset
             scrollView.contentView.scroll(to: clipViewBounds.origin)
+            scrollView.reflectScrolledClipView(scrollView.contentView)  // mantém scrollers e estado consistentes
         }
     }
 

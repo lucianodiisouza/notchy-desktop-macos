@@ -18,12 +18,19 @@ fileprivate func buttonColorFromHex(_ hex: String) -> Color {
 /// Horizontal padding so text isn't flush to the edges.
 private let sidePadding: CGFloat = 14
 
+private struct ControlBarWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 400
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 /// Only the bottom edge is rounded so the bar looks docked into the top of the screen.
+/// Radius scales with window size so small windows don't lose rounding or clip icons.
 private struct NotchBarShape: Shape {
-    private let cornerRadius: CGFloat = 10
+    private static let maxCornerRadius: CGFloat = 10
+    private static let minCornerRadius: CGFloat = 4
 
     func path(in rect: CGRect) -> Path {
-        let r = cornerRadius
+        let r = effectiveCornerRadius(for: rect)
         var path = Path()
         path.move(to: CGPoint(x: 0, y: 0))
         path.addLine(to: CGPoint(x: rect.maxX, y: 0))
@@ -33,6 +40,16 @@ private struct NotchBarShape: Shape {
         path.addArc(center: CGPoint(x: r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
         path.closeSubpath()
         return path
+    }
+
+    /// Keeps corner radius proportional to window size so content isn't clipped when small.
+    /// Never exceeds half width or full height so the two bottom corners don't overlap.
+    private func effectiveCornerRadius(for rect: CGRect) -> CGFloat {
+        let smallSide = min(rect.width, rect.height)
+        let proportional = smallSide * 0.06
+        let capped = min(Self.maxCornerRadius, max(Self.minCornerRadius, proportional))
+        let maxValid = min(rect.width / 2, rect.height)
+        return min(capped, max(1, maxValid - 1))
     }
 }
 
@@ -80,7 +97,7 @@ private struct ResizeHandleView: View {
     @AppStorage("buttonOpacity") private var buttonOpacity: Double = 1
     @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
 
-    private let minWidth: Double = 200
+    private let minWidth: Double = 128
     private let maxWidth: Double = 1200
     private let minHeight: Double = 200
     private let maxHeight: Double = 600
@@ -242,6 +259,170 @@ private struct DragWindowButton: View {
     }
 }
 
+/// Barra de controles: full (todos os botões), compact (menu + gear + chevron) ou extra-compact (só arrastar + menu com tudo).
+private struct ControlBarView: View {
+    let barWidth: CGFloat
+    let compactThreshold: CGFloat
+    let extraCompactThreshold: CGFloat
+    @Binding var voiceControlEnabled: Bool
+    @Binding var autoScrollPlaying: Bool
+    @Binding var mirrorMode: Int
+    @Binding var textAlignment: Int
+    let mirrorModeIcon: String
+    let mirrorModeHelp: String
+    let alignmentIcon: String
+    let alignmentHelp: String
+    let windowController: FloatingWindowController
+    @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
+    @AppStorage("buttonOpacity") private var buttonOpacity: Double = 1
+
+    private var useExtraCompact: Bool { barWidth < extraCompactThreshold }
+    private var useCompactMenu: Bool { barWidth < compactThreshold }
+
+    var body: some View {
+        ZStack {
+            DragHandleRepresentable(windowController: windowController)
+                .frame(maxWidth: .infinity)
+                .frame(height: 36)
+            if useExtraCompact {
+                extraCompactBar
+            } else if useCompactMenu {
+                compactBar
+            } else {
+                fullBar
+            }
+        }
+    }
+
+    private var fullBar: some View {
+        HStack(alignment: .center, spacing: 12) {
+            DragWindowButton(windowController: windowController)
+            ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
+                voiceControlEnabled.toggle()
+            }
+            .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
+            ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
+                autoScrollPlaying.toggle()
+            }
+            .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
+            ControlBarButton(icon: mirrorModeIcon, active: mirrorMode != 0) {
+                mirrorMode = (mirrorMode + 1) % 4
+            }
+            .help(mirrorModeHelp)
+            ControlBarButton(icon: alignmentIcon, active: textAlignment != 0) {
+                textAlignment = (textAlignment + 1) % 4
+            }
+            .help(alignmentHelp)
+            Spacer(minLength: 0)
+            ControlBarButton(icon: "gearshape", active: true) {
+                NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+            }
+            .help("Abrir configurações")
+            ControlBarButton(icon: "chevron.up", active: true) {
+                windowController.collapseNow()
+            }
+            .help("Recolher")
+        }
+    }
+
+    private var compactBar: some View {
+        HStack(alignment: .center, spacing: 12) {
+            DragWindowButton(windowController: windowController)
+            Menu {
+                Button(action: { voiceControlEnabled.toggle() }) {
+                    Label(voiceControlEnabled ? "Desativar voz" : "Ativar voz", systemImage: voiceControlEnabled ? "mic.fill" : "mic.slash.fill")
+                }
+                Button(action: { autoScrollPlaying.toggle() }) {
+                    Label(autoScrollPlaying ? "Pausar scroll" : "Scroll automático", systemImage: autoScrollPlaying ? "pause.fill" : "play.fill")
+                }
+                Divider()
+                Menu("Espelho") {
+                    Button("Normal") { mirrorMode = 0 }
+                    Button("Horizontal") { mirrorMode = 1 }
+                    Button("Vertical") { mirrorMode = 2 }
+                    Button("Horizontal + Vertical") { mirrorMode = 3 }
+                }
+                Menu("Alinhamento") {
+                    Button("Esquerda") { textAlignment = 0 }
+                    Button("Centro") { textAlignment = 1 }
+                    Button("Direita") { textAlignment = 2 }
+                    Button("Justificado") { textAlignment = 3 }
+                }
+                Divider()
+                Button(action: { NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil) }) {
+                    Label("Configurações", systemImage: "gearshape")
+                }
+                Button(action: { windowController.collapseNow() }) {
+                    Label("Recolher", systemImage: "chevron.up")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(buttonColorFromHex(buttonColorHex).opacity(0.9 * buttonOpacity))
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+            .help("Menu de controles (janela estreita)")
+            Spacer(minLength: 0)
+            ControlBarButton(icon: "gearshape", active: true) {
+                NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+            }
+            .help("Abrir configurações")
+            ControlBarButton(icon: "chevron.up", active: true) {
+                windowController.collapseNow()
+            }
+            .help("Recolher")
+        }
+    }
+
+    /// Janela na largura mínima (tipo notch): só arrastar + um menu com todas as ações.
+    private var extraCompactBar: some View {
+        HStack(alignment: .center, spacing: 8) {
+            DragWindowButton(windowController: windowController)
+            Menu {
+                Button(action: { voiceControlEnabled.toggle() }) {
+                    Label(voiceControlEnabled ? "Desativar voz" : "Ativar voz", systemImage: voiceControlEnabled ? "mic.fill" : "mic.slash.fill")
+                }
+                Button(action: { autoScrollPlaying.toggle() }) {
+                    Label(autoScrollPlaying ? "Pausar scroll" : "Scroll automático", systemImage: autoScrollPlaying ? "pause.fill" : "play.fill")
+                }
+                Divider()
+                Menu("Espelho") {
+                    Button("Normal") { mirrorMode = 0 }
+                    Button("Horizontal") { mirrorMode = 1 }
+                    Button("Vertical") { mirrorMode = 2 }
+                    Button("Horizontal + Vertical") { mirrorMode = 3 }
+                }
+                Menu("Alinhamento") {
+                    Button("Esquerda") { textAlignment = 0 }
+                    Button("Centro") { textAlignment = 1 }
+                    Button("Direita") { textAlignment = 2 }
+                    Button("Justificado") { textAlignment = 3 }
+                }
+                Divider()
+                Button(action: { NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil) }) {
+                    Label("Configurações", systemImage: "gearshape")
+                }
+                Button(action: { windowController.collapseNow() }) {
+                    Label("Recolher", systemImage: "chevron.up")
+                }
+            } label: {
+                Image(systemName: "line.3.horizontal.circle.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(buttonColorFromHex(buttonColorHex).opacity(0.9 * buttonOpacity))
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+            .help("Menu (janela na largura mínima)")
+            Spacer(minLength: 0)
+        }
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject var windowController: FloatingWindowController
     @EnvironmentObject var audioMonitor: AudioMonitor
@@ -257,11 +438,59 @@ struct ContentView: View {
     @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
     @AppStorage("voiceControlEnabled") private var voiceControlEnabled = true
     @AppStorage("autoScrollPlaying") private var autoScrollPlaying = false
+    /// 0 = normal, 1 = horizontal, 2 = vertical, 3 = horizontal+vertical (para teleprompter no reflexo do iPad)
+    @AppStorage("mirrorMode") private var mirrorMode: Int = 0
+    /// 0 = esquerda, 1 = centro, 2 = direita, 3 = justificado
+    @AppStorage("textAlignment") private var textAlignment: Int = 0
+    @State private var barWidth: CGFloat = 400
 
     /// Opacidade mínima para o fundo garante que a janela continue recebendo cliques quando o usuário escolhe 0%.
     private var effectiveWindowOpacity: Double {
         max(windowOpacity, 0.004)
     }
+
+    private var mirrorScaleX: CGFloat { mirrorMode == 1 || mirrorMode == 3 ? -1 : 1 }
+    private var mirrorScaleY: CGFloat { mirrorMode == 2 || mirrorMode == 3 ? -1 : 1 }
+    private var mirrorModeIcon: String {
+        switch mirrorMode {
+        case 1: return "arrow.left.and.right"
+        case 2: return "arrow.up.and.down"
+        case 3: return "arrow.up.left.and.arrow.down.right"
+        default: return "rectangle.portrait.rotate"
+        }
+    }
+    private var mirrorModeHelp: String {
+        switch mirrorMode {
+        case 0: return "Espelhar para teleprompter (próximo: horizontal)"
+        case 1: return "Espelho horizontal (próximo: vertical)"
+        case 2: return "Espelho vertical (próximo: ambos)"
+        case 3: return "Espelho H+V (próximo: normal)"
+        default: return "Espelhar para teleprompter"
+        }
+    }
+
+    private var alignmentIcon: String {
+        switch textAlignment {
+        case 1: return "text.aligncenter"
+        case 2: return "text.alignright"
+        case 3: return "text.justify"
+        default: return "text.alignleft"
+        }
+    }
+    private var alignmentHelp: String {
+        switch textAlignment {
+        case 0: return "Alinhamento: esquerda (próximo: centro)"
+        case 1: return "Alinhamento: centro (próximo: direita)"
+        case 2: return "Alinhamento: direita (próximo: justificado)"
+        case 3: return "Alinhamento: justificado (próximo: esquerda)"
+        default: return "Alinhamento do texto"
+        }
+    }
+
+    /// Largura abaixo da qual a barra mostra menu em vez de todos os ícones.
+    private let controlBarCompactThreshold: CGFloat = 380
+    /// Largura abaixo da qual a barra mostra só arrastar + um menu (largura mínima / notch).
+    private let controlBarExtraCompactThreshold: CGFloat = 180
 
     var body: some View {
         ZStack {
@@ -288,40 +517,35 @@ struct ContentView: View {
                         ),
                         fontSize: fontSize,
                         textColor: colorFromHex(textColorHex),
-                        textOpacity: textOpacity
+                        textOpacity: textOpacity,
+                        alignmentMode: textAlignment
                     )
+                    .scaleEffect(x: mirrorScaleX, y: mirrorScaleY)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, sidePadding)
-                    // Barra de controles: fundo arrastável; botões (arrastar, mic, play, config, recolher) por cima
-                    ZStack {
-                        DragHandleRepresentable(windowController: windowController)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 36)
-                        HStack(alignment: .center, spacing: 12) {
-                            DragWindowButton(windowController: windowController)
-                            ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
-                                voiceControlEnabled.toggle()
-                            }
-                            .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
-                            ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
-                                autoScrollPlaying.toggle()
-                            }
-                            .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
-                            Spacer(minLength: 0)
-                            ControlBarButton(icon: "gearshape", active: true) {
-                                NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
-                            }
-                            .help("Abrir configurações")
-                            ControlBarButton(icon: "chevron.up", active: true) {
-                                windowController.collapseNow()
-                            }
-                            .help("Recolher")
-                        }
-                    }
+                    // Barra de controles: fundo arrastável; botões ou menu quando estreito
+                    ControlBarView(
+                            barWidth: barWidth,
+                            compactThreshold: controlBarCompactThreshold,
+                            extraCompactThreshold: controlBarExtraCompactThreshold,
+                            voiceControlEnabled: $voiceControlEnabled,
+                            autoScrollPlaying: $autoScrollPlaying,
+                            mirrorMode: $mirrorMode,
+                            textAlignment: $textAlignment,
+                            mirrorModeIcon: mirrorModeIcon,
+                            mirrorModeHelp: mirrorModeHelp,
+                            alignmentIcon: alignmentIcon,
+                            alignmentHelp: alignmentHelp,
+                            windowController: windowController
+                        )
                     .frame(height: 36)
                     .padding(.horizontal, sidePadding)
                     .padding(.trailing, 36)
                     .padding(.vertical, 8)
+                    .background(GeometryReader { g in
+                        Color.clear.preference(key: ControlBarWidthKey.self, value: max(0, g.size.width - sidePadding * 2 - 36))
+                    })
+                    .onPreferenceChange(ControlBarWidthKey.self) { barWidth = $0 }
                 }
             }
         }

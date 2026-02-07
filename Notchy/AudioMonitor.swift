@@ -21,22 +21,34 @@ final class AudioMonitor: ObservableObject {
     func start() {
         guard !isConfigured else { return }
 
-        if #available(macOS 14.0, *) {
-            AVAudioApplication.requestRecordPermission { [weak self] allowed in
-                DispatchQueue.main.async {
-                    if allowed {
-                        self?.configureAndStart()
+        // Checar status primeiro: se já autorizado, não pedir de novo (evita diálogo a cada launch).
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        case .authorized:
+            configureAndStart()
+        case .denied:
+            break
+        case .notDetermined:
+            if #available(macOS 14.0, *) {
+                AVAudioApplication.requestRecordPermission { [weak self] allowed in
+                    DispatchQueue.main.async {
+                        if allowed {
+                            self?.configureAndStart()
+                        }
+                    }
+                }
+            } else {
+                AVCaptureDevice.requestAccess(for: .audio) { [weak self] allowed in
+                    DispatchQueue.main.async {
+                        if allowed {
+                            self?.configureAndStart()
+                        }
                     }
                 }
             }
-        } else {
-            AVCaptureDevice.requestAccess(for: .audio) { [weak self] allowed in
-                DispatchQueue.main.async {
-                    if allowed {
-                        self?.configureAndStart()
-                    }
-                }
-            }
+        case .restricted:
+            break
+        @unknown default:
+            break
         }
     }
 
