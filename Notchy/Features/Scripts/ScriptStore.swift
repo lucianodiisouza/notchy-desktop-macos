@@ -144,9 +144,10 @@ final class ScriptStore: ObservableObject {
         } catch {}
     }
 
+    /// Atualiza o corpo do script selecionado (ex.: colar no teleprompter). Limpa RTF para manter corpo como texto puro.
     func updateCurrentScriptBody(_ body: String) {
         guard let id = selectedScriptId else { return }
-        updateScript(id: id, title: nil, body: body)
+        updateScript(id: id, title: nil, body: body, bodyRTF: nil, clearRTF: true)
     }
 
     func deleteScript(id: UUID) {
