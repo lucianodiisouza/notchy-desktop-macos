@@ -67,6 +67,8 @@ final class FloatingWindowController: ObservableObject {
     /// When true, the window expands below the notch so you can paste and see the teleprompter.
     /// When there's text, collapse only via button; when empty, collapse on mouse exit too.
     @Published private(set) var isExpanded = true
+    /// True while the user is dragging the resize grip; used to freeze bar layout and avoid height jump.
+    @Published private(set) var isWindowResizing = false
     /// When true, we don't auto-collapse on mouse exit (so pasted text stays visible).
     var hasPrompterText: Bool = false
 
@@ -125,7 +127,7 @@ final class FloatingWindowController: ObservableObject {
     private func persistCurrentWindowSizeBeforeCollapse() {
         guard let window = window, isExpanded else { return }
         let frame = window.frame
-        if frame.width >= 128 {
+        if frame.width >= Self.minWindowWidth {
             UserDefaults.standard.set(frame.width, forKey: "windowWidth")
         }
         if frame.height >= 200 {
@@ -263,6 +265,9 @@ final class FloatingWindowController: ObservableObject {
         // para o hover no notch expandir a janela.
         window.acceptsMouseMovedEvents = true
 
+        // Permite redimensionar até 340pt para a barra em duas linhas caber sem cortar bordas.
+        window.minSize = NSSize(width: Self.minWindowWidth, height: 200)
+
         applyWindowOpacity()
         updateWindowFrame(animated: false)
         window.makeKeyAndOrderFront(nil)
@@ -274,19 +279,36 @@ final class FloatingWindowController: ObservableObject {
 
     /// Durante o arrasto do grip de resize: atualiza tamanho temporário sem escrever em UserDefaults.
     func setTemporaryResize(width: CGFloat?, height: CGFloat?) {
+        let wasResizing = temporaryResizeWidth != nil || temporaryResizeHeight != nil
         temporaryResizeWidth = width
         temporaryResizeHeight = height
+        let nowResizing = width != nil || height != nil
+        if nowResizing != wasResizing {
+            isWindowResizing = nowResizing
+        }
         updateWindowFrame(animated: false)
     }
+
+    /// Persiste largura/altura no UserDefaults e limpa o resize temporário (chamar ao soltar o grip).
+    func commitResize(width: CGFloat, height: CGFloat) {
+        let w = min(1200, max(Self.minWindowWidth, width))
+        let h = min(600, max(200, height))
+        UserDefaults.standard.set(w, forKey: "windowWidth")
+        UserDefaults.standard.set(h, forKey: "windowHeight")
+        setTemporaryResize(width: nil, height: nil)
+    }
+
+    /// Largura mínima da janela expandida; abaixo disso as bordas e o conteúdo cortam.
+    private static let minWindowWidth: CGFloat = 340
 
     /// Largura definida nas Settings (0 = automática = largura total do notch).
     private func customWindowWidth() -> CGFloat {
         if let w = temporaryResizeWidth {
             if w <= 0 { return 0 }
-            return min(1200, max(128, w))
+            return min(1200, max(Self.minWindowWidth, w))
         }
         let w = UserDefaults.standard.double(forKey: "windowWidth")
-        if w > 0 { return min(1200, max(128, CGFloat(w))) }
+        if w > 0 { return min(1200, max(Self.minWindowWidth, CGFloat(w))) }
         return 0
     }
 
@@ -301,6 +323,8 @@ final class FloatingWindowController: ObservableObject {
     }
 
     /// Computes the window frame (notch strip only, or expanded downward).
+    /// When collapsed (height == notchHeight), always uses full notch width so the strip isn't tiny.
+    /// When expanded, uses custom width but clamps so the window stays centered in the notch and doesn't open "to the side".
     private func notchFrame(screen: NSScreen, height: CGFloat) -> CGRect {
         let full = screen.frame
         let visible = screen.visibleFrame
@@ -308,6 +332,7 @@ final class FloatingWindowController: ObservableObject {
         let notchHeight = menuBarHeight > 0 ? menuBarHeight : fallbackNotchHeight
         let useHeight = height > notchHeight ? height : notchHeight
         let y = full.maxY - useHeight
+        let isCollapsed = (height <= notchHeight + 1) // collapsed = only the strip
 
         let notchMinX: CGFloat
         let notchWidth: CGFloat
@@ -321,15 +346,30 @@ final class FloatingWindowController: ObservableObject {
             notchWidth = full.width
         }
 
+        let screenCenterX = visible.minX + visible.width / 2
         let customW = customWindowWidth()
         let windowWidth: CGFloat
         let windowX: CGFloat
-        if customW > 0 {
-            windowWidth = customW
-            windowX = notchMinX + (notchWidth - customW) / 2
-        } else {
-            windowX = notchMinX
+        if isCollapsed {
+            // Docked in notch: always full width so the bar isn't "pequenininho"
             windowWidth = notchWidth
+            windowX = notchMinX
+        } else if customW > 0 {
+            // Expandido: largura custom; centralizado na tela (não na borda do notch) para crescer pelos dois lados
+            let effectiveW = max(Self.minWindowWidth, min(1200, customW))
+            windowWidth = effectiveW
+            let centerX = screenCenterX - effectiveW / 2
+            windowX = max(visible.minX, min(visible.maxX - effectiveW, centerX))
+        } else {
+            // Auto: largura total do notch; se o notch for mais estreito que 340pt, usar 340pt centralizado na tela
+            if notchWidth >= Self.minWindowWidth {
+                windowWidth = notchWidth
+                windowX = notchMinX
+            } else {
+                windowWidth = Self.minWindowWidth
+                let centerX = screenCenterX - windowWidth / 2
+                windowX = max(visible.minX, min(visible.maxX - windowWidth, centerX))
+            }
         }
 
         return CGRect(x: windowX, y: y, width: windowWidth, height: useHeight)
@@ -360,13 +400,21 @@ final class FloatingWindowController: ObservableObject {
                 let freeY = CGFloat(UserDefaults.standard.double(forKey: Self.windowFreeOriginYKey))
                 origin = CGPoint(x: freeX, y: freeY)
             }
-            targetFrame.origin = origin
-            // Clamp to the union of all screens' visible frames so the window can be dragged to any monitor
+            // Never open at (0,0) — treat as "use notch" so window opens centered in notch, not in corner
             let visible = combinedVisibleFrameOfAllScreens()
-            targetFrame.origin.x = min(max(visible.minX, targetFrame.origin.x), visible.maxX - targetFrame.width)
-            targetFrame.origin.y = min(max(visible.minY, targetFrame.origin.y), visible.maxY - targetFrame.height)
+            let isInvalidOrigin = (origin.x == 0 && origin.y == 0) || !visible.contains(CGPoint(x: origin.x + targetFrame.width / 2, y: origin.y + targetFrame.height / 2))
+            if isInvalidOrigin && !isDragging {
+                // Use notch position for this open (last position was invalid or never set)
+                targetFrame = notchFrame(screen: screen, height: height)
+            } else {
+                targetFrame.origin = origin
+                // Clamp to the union of all screens' visible frames so the window can be dragged to any monitor
+                targetFrame.origin.x = min(max(visible.minX, targetFrame.origin.x), visible.maxX - targetFrame.width)
+                targetFrame.origin.y = min(max(visible.minY, targetFrame.origin.y), visible.maxY - targetFrame.height)
+            }
         }
 
+        let isResizing = temporaryResizeWidth != nil || temporaryResizeHeight != nil
         if animated {
             NSAnimationContext.runAnimationGroup({ ctx in
                 ctx.duration = 0.2
@@ -378,6 +426,15 @@ final class FloatingWindowController: ObservableObject {
         } else if isDragging {
             // During drag only move origin to avoid layout thrashing and jitter
             window.setFrameOrigin(targetFrame.origin)
+        } else if isResizing {
+            // Durante o resize: manter o canto superior-esquerdo fixo e só mudar largura/altura,
+            // senão a janela "pula" (o frame é recalculado e a origem muda a cada frame).
+            let cur = window.frame
+            let top = cur.origin.y + cur.height
+            let left = cur.origin.x
+            let newOrigin = CGPoint(x: left, y: top - targetFrame.height)
+            let smoothFrame = CGRect(origin: newOrigin, size: CGSize(width: targetFrame.width, height: targetFrame.height))
+            window.setFrame(smoothFrame, display: false)
         } else {
             window.setFrame(targetFrame, display: true)
             window.orderFrontRegardless()

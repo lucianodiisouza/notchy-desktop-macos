@@ -19,7 +19,9 @@ struct SettingsView: View {
     private let speedRange: ClosedRange<Double> = 10...120
     private let opacityRange: ClosedRange<Double> = 0...1
     private let fontSizeRange: ClosedRange<Double> = 10...32
+    /// 0 = automática; mínimo 340 pt (abaixo disso corta bordas; entre 340–380 a barra quebra em duas linhas)
     private let widthRange: ClosedRange<Double> = 0...1200
+    private let minWindowWidth: Double = 340
     private let heightRange: ClosedRange<Double> = 200...600
     private let sensitivityRange: ClosedRange<Double> = 0...100
 
@@ -32,7 +34,10 @@ struct SettingsView: View {
         }
         .tabViewStyle(.automatic)
         .frame(minWidth: 480, minHeight: 420)
-        .onChange(of: windowWidth) { _ in
+        .onChange(of: windowWidth) { newValue in
+            if newValue > 0 && newValue < minWindowWidth {
+                windowWidth = minWindowWidth
+            }
             NotchyState.shared.windowController.refreshWindowFrame()
         }
         .onChange(of: windowHeight) { _ in
@@ -71,7 +76,7 @@ struct SettingsView: View {
                     Text(widthLabel)
                         .frame(width: 70, alignment: .trailing)
                 }
-                Text("0 = automática (largura total do notch). Defina um valor para largura fixa (centralizada).")
+                Text("0 = automática (largura total do notch). Largura fixa: 340–1200 pt (entre 340–380 pt os botões quebram em duas linhas).")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 HStack {

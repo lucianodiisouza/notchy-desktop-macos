@@ -23,6 +23,11 @@ private struct ControlBarWidthKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
+private struct ControlBarHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 36
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 /// Only the bottom edge is rounded so the bar looks docked into the top of the screen.
 /// Radius scales with window size so small windows don't lose rounding or clip icons.
 private struct NotchBarShape: Shape {
@@ -69,7 +74,6 @@ private struct ResizeGripShape: Shape {
     }
 }
 
-/// Resize handle view: drag to resize window (updates UserDefaults and refreshes frame).
 /// Botão da barra de controles (mic, play, recolher) — tamanho fixo para alinhamento.
 private struct ControlBarButton: View {
     let icon: String
@@ -90,20 +94,77 @@ private struct ControlBarButton: View {
     }
 }
 
+/// Resize via AppKit (coordenadas de tela) para não ter o mesmo tremor do DragGesture do SwiftUI
+/// quando a janela muda de tamanho e o layout da view acompanha.
+private final class ResizeHandleMouseView: NSView {
+    weak var windowController: FloatingWindowController?
+    private var dragStartFrame: CGRect = .zero
+    private var dragStartLocation: NSPoint = .zero
+    private var trackingArea: NSTrackingArea?
+    private static let minWidth: CGFloat = 340
+    private static let maxWidth: CGFloat = 1200
+    private static let minHeight: CGFloat = 200
+    private static let maxHeight: CGFloat = 600
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingArea.map { removeTrackingArea($0) }
+        let area = NSTrackingArea(rect: bounds, options: [.activeAlways, .mouseEnteredAndExited], owner: self, userInfo: nil)
+        addTrackingArea(area)
+        trackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        NSCursor.resizeUpDown.push()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        NSCursor.pop()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard let window = window, windowController != nil else { return }
+        dragStartFrame = window.frame
+        dragStartLocation = NSEvent.mouseLocation
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard windowController != nil, let window = window else { return }
+        let current = NSEvent.mouseLocation
+        let deltaX = current.x - dragStartLocation.x
+        let deltaY = dragStartLocation.y - current.y // y sobe na tela; arrastar pra baixo = mais altura
+        var newW = dragStartFrame.width + deltaX
+        var newH = dragStartFrame.height + deltaY
+        newW = min(Self.maxWidth, max(Self.minWidth, newW))
+        newH = min(Self.maxHeight, max(Self.minHeight, newH))
+        windowController?.setTemporaryResize(width: newW, height: newH)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard let window = window, let controller = windowController else { return }
+        controller.commitResize(width: window.frame.width, height: window.frame.height)
+    }
+}
+
+private struct ResizeHandleRepresentable: NSViewRepresentable {
+    let windowController: FloatingWindowController
+
+    func makeNSView(context: Context) -> ResizeHandleMouseView {
+        let v = ResizeHandleMouseView()
+        v.windowController = windowController
+        return v
+    }
+
+    func updateNSView(_ nsView: ResizeHandleMouseView, context: Context) {
+        nsView.windowController = windowController
+    }
+}
+
+/// Resize handle: desenho em SwiftUI, interação via AppKit (evita salto ao redimensionar).
 private struct ResizeHandleView: View {
     @EnvironmentObject var windowController: FloatingWindowController
-    @AppStorage("windowWidth") private var windowWidth: Double = 0
-    @AppStorage("windowHeight") private var windowHeight: Double = 320
     @AppStorage("buttonOpacity") private var buttonOpacity: Double = 1
     @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
-
-    private let minWidth: Double = 128
-    private let maxWidth: Double = 1200
-    private let minHeight: Double = 200
-    private let maxHeight: Double = 600
-    @State private var dragStartWidth: Double = 0
-    @State private var dragStartHeight: Double = 0
-    @State private var dragStarted = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -114,35 +175,7 @@ private struct ResizeHandleView: View {
                 .contentShape(Rectangle())
                 .frame(width: 28, height: 28)
                 .padding(4)
-                .onHover { inside in
-                    if inside { NSCursor.resizeUpDown.push() }
-                    else { NSCursor.pop() }
-                }
-                .highPriorityGesture(
-                    DragGesture(minimumDistance: 2)
-                        .onChanged { value in
-                            if !dragStarted {
-                                dragStartHeight = windowHeight
-                                // Em modo Auto (width 0), usar a largura atual da janela como base para o arrasto
-                                let currentW = windowController.currentWindowFrame()?.width
-                                dragStartWidth = windowWidth > 0 ? windowWidth : Double(currentW ?? minWidth)
-                                dragStarted = true
-                            }
-                            let newH = max(minHeight, min(maxHeight, dragStartHeight + value.translation.height))
-                            let newW = max(minWidth, min(maxWidth, dragStartWidth + value.translation.width))
-                            windowController.setTemporaryResize(width: newW, height: newH)
-                        }
-                        .onEnded { value in
-                            if dragStarted {
-                                let newH = max(minHeight, min(maxHeight, dragStartHeight + value.translation.height))
-                                let newW = max(minWidth, min(maxWidth, dragStartWidth + value.translation.width))
-                                windowHeight = newH
-                                windowWidth = newW
-                                windowController.setTemporaryResize(width: nil, height: nil)
-                            }
-                            dragStarted = false
-                        }
-                )
+            ResizeHandleRepresentable(windowController: windowController)
         }
         .frame(width: 32, height: 32)
     }
@@ -259,7 +292,7 @@ private struct DragWindowButton: View {
     }
 }
 
-/// Barra de controles: full (todos os botões), compact (menu + gear + chevron) ou extra-compact (só arrastar + menu com tudo).
+/// Barra de controles: full (todos os botões), compact (menu + gear + chevron), wrapped (duas linhas) ou extra-compact (só arrastar + menu).
 private struct ControlBarView: View {
     let barWidth: CGFloat
     let compactThreshold: CGFloat
@@ -276,23 +309,28 @@ private struct ControlBarView: View {
     @AppStorage("buttonColorHex") private var buttonColorHex = "FFFFFF"
     @AppStorage("buttonOpacity") private var buttonOpacity: Double = 1
 
+    /// Abaixo disso: só arrastar + menu (extra compacto).
     private var useExtraCompact: Bool { barWidth < extraCompactThreshold }
-    private var useCompactMenu: Bool { barWidth < compactThreshold }
+    /// Entre extraCompact e compact: duas linhas de botões (flex wrap) para não cortar.
+    private var useWrapped: Bool { barWidth < compactThreshold && barWidth >= extraCompactThreshold }
+    /// Acima de compactThreshold: uma linha com todos os ícones.
 
     var body: some View {
         ZStack {
             DragHandleRepresentable(windowController: windowController)
                 .frame(maxWidth: .infinity)
-                .frame(height: 36)
+                .frame(height: barHeight)
             if useExtraCompact {
                 extraCompactBar
-            } else if useCompactMenu {
-                compactBar
+            } else if useWrapped {
+                wrappedBar
             } else {
                 fullBar
             }
         }
     }
+
+    private var barHeight: CGFloat { useWrapped ? 76 : 36 }
 
     private var fullBar: some View {
         HStack(alignment: .center, spacing: 12) {
@@ -322,6 +360,42 @@ private struct ControlBarView: View {
                 windowController.collapseNow()
             }
             .help("Recolher")
+        }
+    }
+
+    /// Duas linhas (flex wrap) para caber em janelas estreitas sem cortar botões.
+    private var wrappedBar: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .center, spacing: 10) {
+                DragWindowButton(windowController: windowController)
+                ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
+                    voiceControlEnabled.toggle()
+                }
+                .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
+                ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
+                    autoScrollPlaying.toggle()
+                }
+                .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático")
+                ControlBarButton(icon: mirrorModeIcon, active: mirrorMode != 0) {
+                    mirrorMode = (mirrorMode + 1) % 4
+                }
+                .help(mirrorModeHelp)
+                ControlBarButton(icon: alignmentIcon, active: textAlignment != 0) {
+                    textAlignment = (textAlignment + 1) % 4
+                }
+                .help(alignmentHelp)
+            }
+            HStack(alignment: .center, spacing: 10) {
+                Spacer(minLength: 0)
+                ControlBarButton(icon: "gearshape", active: true) {
+                    NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
+                }
+                .help("Abrir configurações")
+                ControlBarButton(icon: "chevron.up", active: true) {
+                    windowController.collapseNow()
+                }
+                .help("Recolher")
+            }
         }
     }
 
@@ -443,6 +517,10 @@ struct ContentView: View {
     /// 0 = esquerda, 1 = centro, 2 = direita, 3 = justificado
     @AppStorage("textAlignment") private var textAlignment: Int = 0
     @State private var barWidth: CGFloat = 400
+    @State private var controlBarHeight: CGFloat = 36
+    /// Congelados no início do resize para evitar a barra alternar 36↔76 e a área do prompter "pular".
+    @State private var frozenBarWidth: CGFloat?
+    @State private var frozenBarHeight: CGFloat?
 
     /// Opacidade mínima para o fundo garante que a janela continue recebendo cliques quando o usuário escolhe 0%.
     private var effectiveWindowOpacity: Double {
@@ -487,10 +565,18 @@ struct ContentView: View {
         }
     }
 
-    /// Largura abaixo da qual a barra mostra menu em vez de todos os ícones.
+    /// Largura abaixo da qual a barra quebra em duas linhas (flex wrap) em vez de uma só.
     private let controlBarCompactThreshold: CGFloat = 380
-    /// Largura abaixo da qual a barra mostra só arrastar + um menu (largura mínima / notch).
-    private let controlBarExtraCompactThreshold: CGFloat = 180
+    /// Largura abaixo da qual a barra mostra só arrastar + um menu (modo extra compacto).
+    private let controlBarExtraCompactThreshold: CGFloat = 140
+
+    /// Durante o resize, usa dimensões congeladas para não alternar 36↔76 e evitar o pulo da área do prompter.
+    private var effectiveBarWidth: CGFloat {
+        frozenBarWidth ?? barWidth
+    }
+    private var effectiveBarHeight: CGFloat {
+        frozenBarHeight ?? controlBarHeight
+    }
 
     var body: some View {
         ZStack {
@@ -525,7 +611,7 @@ struct ContentView: View {
                     .padding(.horizontal, sidePadding)
                     // Barra de controles: fundo arrastável; botões ou menu quando estreito
                     ControlBarView(
-                            barWidth: barWidth,
+                            barWidth: effectiveBarWidth,
                             compactThreshold: controlBarCompactThreshold,
                             extraCompactThreshold: controlBarExtraCompactThreshold,
                             voiceControlEnabled: $voiceControlEnabled,
@@ -538,14 +624,29 @@ struct ContentView: View {
                             alignmentHelp: alignmentHelp,
                             windowController: windowController
                         )
-                    .frame(height: 36)
+                    .frame(height: effectiveBarHeight)
                     .padding(.horizontal, sidePadding)
                     .padding(.trailing, 36)
                     .padding(.vertical, 8)
                     .background(GeometryReader { g in
-                        Color.clear.preference(key: ControlBarWidthKey.self, value: max(0, g.size.width - sidePadding * 2 - 36))
+                        // g.size já é a área da barra (view com padding aplicado)
+                        let w = max(0, g.size.width)
+                        let useWrapped = w < controlBarCompactThreshold && w >= controlBarExtraCompactThreshold
+                        Color.clear
+                            .preference(key: ControlBarWidthKey.self, value: w)
+                            .preference(key: ControlBarHeightKey.self, value: useWrapped ? 76 : 36)
                     })
                     .onPreferenceChange(ControlBarWidthKey.self) { barWidth = $0 }
+                    .onPreferenceChange(ControlBarHeightKey.self) { controlBarHeight = $0 }
+                    .onChange(of: windowController.isWindowResizing) { resizing in
+                        if resizing {
+                            frozenBarWidth = barWidth
+                            frozenBarHeight = controlBarHeight
+                        } else {
+                            frozenBarWidth = nil
+                            frozenBarHeight = nil
+                        }
+                    }
                 }
             }
         }

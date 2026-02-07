@@ -132,7 +132,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate: NSWindowDelegate {
-    @objc(windowDidClose:)
     func windowDidClose(_ notification: Notification) {
         guard let closedWindow = notification.object as? NSWindow,
               let wc = settingsWindowController,
@@ -140,6 +139,9 @@ extension AppDelegate: NSWindowDelegate {
         closedWindow.delegate = nil
         settingsWindowController = nil
     }
+
+    // Stub to satisfy optional NSWindowDelegate requirement and avoid "nearly matches windowDidExpose" warning
+    func windowDidExpose(_ notification: Notification) {}
 }
 
 extension AppDelegate: NSMenuDelegate {
