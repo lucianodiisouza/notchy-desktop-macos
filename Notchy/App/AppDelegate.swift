@@ -23,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forName: Notification.Name(NotchyKeys.selectedScriptDidChangeNotification),
             object: nil,
             queue: .main
-        ) { [weak self] _ in
+        ) { _ in
             ScriptStore.shared.syncFromSharedStorage()
         }
     }

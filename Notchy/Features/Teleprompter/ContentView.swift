@@ -23,9 +23,10 @@ struct ContentView: View {
     @EnvironmentObject var scrollController: ScrollController
     @ObservedObject private var scriptStore = ScriptStore.shared
 
+    /// Teleprompter shows plain text (Markdown stripped). Edits from the prompter update the script body as plain text.
     private var prompterText: Binding<String> {
         Binding(
-            get: { scriptStore.currentScriptBody },
+            get: { MarkdownHelpers.plainText(from: scriptStore.currentScriptBody) },
             set: { scriptStore.updateCurrentScriptBody($0) }
         )
     }
