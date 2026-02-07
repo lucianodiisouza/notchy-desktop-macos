@@ -216,7 +216,7 @@ fileprivate struct DragWindowButton: View {
         }
         .frame(width: 28, height: 28)
         .contentShape(Rectangle())
-        .help("Arrastar para mover. Duplo clique para fixar de volta no notch.")
+        .help(String(localized: "drag_to_move_help"))
     }
 }
 
@@ -264,11 +264,11 @@ struct ControlBarView: View {
             ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
                 voiceControlEnabled.toggle()
             }
-            .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
+            .help(voiceControlEnabled ? String(localized: "voice_disable") : String(localized: "voice_enable"))
             ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
                 autoScrollPlaying.toggle()
             }
-            .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático (velocidade nas configurações)")
+            .help(autoScrollPlaying ? String(localized: "scroll_pause") : String(localized: "scroll_auto"))
             ControlBarButton(icon: mirrorModeIcon, active: mirrorMode != 0) {
                 mirrorMode = (mirrorMode + 1) % 4
             }
@@ -281,11 +281,11 @@ struct ControlBarView: View {
             ControlBarButton(icon: "gearshape", active: true) {
                 NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
             }
-            .help("Abrir configurações")
+            .help(String(localized: "open_settings"))
             ControlBarButton(icon: "chevron.up", active: true) {
                 windowController.collapseNow()
             }
-            .help("Recolher")
+            .help(String(localized: "collapse"))
         }
     }
 
@@ -296,11 +296,11 @@ struct ControlBarView: View {
                 ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
                     voiceControlEnabled.toggle()
                 }
-                .help(voiceControlEnabled ? "Desativar scroll por voz" : "Ativar scroll por voz")
+                .help(voiceControlEnabled ? String(localized: "voice_disable") : String(localized: "voice_enable"))
                 ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
                     autoScrollPlaying.toggle()
                 }
-                .help(autoScrollPlaying ? "Pausar scroll automático" : "Scroll automático")
+                .help(autoScrollPlaying ? String(localized: "scroll_pause") : String(localized: "scroll_auto_short"))
                 ControlBarButton(icon: mirrorModeIcon, active: mirrorMode != 0) {
                     mirrorMode = (mirrorMode + 1) % 4
                 }
@@ -315,11 +315,11 @@ struct ControlBarView: View {
                 ControlBarButton(icon: "gearshape", active: true) {
                     NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil)
                 }
-                .help("Abrir configurações")
+                .help(String(localized: "open_settings"))
                 ControlBarButton(icon: "chevron.up", active: true) {
                     windowController.collapseNow()
                 }
-                .help("Recolher")
+                .help(String(localized: "collapse"))
             }
         }
     }
@@ -329,30 +329,30 @@ struct ControlBarView: View {
             DragWindowButton(windowController: windowController)
             Menu {
                 Button(action: { voiceControlEnabled.toggle() }) {
-                    Label(voiceControlEnabled ? "Desativar voz" : "Ativar voz", systemImage: voiceControlEnabled ? "mic.fill" : "mic.slash.fill")
+                    Label(voiceControlEnabled ? String(localized: "voice_off") : String(localized: "voice_on"), systemImage: voiceControlEnabled ? "mic.fill" : "mic.slash.fill")
                 }
                 Button(action: { autoScrollPlaying.toggle() }) {
-                    Label(autoScrollPlaying ? "Pausar scroll" : "Scroll automático", systemImage: autoScrollPlaying ? "pause.fill" : "play.fill")
+                    Label(autoScrollPlaying ? String(localized: "scroll_pause_short") : String(localized: "scroll_auto_short"), systemImage: autoScrollPlaying ? "pause.fill" : "play.fill")
                 }
                 Divider()
-                Menu("Espelho") {
-                    Button("Normal") { mirrorMode = 0 }
-                    Button("Horizontal") { mirrorMode = 1 }
-                    Button("Vertical") { mirrorMode = 2 }
-                    Button("Horizontal + Vertical") { mirrorMode = 3 }
+                Menu(String(localized: "mirror_menu")) {
+                    Button(String(localized: "mirror_normal")) { mirrorMode = 0 }
+                    Button(String(localized: "mirror_h")) { mirrorMode = 1 }
+                    Button(String(localized: "mirror_v")) { mirrorMode = 2 }
+                    Button(String(localized: "mirror_hv")) { mirrorMode = 3 }
                 }
-                Menu("Alinhamento") {
-                    Button("Esquerda") { textAlignment = 0 }
-                    Button("Centro") { textAlignment = 1 }
-                    Button("Direita") { textAlignment = 2 }
-                    Button("Justificado") { textAlignment = 3 }
+                Menu(String(localized: "alignment_menu")) {
+                    Button(String(localized: "align_left")) { textAlignment = 0 }
+                    Button(String(localized: "align_center")) { textAlignment = 1 }
+                    Button(String(localized: "align_right")) { textAlignment = 2 }
+                    Button(String(localized: "align_justified")) { textAlignment = 3 }
                 }
                 Divider()
                 Button(action: { NSApplication.shared.sendAction(Selector(("openSettings")), to: NSApplication.shared.delegate, from: nil) }) {
-                    Label("Configurações", systemImage: "gearshape")
+                    Label(String(localized: "settings"), systemImage: "gearshape")
                 }
                 Button(action: { windowController.collapseNow() }) {
-                    Label("Recolher", systemImage: "chevron.up")
+                    Label(String(localized: "collapse"), systemImage: "chevron.up")
                 }
             } label: {
                 Image(systemName: "line.3.horizontal.circle.fill")
@@ -363,7 +363,7 @@ struct ControlBarView: View {
             }
             .menuStyle(.borderlessButton)
             .fixedSize()
-            .help("Menu (janela na largura mínima)")
+            .help(String(localized: "menu_compact_help"))
             Spacer(minLength: 0)
         }
     }

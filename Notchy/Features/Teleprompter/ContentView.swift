@@ -66,11 +66,11 @@ struct ContentView: View {
     }
     private var mirrorModeHelp: String {
         switch mirrorMode {
-        case 0: return "Espelhar para teleprompter (próximo: horizontal)"
-        case 1: return "Espelho horizontal (próximo: vertical)"
-        case 2: return "Espelho vertical (próximo: ambos)"
-        case 3: return "Espelho H+V (próximo: normal)"
-        default: return "Espelhar para teleprompter"
+        case 0: return String(localized: "mirror_help_0")
+        case 1: return String(localized: "mirror_help_1")
+        case 2: return String(localized: "mirror_help_2")
+        case 3: return String(localized: "mirror_help_3")
+        default: return String(localized: "mirror_help_default")
         }
     }
 
@@ -84,11 +84,11 @@ struct ContentView: View {
     }
     private var alignmentHelp: String {
         switch textAlignment {
-        case 0: return "Alinhamento: esquerda (próximo: centro)"
-        case 1: return "Alinhamento: centro (próximo: direita)"
-        case 2: return "Alinhamento: direita (próximo: justificado)"
-        case 3: return "Alinhamento: justificado (próximo: esquerda)"
-        default: return "Alinhamento do texto"
+        case 0: return String(localized: "alignment_help_0")
+        case 1: return String(localized: "alignment_help_1")
+        case 2: return String(localized: "alignment_help_2")
+        case 3: return String(localized: "alignment_help_3")
+        default: return String(localized: "alignment_help_default")
         }
     }
 
@@ -113,7 +113,7 @@ struct ContentView: View {
 
             // Recolhido: indicador mínimo para saber onde está o app (hover para expandir)
             if !windowController.isExpanded {
-                Text("Notchy ▼")
+                Text("notchy_collapsed")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(buttonColorFromHex(buttonColorHex).opacity(0.7 * buttonOpacity))
             }
