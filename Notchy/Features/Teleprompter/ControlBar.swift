@@ -52,9 +52,12 @@ fileprivate final class ResizeHandleMouseView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard let window = window, windowController != nil else { return }
+        guard let window = window, let controller = windowController else { return }
         dragStartFrame = window.frame
         dragStartLocation = NSEvent.mouseLocation
+        let centerX = dragStartFrame.origin.x + dragStartFrame.width / 2
+        let topY = dragStartFrame.origin.y + dragStartFrame.height
+        controller.beginResizeAnchor(centerX: centerX, topY: topY)
     }
 
     override func mouseDragged(with event: NSEvent) {

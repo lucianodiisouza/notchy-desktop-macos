@@ -220,6 +220,16 @@ final class FloatingWindowController: ObservableObject {
     private var temporaryResizeWidth: CGFloat?
     private var temporaryResizeHeight: CGFloat?
 
+    /// Centro X e topo Y no início do resize; mantidos durante todo o arrasto para crescimento pelo centro (sem drift).
+    private var temporaryResizeAnchorCenterX: CGFloat?
+    private var temporaryResizeAnchorTopY: CGFloat?
+
+    /// Chamar no mouseDown do grip de resize para fixar o centro horizontal e o topo como âncora.
+    func beginResizeAnchor(centerX: CGFloat, topY: CGFloat) {
+        temporaryResizeAnchorCenterX = centerX
+        temporaryResizeAnchorTopY = topY
+    }
+
     /// Durante o arrasto do grip de resize: atualiza tamanho temporário sem escrever em UserDefaults.
     func setTemporaryResize(width: CGFloat?, height: CGFloat?) {
         let wasResizing = temporaryResizeWidth != nil || temporaryResizeHeight != nil
@@ -239,6 +249,8 @@ final class FloatingWindowController: ObservableObject {
         UserDefaults.standard.set(w, forKey: NotchyKeys.windowWidth)
         UserDefaults.standard.set(h, forKey: NotchyKeys.windowHeight)
         setTemporaryResize(width: nil, height: nil)
+        temporaryResizeAnchorCenterX = nil
+        temporaryResizeAnchorTopY = nil
     }
 
     /// Largura mínima da janela expandida; abaixo disso as bordas e o conteúdo cortam.
@@ -384,14 +396,16 @@ final class FloatingWindowController: ObservableObject {
             // During drag only move origin to avoid layout thrashing and jitter
             window.setFrameOrigin(targetFrame.origin)
         } else if isResizing {
-            // Durante o resize: manter o centro horizontal fixo para a janela crescer dos dois lados;
-            // manter o topo fixo na vertical para crescer só para baixo.
-            let cur = window.frame
-            let top = cur.origin.y + cur.height
-            let centerX = cur.origin.x + cur.width / 2
+            // Durante o resize: manter o centro horizontal e o topo fixos (âncora definida no mouseDown do grip).
+            let centerX = temporaryResizeAnchorCenterX ?? (window.frame.origin.x + window.frame.width / 2)
+            let top = temporaryResizeAnchorTopY ?? (window.frame.origin.y + window.frame.height)
             let newOrigin = CGPoint(x: centerX - targetFrame.width / 2, y: top - targetFrame.height)
             let smoothFrame = CGRect(origin: newOrigin, size: CGSize(width: targetFrame.width, height: targetFrame.height))
             window.setFrame(smoothFrame, display: false)
+            if !isPinnedToNotch {
+                UserDefaults.standard.set(newOrigin.x, forKey: NotchyKeys.windowFreeOriginX)
+                UserDefaults.standard.set(newOrigin.y, forKey: NotchyKeys.windowFreeOriginY)
+            }
         } else {
             window.setFrame(targetFrame, display: true)
             window.orderFrontRegardless()
