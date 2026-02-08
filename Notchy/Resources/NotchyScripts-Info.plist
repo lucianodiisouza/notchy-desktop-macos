@@ -4,7 +4,5 @@
 <dict>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
-	<key>CFBundleName</key>
-	<string>Notchy Scripts</string>
 </dict>
 </plist>
