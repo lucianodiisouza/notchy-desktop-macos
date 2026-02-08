@@ -53,6 +53,8 @@
 		M1000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* main.swift */; };
 		P1000001 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
 		P1000002 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
+		G1000001 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* LiquidGlassModifier.swift */; };
+		G1000002 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* LiquidGlassModifier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,6 +150,7 @@
 		L2000031 /* ca.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		M2000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
+		G2000001 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +219,7 @@
 				A2000014 /* NotchyKeys.swift */,
 				A2000015 /* Color+Hex.swift */,
 				F2000001 /* InlineMarkdown.swift */,
+				G2000001 /* LiquidGlassModifier.swift */,
 				B2000001 /* Script.swift */,
 				A2000016 /* ScreenLayout.swift */,
 				A2000017 /* NotchShapes.swift */,
@@ -451,6 +455,7 @@
 				E1000001 /* AppLogger.swift in Sources */,
 				L1000001 /* L10n.swift in Sources */,
 				P1000001 /* PreferredLanguageBundle.swift in Sources */,
+				G1000001 /* LiquidGlassModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,6 +478,7 @@
 				E1000002 /* AppLogger.swift in Sources */,
 				L1000002 /* L10n.swift in Sources */,
 				P1000002 /* PreferredLanguageBundle.swift in Sources */,
+				G1000002 /* LiquidGlassModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

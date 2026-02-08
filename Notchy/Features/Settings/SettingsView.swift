@@ -41,6 +41,7 @@ struct SettingsView: View {
             scrollTab
         }
         .tabViewStyle(.automatic)
+        .liquidGlassBackground()
         .frame(minWidth: 480, minHeight: 420)
         .onChange(of: windowWidth) { newValue in
             if newValue > 0 && newValue < minWindowWidth {

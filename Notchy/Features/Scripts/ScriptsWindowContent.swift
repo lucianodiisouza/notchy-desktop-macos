@@ -55,6 +55,7 @@ struct ScriptsWindowContent: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .liquidGlassBackground()
         .navigationTitle("")
         .focusedValue(\.selectedScriptId, selectedScriptId)
         .toolbar {

@@ -88,6 +88,7 @@ struct ScriptEditorSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .liquidGlassBackground()
         .frame(minWidth: 360, minHeight: 320)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
