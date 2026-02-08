@@ -80,7 +80,6 @@ struct ScriptEditorView: View {
                         store.selectScript(id: s.id)
                         ScriptStore.openTeleprompterInMainApp()
                     }
-                    .disabled(store.selectedScriptId == s.id)
                 }
             }
         } else {
