@@ -45,7 +45,31 @@ final class ScriptRepository: ScriptRepositoryProtocol {
         }
         if !fileManager.fileExists(atPath: url.path) {
             try fileManager.createDirectory(at: url, withIntermediateDirectories: true)
+            runMigrationFromLegacyGroupContainerIfNeeded(to: url)
         }
+    }
+
+    /// One-time migration: when using a team-prefixed App Group (e.g. TEAM.com.notchy), copy scripts from the old container (group.com.notchy) so the user doesn’t lose data.
+    private func runMigrationFromLegacyGroupContainerIfNeeded(to newScriptsDir: URL) {
+        let key = "NotchyKeys.appGroupMigrationFromGroupComNotchy"
+        if UserDefaults.standard.bool(forKey: key) { return }
+        guard NotchyKeys.appGroupIdentifier != "group.com.notchy" else { return }
+        guard let legacyContainer = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.notchy") else { return }
+        let legacyScripts = legacyContainer.appendingPathComponent(scriptsDirectoryName, isDirectory: true)
+        guard fileManager.fileExists(atPath: legacyScripts.path) else {
+            UserDefaults.standard.set(true, forKey: key)
+            return
+        }
+        do {
+            let items = try fileManager.contentsOfDirectory(at: legacyScripts, includingPropertiesForKeys: nil)
+            for item in items {
+                let dest = newScriptsDir.appendingPathComponent(item.lastPathComponent)
+                if !fileManager.fileExists(atPath: dest.path) {
+                    try fileManager.copyItem(at: item, to: dest)
+                }
+            }
+        } catch { }
+        UserDefaults.standard.set(true, forKey: key)
     }
 
     private func loadFolderPaths() throws -> [String] {
