@@ -21,6 +21,7 @@ struct ContentView: View {
     @EnvironmentObject var windowController: FloatingWindowController
     @EnvironmentObject var audioMonitor: AudioMonitor
     @EnvironmentObject var scrollController: ScrollController
+    @EnvironmentObject var premiumService: PremiumService
     @ObservedObject private var scriptStore = ScriptStore.shared
 
     /// Teleprompter mostra texto puro (body). Edições no prompter atualizam o script como texto puro e limpam RTF.
@@ -111,6 +112,13 @@ struct ContentView: View {
         frozenBarHeight ?? controlBarHeight
     }
 
+    /// When premium is inactive or banned, entire prompter is at 2% opacity and non-interactive.
+    private var prompterOpacity: Double {
+        (premiumService.isPremium && !premiumService.isBanned) ? 1 : 0.02
+    }
+
+    private var isBlocked: Bool { !premiumService.isPremium || premiumService.isBanned }
+
     var body: some View {
         ZStack {
             // Opacidade da janela só no fundo; texto e controles usam suas próprias opacidades.
@@ -192,6 +200,8 @@ struct ContentView: View {
                 }
             }
         }
+        .opacity(prompterOpacity)
+        .allowsHitTesting(!isBlocked)
         .clipShape(NotchBarShape(
             roundTopCorners: !windowController.isExpanded && !windowController.isCollapseAnimationInProgress,
             notchCutoutWidth: !windowController.isExpanded ? windowController.notchCutoutSize()?.width : nil,
@@ -201,6 +211,22 @@ struct ContentView: View {
         .overlay(alignment: .bottomTrailing) {
             if windowController.isExpanded {
                 ResizeHandleView()
+            }
+        }
+        .overlay {
+            if premiumService.isBanned && windowController.isExpanded {
+                VStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 32))
+                        .foregroundStyle(.red.opacity(0.9))
+                    Text(String(localized: "account_banned"))
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 24)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.opacity(0.7))
             }
         }
         .onAppear {
@@ -323,6 +349,11 @@ private struct OnboardingView: View {
                 .foregroundStyle(.secondary)
             Text(String(localized: "onboarding_title"))
                 .font(.title2.weight(.semibold))
+            Text(String(localized: "onboarding_trial"))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
             VStack(alignment: .leading, spacing: 12) {
                 OnboardingRow(icon: "doc.on.clipboard", text: String(localized: "onboarding_paste"))
                 OnboardingRow(icon: "mic.fill", text: String(localized: "onboarding_speak"))
