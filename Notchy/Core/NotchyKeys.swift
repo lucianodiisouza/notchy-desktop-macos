@@ -63,6 +63,8 @@ enum NotchyKeys {
 
     // Onboarding (first run)
     static let onboardingCompleted = "onboardingCompleted"
+    /// User email collected at onboarding for support/identification.
+    static let userEmail = "userEmail"
 
     // Premium (validated via backend; shared in App Group)
     static let premiumActive = "premiumActive"
