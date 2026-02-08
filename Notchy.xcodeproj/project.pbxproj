@@ -650,6 +650,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Notchy/Resources/Info.plist;
+				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notchy uses the microphone to detect when you are speaking so it can scroll the teleprompter automatically and pause when you stop.";
@@ -659,7 +660,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchy;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyPrompter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -682,6 +683,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Notchy/Resources/Info.plist;
+				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notchy uses the microphone to detect when you are speaking so it can scroll the teleprompter automatically and pause when you stop.";
@@ -691,7 +693,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyDesktop;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyPrompter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -713,6 +715,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Notchy/Resources/NotchyScripts-Info.plist";
+				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -720,7 +723,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.notchy.scripts;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyScripts;
 				PRODUCT_NAME = "Notchy Scripts";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -742,6 +745,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Notchy/Resources/NotchyScripts-Info.plist";
+				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -749,7 +753,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.notchy.scripts;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyScripts;
 				PRODUCT_NAME = "Notchy Scripts";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
