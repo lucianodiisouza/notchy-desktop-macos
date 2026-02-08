@@ -52,6 +52,13 @@ struct SettingsView: View {
         .onChange(of: windowHeight) { _ in
             NotchyState.shared.windowController.refreshWindowFrame()
         }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Text(AppVersion.fullVersionLine)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+        }
     }
 
     // MARK: - Janela

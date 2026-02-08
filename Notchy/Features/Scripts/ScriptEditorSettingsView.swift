@@ -86,6 +86,12 @@ struct ScriptEditorSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            Section {
+                Text(AppVersion.fullVersionLine)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity)
+            }
         }
         .formStyle(.grouped)
         .liquidGlassBackground()
