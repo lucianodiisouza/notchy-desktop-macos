@@ -205,6 +205,7 @@
 "field_font_name" = "Font name (empty = system)";
 "font_name_help" = "Leave blank to use system font. E.g. Helvetica, Menlo.";
 "section_markdown" = "Markdown";
+"section_export" = "Export";
 "markdown_help" = "In text blocks you see bold, italic, underline and size in real time. Use the toolbar (B, I, U, size) or type **bold**, *italic*, %underline% and [14]size[/14]. The teleprompter shows plain text (formatting removed).";
 
 /* Info.plist - microphone (localized in app) */

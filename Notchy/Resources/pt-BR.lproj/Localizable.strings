@@ -205,6 +205,7 @@
 "field_font_name" = "Nome da fonte (vazio = sistema)";
 "font_name_help" = "Deixe em branco para usar a fonte do sistema. Ex.: Helvetica, Menlo.";
 "section_markdown" = "Markdown";
+"section_export" = "Exportar";
 "markdown_help" = "Nos blocos de texto você vê negrito, itálico, sublinhado e tamanho em tempo real. Use a barra (B, I, U, tamanho) ou digite **negrito**, *itálico*, %sublinhado% e [14]tamanho[/14]. O teleprompter exibe texto puro (formatação removida).";
 
 "NSMicrophoneUsageDescription" = "O Notchy usa o microfone para detectar quando você está falando e assim rolar o teleprompter automaticamente e pausar quando você parar.";

@@ -86,6 +86,12 @@ struct ScriptEditorSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            Section(String(localized: "section_export")) {
+                Button(String(localized: "export_all_scripts")) {
+                    _ = ScriptStore.shared.exportAllScriptsToFolder()
+                }
+                .help(String(localized: "export_all_scripts_help"))
+            }
             Section {
                 Text(AppVersion.fullVersionLine)
                     .font(.caption)
