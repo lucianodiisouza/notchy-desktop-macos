@@ -303,8 +303,7 @@ final class FloatingWindowController: ObservableObject {
     private func notchFrame(screen: NSScreen, height: CGFloat) -> CGRect {
         let full = screen.frame
         let visible = screen.visibleFrame
-        let menuBarHeight = full.maxY - visible.maxY
-        let notchHeight = menuBarHeight > 0 ? menuBarHeight : fallbackNotchHeight
+        let notchHeight = effectiveTopStripHeight(for: screen)
         let isCollapsed = (height <= notchHeight + 1) // collapsed = only the strip
         let useHeight = height > notchHeight ? height : notchHeight
         let y = full.maxY - useHeight
@@ -365,15 +364,21 @@ final class FloatingWindowController: ObservableObject {
     private func updateWindowFrame(animated: Bool, completion: (() -> Void)? = nil) {
         guard let window = window, let screen = targetScreen() else { return }
 
-        // Recolhido: janela acima da menu bar para receber hover no notch. Expandido: mesmo nível da menu bar.
+        // Recolhido: janela acima da menu bar para receber hover no notch.
+        // Expandido: no Sequoia (15+) a status bar pode desenhar por cima; usar nível acima da menu bar também quando expandido.
         let menuLevel = Int(CGWindowLevelForKey(.mainMenuWindow))
         let aboveMenuLevel = Int(CGWindowLevelForKey(.statusWindow)) + 1
-        window.level = NSWindow.Level(rawValue: isExpanded ? menuLevel : aboveMenuLevel)
+        let useAboveMenu: Bool
+        if #available(macOS 15.0, *) {
+            useAboveMenu = true // Sequoia+: sempre acima da status bar para não ficar embaixo
+        } else {
+            useAboveMenu = !isExpanded
+        }
+        window.level = NSWindow.Level(rawValue: useAboveMenu ? aboveMenuLevel : menuLevel)
 
         let full = screen.frame
         let visible = screen.visibleFrame
-        let menuBarHeight = full.maxY - visible.maxY
-        let notchHeight = menuBarHeight > 0 ? menuBarHeight : fallbackNotchHeight
+        let notchHeight = effectiveTopStripHeight(for: screen)
         let height = isExpanded ? customExpandedHeight() : notchHeight
         var targetFrame = notchFrame(screen: screen, height: height)
         let isDragging = temporaryFreeOrigin != nil

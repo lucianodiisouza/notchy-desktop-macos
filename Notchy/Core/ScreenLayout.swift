@@ -3,6 +3,27 @@ import AppKit
 /// Height of the menu bar strip when the Mac has no notch (fallback).
 let fallbackNotchHeight: CGFloat = 28
 
+/// Effective height of the top strip (notch + menu bar area) for positioning the prompter.
+/// On macOS Sequoia (15+) the relationship between visibleFrame and the notch can differ;
+/// this prefers safeAreaInsets when available, then visibleFrame, then a fixed fallback.
+func effectiveTopStripHeight(for screen: NSScreen) -> CGFloat {
+    let full = screen.frame
+    let visible = screen.visibleFrame
+    let fromVisible = full.maxY - visible.maxY
+
+    if #available(macOS 12.0, *) {
+        let safeTop = screen.safeAreaInsets.top
+        // When there's a notch, safeAreaInsets.top is the inset from the physical top (notch height).
+        // Use it as the strip height when it's the largest/most reliable value.
+        if safeTop > 0 {
+            // Prefer the larger of the two so we don't end up below the status bar (e.g. on Sequoia).
+            return max(safeTop, fromVisible > 0 ? fromVisible : fallbackNotchHeight)
+        }
+    }
+
+    return fromVisible > 0 ? fromVisible : fallbackNotchHeight
+}
+
 extension NSScreen {
     /// CGDirectDisplayID for this screen (from deviceDescription).
     var displayID: UInt32? {
