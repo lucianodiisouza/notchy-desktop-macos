@@ -1,5 +1,6 @@
 import AppKit
 import SwiftUI
+import Combine
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var notchWindow: NotchWindow?
@@ -9,7 +10,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var menu: NSMenu?
     private var pinToNotchItem: NSMenuItem?
     private var showOnSubmenu: NSMenu?
+    private var accountMenuItem: NSMenuItem?
     private var selectedScriptObserver: NSObjectProtocol?
+    private var premiumCancellable: AnyCancellable?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         // AppleLanguages is set in main.swift before any UI runs. Install bundle override for NSLocalizedString.
@@ -25,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Sync language with App Group here (not in main.swift) so the system permission
         // "access data from other apps" is not triggered before the app is ready.
         syncPreferredLanguageWithAppGroup()
+        PremiumService.shared.start()
         setupStatusBar()
         observeSelectedScriptChanges()
         openTeleprompter()
@@ -85,6 +89,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_scripts", comment: ""), action: #selector(openScripts), keyEquivalent: "r"))
         menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
         menu?.addItem(NSMenuItem.separator())
+        accountMenuItem = NSMenuItem(title: "", action: #selector(refreshPremiumStatus), keyEquivalent: "")
+        accountMenuItem?.toolTip = NSLocalizedString("menu_account_refresh_hint", comment: "")
+        menu?.addItem(accountMenuItem!)
+        menu?.addItem(NSMenuItem.separator())
         menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_quit", comment: ""), action: #selector(quit), keyEquivalent: "q"))
 
         for item in menu?.items ?? [] {
@@ -93,6 +101,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu?.delegate = self
         statusItem?.menu = menu
         updateMenuVisibility()
+        updatePremiumIndicator()
+        premiumCancellable = Publishers.CombineLatest(PremiumService.shared.$isPremium, PremiumService.shared.$isBanned)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updatePremiumIndicator()
+            }
+    }
+
+    /// Updates the account menu item title (Premium / Free / Suspended).
+    private func updatePremiumIndicator() {
+        let service = PremiumService.shared
+        if service.isBanned {
+            accountMenuItem?.title = NSLocalizedString("menu_account_banned", comment: "")
+        } else if service.isPremium {
+            accountMenuItem?.title = NSLocalizedString("menu_account_premium", comment: "")
+        } else {
+            accountMenuItem?.title = NSLocalizedString("menu_account_free", comment: "")
+        }
+    }
+
+    /// Called when user clicks the account menu item: fetches current premium status from backend.
+    @objc private func refreshPremiumStatus() {
+        PremiumService.shared.checkPremium()
     }
 
     func updateMenuVisibility() {
@@ -107,6 +138,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .environmentObject(state.windowController)
             .environmentObject(state.audioMonitor)
             .environmentObject(state.scrollController)
+            .environmentObject(PremiumService.shared)
         let window = NotchWindow()
         window.contentView = NSHostingView(rootView: contentView)
         state.windowController.setWindow(window)
@@ -136,16 +168,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Self.launchScriptsApp()
     }
 
-    /// Launches the Notchy Scripts app (embedded or by bundle id). Call from menu or SwiftUI commands.
+    /// Launches the Notchy Scripts app (embedded, sibling in dev, or by bundle id). Call from menu or SwiftUI commands.
     static func launchScriptsApp() {
         let scriptsAppName = "Notchy Scripts.app"
-        let scriptsURL = Bundle.main.bundleURL
+        let fileManager = FileManager.default
+
+        // 1) Embedded (release/archive): Notchy.app/Contents/Applications/Notchy Scripts.app
+        let embeddedURL = Bundle.main.bundleURL
             .appendingPathComponent("Contents/Applications")
             .appendingPathComponent(scriptsAppName)
-        if FileManager.default.fileExists(atPath: scriptsURL.path) {
-            NSWorkspace.shared.open(scriptsURL)
+        if fileManager.fileExists(atPath: embeddedURL.path) {
+            NSWorkspace.shared.open(embeddedURL)
             return
         }
+
+        // 2) Dev (Xcode): Notchy Scripts.app as sibling in Build/Products/Debug or Build/Products/Release
+        let siblingURL = Bundle.main.bundleURL
+            .deletingLastPathComponent()
+            .appendingPathComponent(scriptsAppName)
+        if fileManager.fileExists(atPath: siblingURL.path) {
+            NSWorkspace.shared.open(siblingURL)
+            return
+        }
+
+        // 3) Installed app by bundle id (e.g. /Applications)
         if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.notchy.scripts") {
             NSWorkspace.shared.open(url)
         }
