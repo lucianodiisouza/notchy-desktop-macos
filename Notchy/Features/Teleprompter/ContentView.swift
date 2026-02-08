@@ -341,6 +341,7 @@ struct ContentView: View {
 
 private struct OnboardingView: View {
     var onDismiss: () -> Void
+    @State private var userEmail = UserDefaults.standard.string(forKey: NotchyKeys.userEmail) ?? ""
 
     var body: some View {
         VStack(spacing: 24) {
@@ -354,6 +355,17 @@ private struct OnboardingView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(String(localized: "onboarding_email_label"))
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                TextField(String(localized: "onboarding_email_placeholder"), text: $userEmail)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
             VStack(alignment: .leading, spacing: 12) {
                 OnboardingRow(icon: "doc.on.clipboard", text: String(localized: "onboarding_paste"))
                 OnboardingRow(icon: "mic.fill", text: String(localized: "onboarding_speak"))
@@ -361,6 +373,9 @@ private struct OnboardingView: View {
             }
             .padding(.vertical, 8)
             Button(String(localized: "onboarding_got_it")) {
+                if !userEmail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    UserDefaults.standard.set(userEmail.trimmingCharacters(in: .whitespacesAndNewlines), forKey: NotchyKeys.userEmail)
+                }
                 onDismiss()
             }
             .buttonStyle(.borderedProminent)
