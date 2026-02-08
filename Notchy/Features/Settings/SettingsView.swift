@@ -21,6 +21,7 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
     @AppStorage(NotchyKeys.contentPadding) private var contentPadding: Double = 14
     @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover: Bool = true
+    @AppStorage(NotchyKeys.userEmail) private var userEmail: String = ""
 
     @State private var showLanguageRestartAlert = false
 
@@ -72,6 +73,10 @@ struct SettingsView: View {
     private var windowTab: some View {
         Form {
             Section(String(localized: "section_account")) {
+                TextField(String(localized: "onboarding_email_label"), text: $userEmail, prompt: Text(String(localized: "onboarding_email_placeholder")))
+                    .textContentType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
                 HStack {
                     Text(accountStatusText)
                         .fontWeight(.medium)
