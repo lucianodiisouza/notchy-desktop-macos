@@ -22,9 +22,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Sync language with App Group here (not in main.swift) so the system permission
+        // "access data from other apps" is not triggered before the app is ready.
+        syncPreferredLanguageWithAppGroup()
         setupStatusBar()
         observeSelectedScriptChanges()
         openTeleprompter()
+    }
+
+    /// Syncs preferred language with the App Group (so Notchy and Notchy Scripts stay in sync).
+    /// Call only after the app is running to avoid triggering the permission dialog at startup.
+    private func syncPreferredLanguageWithAppGroup() {
+        let suite = UserDefaults(suiteName: NotchyKeys.appGroupIdentifier)
+        if let prefFromGroup = suite?.string(forKey: NotchyKeys.preferredLanguage), !prefFromGroup.isEmpty {
+            UserDefaults.standard.set(prefFromGroup, forKey: NotchyKeys.preferredLanguage)
+            UserDefaults.standard.set([prefFromGroup, "en"], forKey: "AppleLanguages")
+            PreferredLanguageBundle.installIfNeeded()
+        }
+        let pref = UserDefaults.standard.string(forKey: NotchyKeys.preferredLanguage) ?? ""
+        suite?.set(pref, forKey: NotchyKeys.preferredLanguage)
     }
 
     private func observeSelectedScriptChanges() {
