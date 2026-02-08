@@ -64,6 +64,16 @@ enum NotchyKeys {
     // Onboarding (first run)
     static let onboardingCompleted = "onboardingCompleted"
 
+    // Premium (validated via backend; shared in App Group)
+    static let premiumActive = "premiumActive"
+    static let accountBanned = "accountBanned"
+    /// Base URL for premium check API. Debug = localhost; Release = production (replace when you deploy).
+    #if DEBUG
+    static let premiumCheckBaseURL = "http://localhost:3000"
+    #else
+    static let premiumCheckBaseURL = "https://your-app.railway.app"
+    #endif
+
     // Scripts editor (Notchy Scripts app; use App Group if shared with main app)
     static let scriptEditorFontSize = "scriptEditorFontSize"
     static let scriptEditorTheme = "scriptEditorTheme"  // 0 = system, 1 = light, 2 = dark

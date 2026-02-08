@@ -57,6 +57,12 @@
 		G1000002 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* LiquidGlassModifier.swift */; };
 		V1000001 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = V2000001 /* AppVersion.swift */; };
 		V1000002 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = V2000001 /* AppVersion.swift */; };
+		Q1000001 /* DeviceIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000001 /* DeviceIdentifier.swift */; };
+		Q1000002 /* PremiumService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000002 /* PremiumService.swift */; };
+		Q1000003 /* DeviceIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000001 /* DeviceIdentifier.swift */; };
+		Q1000004 /* PremiumService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000002 /* PremiumService.swift */; };
+		I1000001 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = I2000001 /* IOKit.framework */; };
+		I1000002 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = I2000001 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,6 +160,9 @@
 		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
 		G2000001 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
 		V2000001 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
+		Q2000001 /* DeviceIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentifier.swift; sourceTree = "<group>"; };
+		Q2000002 /* PremiumService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumService.swift; sourceTree = "<group>"; };
+		I2000001 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +170,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				I1000001 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				I1000002 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +305,8 @@
 			children = (
 				A2000004 /* AudioMonitor.swift */,
 				A2000019 /* AudioDeviceList.swift */,
+				Q2000001 /* DeviceIdentifier.swift */,
+				Q2000002 /* PremiumService.swift */,
 			);
 			path = Infrastructure;
 			sourceTree = "<group>";
@@ -461,6 +474,8 @@
 				P1000001 /* PreferredLanguageBundle.swift in Sources */,
 				G1000001 /* LiquidGlassModifier.swift in Sources */,
 				V1000001 /* AppVersion.swift in Sources */,
+				Q1000001 /* DeviceIdentifier.swift in Sources */,
+				Q1000002 /* PremiumService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +500,8 @@
 				P1000002 /* PreferredLanguageBundle.swift in Sources */,
 				G1000002 /* LiquidGlassModifier.swift in Sources */,
 				V1000002 /* AppVersion.swift in Sources */,
+				Q1000003 /* DeviceIdentifier.swift in Sources */,
+				Q1000004 /* PremiumService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
