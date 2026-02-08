@@ -160,4 +160,8 @@
 "section_markdown" = "Markdown";
 "markdown_help" = "テキストブロックで太字・斜体・下線・サイズをリアルタイム表示。ツールバー（B、I、U、サイズ）または **太字**、*斜体*、%下線%、[14]サイズ[/14] と入力。テレプロンプターはプレーンテキスト（書式なし）を表示。";
 
+/* Onboarding - email */
+"onboarding_email_label" = "サポート用メールアドレス";
+"onboarding_email_placeholder" = "you@example.com";
+
 "NSMicrophoneUsageDescription" = "Notchy はマイクで話していることを検知し、テレプロンプターを自動でスクロールし、話を止めると一時停止します。";

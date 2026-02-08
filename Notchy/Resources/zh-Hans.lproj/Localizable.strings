@@ -160,4 +160,8 @@
 "section_markdown" = "Markdown";
 "markdown_help" = "在文本块中可实时看到粗体、斜体、下划线和字号。使用工具栏 (B、I、U、字号) 或输入 **粗体**、*斜体*、%下划线% 和 [14]字号[/14]。提词器显示纯文本（格式已去除）。";
 
+/* Onboarding - email */
+"onboarding_email_label" = "您的邮箱（用于支持）";
+"onboarding_email_placeholder" = "you@example.com";
+
 "NSMicrophoneUsageDescription" = "Notchy 使用麦克风检测您何时说话，以便自动滚动提词器并在您停止时暂停。";

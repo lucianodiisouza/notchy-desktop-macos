@@ -160,4 +160,8 @@
 "section_markdown" = "Markdown";
 "markdown_help" = "Dans les blocs de texte vous voyez gras, italique, souligné et taille en temps réel. Barre d'outils (B, I, U, taille) ou **gras**, *italique*, %souligné% et [14]taille[/14]. Le téléprompteur affiche le texte seul (sans formatage).";
 
+/* Onboarding - email */
+"onboarding_email_label" = "Votre email (pour le support)";
+"onboarding_email_placeholder" = "vous@exemple.fr";
+
 "NSMicrophoneUsageDescription" = "Notchy utilise le micro pour détecter quand vous parlez afin de faire défiler le téléprompteur automatiquement et de faire une pause quand vous vous arrêtez.";

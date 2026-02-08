@@ -160,4 +160,8 @@
 "section_markdown" = "Markdown";
 "markdown_help" = "En los bloques de texto ves negrita, cursiva, subrayado y tamaño en tiempo real. Usa la barra (B, I, U, tamaño) o escribe **negrita**, *cursiva*, %subrayado% y [14]tamaño[/14]. El teleprompter muestra solo texto (sin formato).";
 
+/* Onboarding - email */
+"onboarding_email_label" = "Tu email (para soporte)";
+"onboarding_email_placeholder" = "tu@ejemplo.com";
+
 "NSMicrophoneUsageDescription" = "Notchy usa el micrófono para detectar cuándo hablas y así hacer scroll del teleprompter automáticamente y pausar cuando te detienes.";

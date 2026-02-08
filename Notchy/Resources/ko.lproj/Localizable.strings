@@ -168,5 +168,9 @@
 "section_markdown" = "Markdown";
 "markdown_help" = "In text blocks you see bold, italic, underline and size in real time. Use the toolbar (B, I, U, size) or type **bold**, *italic*, %underline% and [14]size[/14]. The teleprompter shows plain text (formatting removed).";
 
+/* Onboarding - email */
+"onboarding_email_label" = "이메일 (지원용)";
+"onboarding_email_placeholder" = "you@example.com";
+
 /* Info.plist - microphone (localized in app) */
 "NSMicrophoneUsageDescription" = "Notchy uses the microphone to detect when you are speaking so it can scroll the teleprompter automatically and pause when you stop.";

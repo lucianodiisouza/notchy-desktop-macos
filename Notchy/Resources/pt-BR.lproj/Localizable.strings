@@ -143,6 +143,8 @@
 /* Onboarding */
 "onboarding_title" = "Primeiros passos";
 "onboarding_trial" = "Você tem 3 dias de teste grátis com acesso completo. Depois, pode continuar usando o Notchy Scripts; o Teleprompter exige Premium.";
+"onboarding_email_label" = "Seu e-mail (para suporte)";
+"onboarding_email_placeholder" = "voce@exemplo.com";
 "onboarding_paste" = "Cole o roteiro com Cmd+V ou digite direto.";
 "onboarding_speak" = "Fale para o texto subir; pausa após um breve silêncio.";
 "onboarding_collapse" = "Clique na seta para recolher a barra na faixa do notch.";
