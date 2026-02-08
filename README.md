@@ -21,6 +21,10 @@ A minimal teleprompter for Mac that lives in the notch (menu bar strip). Text sc
 
 **Development:** When running from Xcode, macOS may ask for microphone access every time you open the teleprompter (the system often doesn’t persist the choice for debug builds). To avoid that, either allow Notchy in **System Settings → Privacy & Security → Microphone**, or run the built app from the Products folder instead of using Run. The app only requests microphone permission when voice-controlled scroll is enabled.
 
+When you use both **Notchy** and **Notchy Scripts**, the system may show a permission dialog like “access data from other apps” (they share data via an App Group for scripts and language). In development this can appear every time you launch one or both apps. To reduce prompts, the main app only accesses the shared container after launch (not in the first line of code). If the dialog keeps appearing, allow the apps in **System Settings → Privacy & Security** (or run the release build from the Products folder, where the system tends to persist the choice).
+
+**No paid Apple account needed.** The project uses your Xcode **Team** (any Apple ID, including free) to form a "macOS-style" App Group so the system does not show the dialog. Set **Signing & Capabilities → Team** for both targets to your Apple ID. If you don't set a Team, the app falls back to `group.com.notchy` and the prompt may appear. There is no dedicated toggle in System Settings; this setup avoids the dialog without developer.apple.com or a paid account.
+
 ## Usage
 
 1. Launch Notchy. The window appears in the notch (top strip).

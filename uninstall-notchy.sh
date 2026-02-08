@@ -23,7 +23,8 @@ echo "  Preferences limpas"
 
 echo "=== Removendo App Group (scripts e dados compartilhados) ==="
 rm -rf "$HOME/Library/Group Containers/group.com.notchy"
-echo "  Group Containers/group.com.notchy removido"
+rm -rf "$HOME/Library/Group Containers/TJ7XUV6VQ9.com.notchy"
+echo "  Group Containers (group.com.notchy e team-prefixed) removidos"
 
 echo "=== Removendo caches ==="
 rm -rf "$HOME/Library/Caches/com.notchy.app"
