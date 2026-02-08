@@ -63,11 +63,16 @@ final class PremiumService: ObservableObject {
         }
     }
 
-    /// Performs a single check; called on launch and hourly.
+    /// Performs a single check; called on launch and hourly. Sends user email when set (for support/identification).
     func checkPremium() {
         let deviceId = DeviceIdentifier.deviceId
         let baseURL = NotchyKeys.premiumCheckBaseURL
-        guard let url = URL(string: "\(baseURL)/api/check?deviceId=\(deviceId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? deviceId)") else {
+        let userEmail = (UserDefaults.standard.string(forKey: NotchyKeys.userEmail) ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        var path = "\(baseURL)/api/check?deviceId=\(deviceId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? deviceId)"
+        if !userEmail.isEmpty, let encoded = userEmail.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            path += "&email=\(encoded)"
+        }
+        guard let url = URL(string: path) else {
             return
         }
         var request = URLRequest(url: url)
