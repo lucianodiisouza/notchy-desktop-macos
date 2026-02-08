@@ -3,8 +3,8 @@ import Foundation
 /// Centralized UserDefaults keys for Notchy. Use these everywhere so we have a single place to see
 /// what is persisted — useful for future sync/backend when scripts are synced.
 enum NotchyKeys {
-    /// App Group identifier for sharing scripts and selectedScriptId between Notchy and Notchy Scripts.
-    static let appGroupIdentifier = "group.com.notchy"
+    /// App Group identifier for sharing scripts and selectedScriptId between Notchy and Notchy Scripts. macOS-style (Team ID prefix) = no "access data from other apps" prompt.
+    static let appGroupIdentifier = "TJ7XUV6VQ9.com.notchy"
     /// Distributed notification posted by Notchy Scripts when selected script changes; Notchy (main app) observes it to refresh.
     static let selectedScriptDidChangeNotification = "com.notchy.selectedScriptDidChange"
     /// Posted when preferred microphone changes so the audio monitor can restart with the new device.
