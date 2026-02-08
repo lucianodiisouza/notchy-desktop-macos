@@ -67,11 +67,11 @@ enum NotchyKeys {
     // Premium (validated via backend; shared in App Group)
     static let premiumActive = "premiumActive"
     static let accountBanned = "accountBanned"
-    /// Base URL for premium check API. Debug = localhost; Release = production (replace when you deploy).
+    /// Base URL for premium check API. Debug = localhost; Release = production (Railway).
     #if DEBUG
     static let premiumCheckBaseURL = "http://localhost:3000"
     #else
-    static let premiumCheckBaseURL = "https://your-app.railway.app"
+    static let premiumCheckBaseURL = "https://notchy-backoffice-backend-production.up.railway.app"
     #endif
 
     // Scripts editor (Notchy Scripts app; use App Group if shared with main app)
