@@ -51,6 +51,14 @@
 "menu_pin_to_notch" = "Pin prompter to notch";
 "menu_quit" = "Quit";
 "menu_bar_title" = "N";
+"menu_bar_premium" = "Premium";
+"menu_bar_free" = "Free";
+"menu_account_premium" = "Account: Premium";
+"menu_account_free" = "Account: Free";
+"menu_account_refresh_hint" = "Click to refresh status";
+"account_banned" = "This device has been suspended. Contact support.";
+"menu_account_banned" = "Account: Suspended";
+"menu_bar_banned" = "Suspended";
 "menu_pin_to_notch_help" = "Put window back on notch (useful after dragging).";
 "menu_reset_scroll" = "Reset Scroll";
 "menu_faster" = "Faster";
@@ -59,6 +67,8 @@
 "window_title_settings" = "Settings";
 
 /* Settings - Language */
+"section_account" = "Account";
+"button_refresh_status" = "Refresh status";
 "section_language" = "Language";
 "picker_language" = "App language";
 "language_system_default" = "System default";
@@ -132,6 +142,7 @@
 
 /* Onboarding */
 "onboarding_title" = "Quick start";
+"onboarding_trial" = "You have 3 days of free trial with full access. After that, you can keep using Notchy Scripts; the Teleprompter will require Premium.";
 "onboarding_paste" = "Paste your script with Cmd+V or type directly.";
 "onboarding_speak" = "Speak to scroll; it pauses after a short silence.";
 "onboarding_collapse" = "Click the arrow to collapse the bar to the notch strip.";

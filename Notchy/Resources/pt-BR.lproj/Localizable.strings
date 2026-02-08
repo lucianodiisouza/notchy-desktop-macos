@@ -51,6 +51,14 @@
 "menu_pin_to_notch" = "Fixar teleprompter no notch";
 "menu_quit" = "Sair";
 "menu_bar_title" = "N";
+"menu_bar_premium" = "Premium";
+"menu_bar_free" = "Grátis";
+"menu_account_premium" = "Conta: Premium";
+"menu_account_free" = "Conta: Grátis";
+"menu_account_refresh_hint" = "Clique para atualizar o status";
+"account_banned" = "Este dispositivo foi suspenso. Entre em contato com o suporte.";
+"menu_account_banned" = "Conta: Suspensa";
+"menu_bar_banned" = "Suspenso";
 "menu_pin_to_notch_help" = "Recoloca a janela no notch (útil depois de arrastar).";
 "menu_reset_scroll" = "Resetar scroll";
 "menu_faster" = "Mais rápido";
@@ -59,6 +67,8 @@
 "window_title_settings" = "Configurações";
 
 /* Settings - Language */
+"section_account" = "Conta";
+"button_refresh_status" = "Atualizar status";
 "section_language" = "Idioma";
 "picker_language" = "Idioma do app";
 "language_system_default" = "Padrão do sistema";
@@ -132,6 +142,7 @@
 
 /* Onboarding */
 "onboarding_title" = "Primeiros passos";
+"onboarding_trial" = "Você tem 3 dias de teste grátis com acesso completo. Depois, pode continuar usando o Notchy Scripts; o Teleprompter exige Premium.";
 "onboarding_paste" = "Cole o roteiro com Cmd+V ou digite direto.";
 "onboarding_speak" = "Fale para o texto subir; pausa após um breve silêncio.";
 "onboarding_collapse" = "Clique na seta para recolher a barra na faixa do notch.";
