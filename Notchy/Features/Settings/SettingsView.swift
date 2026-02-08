@@ -74,9 +74,11 @@ struct SettingsView: View {
         Form {
             Section(String(localized: "section_account")) {
                 TextField(String(localized: "onboarding_email_label"), text: $userEmail, prompt: Text(String(localized: "onboarding_email_placeholder")))
-                    .textContentType(.emailAddress)
+                    .modifier(EmailContentTypeWhenAvailableModifier())
+                    #if os(iOS)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    #endif
                 HStack {
                     Text(accountStatusText)
                         .fontWeight(.medium)
@@ -401,4 +403,15 @@ struct SettingsView: View {
         }
     }
 
+}
+
+/// Aplica `.textContentType(.emailAddress)` apenas quando disponível (macOS 14+), mantendo compatibilidade com deployment target 13.
+struct EmailContentTypeWhenAvailableModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 14.0, *) {
+            content.textContentType(.emailAddress)
+        } else {
+            content
+        }
+    }
 }

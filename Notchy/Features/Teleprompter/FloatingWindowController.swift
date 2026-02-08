@@ -376,8 +376,6 @@ final class FloatingWindowController: ObservableObject {
         }
         window.level = NSWindow.Level(rawValue: useAboveMenu ? aboveMenuLevel : menuLevel)
 
-        let full = screen.frame
-        let visible = screen.visibleFrame
         let notchHeight = effectiveTopStripHeight(for: screen)
         let height = isExpanded ? customExpandedHeight() : notchHeight
         var targetFrame = notchFrame(screen: screen, height: height)

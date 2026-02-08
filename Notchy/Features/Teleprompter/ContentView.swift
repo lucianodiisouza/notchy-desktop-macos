@@ -361,9 +361,11 @@ private struct OnboardingView: View {
                     .foregroundStyle(.secondary)
                 TextField(String(localized: "onboarding_email_placeholder"), text: $userEmail)
                     .textFieldStyle(.roundedBorder)
-                    .textContentType(.emailAddress)
+                    .modifier(EmailContentTypeWhenAvailableModifier())
+                    #if os(iOS)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    #endif
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             VStack(alignment: .leading, spacing: 12) {

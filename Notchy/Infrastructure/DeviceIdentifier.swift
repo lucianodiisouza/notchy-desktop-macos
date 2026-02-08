@@ -9,10 +9,15 @@ enum DeviceIdentifier {
         let service = IOServiceGetMatchingService(kIOMainPortDefault, IOServiceMatching("IOPlatformExpertDevice"))
         defer { IOObjectRelease(service) }
         guard service != 0,
-              let uuid = IORegistryEntryCreateCFProperty(service, "IOPlatformUUID" as CFString, kCFAllocatorDefault, 0) as? String else {
+              let unmanaged = IORegistryEntryCreateCFProperty(service, "IOPlatformUUID" as CFString, kCFAllocatorDefault, 0) else {
             return fallbackDeviceId
         }
-        return uuid.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value = unmanaged.takeRetainedValue()
+        guard CFGetTypeID(value) == CFStringGetTypeID() else {
+            return fallbackDeviceId
+        }
+        let uuid = (value as! CFString) as String
+        return uuid.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
 
     /// Fallback when IOKit is unavailable (e.g. sandbox); stable per app install.
