@@ -1,0 +1,57 @@
+# Build Notchy (macOS app), create DMG, and publish to GitHub Releases
+# so customers can download the DMG from the repo's Releases page.
+#
+# Triggers:
+#   - Push a tag v* (e.g. v1.0.0) → build DMG and create/update that Release
+#   - Manual "Run workflow" → build DMG and upload as workflow artifact (optional version)
+#
+# Customers: go to GitHub → Releases and download Notchy-<version>.dmg
+
+name: Build and release DMG
+
+on:
+  push:
+    tags:
+      - 'v*'   # e.g. v1.0.0, v1.0.1
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for DMG name (e.g. 1.0.0). Leave empty for "Notchy.dmg"'
+        required: false
+        type: string
+
+env:
+  CI: true
+
+jobs:
+  build-dmg:
+    runs-on: macos-14   # macOS 14 (Sonoma); use macos-latest for newest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and create DMG
+        run: |
+          if [[ "${{ github.event_name }}" == 'push' && "${{ github.ref_type }}" == 'tag' ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Building from tag: $VERSION"
+          else
+            VERSION="${{ inputs.version }}"
+            echo "Manual run; version: ${VERSION:-<none>}"
+          fi
+          ./scripts/create-dmg.sh $VERSION
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Notchy-DMG
+          path: Notchy*.dmg
+
+      - name: Create GitHub Release and upload DMG
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Notchy-*.dmg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

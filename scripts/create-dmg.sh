@@ -9,7 +9,9 @@
 set -e
 
 VERSION="${1:-}"
-PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Repo root (parent of scripts/), so the script works when run from repo root or CI
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT="Notchy.xcodeproj"
 SCHEME_MAIN="Notchy"
 APP_PROMPTER="Notchy.app"
@@ -69,12 +71,13 @@ SIZE_MB=100
 hdiutil create -srcfolder "$STAGING" -volname "$VOLUME_NAME" -fs HFS+ \
   -fsargs "-c c=64,a=16,e=16" -format UDRW -size "${SIZE_MB}m" "$DMG_RW"
 
-# Montar em pasta fixa para ajustar ícones
+# Montar em pasta fixa para ajustar ícones (e opcionalmente layout do Finder)
 hdiutil attach -readwrite -noverify -noautoopen "$DMG_RW" -mountpoint "$MOUNTPOINT" -quiet
 echo "  Volume montado em: $MOUNTPOINT"
 
-# Ajustar janela do Finder: vista de ícones e posições
-osascript <<EOF
+# Ajustar janela do Finder (skip em CI: AppleScript/Finder pode travar em runners headless)
+if [[ -z "$CI" ]]; then
+  osascript <<EOF
 tell application "Finder"
   open POSIX file "$MOUNTPOINT"
   tell front window
@@ -95,6 +98,9 @@ tell application "Finder"
   close front window
 end tell
 EOF
+else
+  echo "  (CI: pulando layout do Finder)"
+fi
 
 # Desmontar
 hdiutil detach "$MOUNTPOINT" -quiet
