@@ -4,6 +4,8 @@ A minimal teleprompter for Mac that lives in the notch. Your script scrolls when
 
 **Free and open source.** No subscriptions, no accounts, no backend. Use it forever.
 
+[![Download Notchy](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge)](https://github.com/oprimodev/notchy-desktop-macos/releases)
+
 ---
 
 ## What is Notchy?
@@ -19,9 +21,21 @@ It comes as two apps:
 
 ## Download & install
 
-1. Go to **[Releases](https://github.com/oprimodev/notchy/releases)** and download the latest **Notchy-&lt;version&gt;.dmg**.
+1. **[Download the DMG from Releases](https://github.com/oprimodev/notchy-desktop-macos/releases)** (or use the button at the top). Pick the latest release and download the `.dmg` from the assets.
 2. Open the DMG and drag **Notchy** and **Notchy Scripts** into **Applications**.
 3. Launch **Notchy** from Applications (or Spotlight).
+
+### First time: “App can’t be opened because it is from an unidentified developer”
+
+macOS may block the app the first time. Use one of these:
+
+- **Option A (recommended):** Open **System Settings → Privacy & Security**. At the bottom, click **“Open Anyway”** next to the message about Notchy (you may need to try opening the app once so the button appears).
+- **Option B (terminal):** Remove the quarantine attribute so macOS allows the app:
+  ```bash
+  xattr -cr "/Applications/Notchy.app"
+  xattr -cr "/Applications/Notchy Scripts.app"
+  ```
+  Then open Notchy as usual.
 
 **Requirements:** macOS 13.0 or later. Microphone access is requested on first use (for voice-controlled scroll).
 
