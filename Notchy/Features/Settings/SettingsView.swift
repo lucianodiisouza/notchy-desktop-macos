@@ -2,7 +2,6 @@ import SwiftUI
 import AppKit
 
 struct SettingsView: View {
-    @ObservedObject private var premiumService = PremiumService.shared
     @AppStorage(NotchyKeys.scrollSpeed) private var scrollSpeed: Double = 40
     @AppStorage(NotchyKeys.fontSize) private var fontSize: Double = 16
     @AppStorage(NotchyKeys.textColor) private var textColorHex = "FFFFFF"
@@ -21,7 +20,6 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.preferredLanguage) private var preferredLanguage: String = ""
     @AppStorage(NotchyKeys.contentPadding) private var contentPadding: Double = 14
     @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover: Bool = true
-    @AppStorage(NotchyKeys.userEmail) private var userEmail: String = ""
 
     @State private var showLanguageRestartAlert = false
 
@@ -34,11 +32,6 @@ struct SettingsView: View {
     private let minWindowWidth: Double = 340
     private let heightRange: ClosedRange<Double> = 200...600
     private let sensitivityRange: ClosedRange<Double> = 0...100
-
-    private var accountStatusText: String {
-        if premiumService.isBanned { return String(localized: "menu_bar_banned") }
-        return premiumService.isPremium ? String(localized: "menu_bar_premium") : String(localized: "menu_bar_free")
-    }
 
     var body: some View {
         TabView {
@@ -72,23 +65,6 @@ struct SettingsView: View {
 
     private var windowTab: some View {
         Form {
-            Section(String(localized: "section_account")) {
-                TextField(String(localized: "onboarding_email_label"), text: $userEmail, prompt: Text(String(localized: "onboarding_email_placeholder")))
-                    .modifier(EmailContentTypeWhenAvailableModifier())
-                    #if os(iOS)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    #endif
-                HStack {
-                    Text(accountStatusText)
-                        .fontWeight(.medium)
-                    Spacer()
-                    Button(String(localized: "button_refresh_status")) {
-                        premiumService.checkPremium()
-                    }
-                    .buttonStyle(.bordered)
-                }
-            }
             Section(String(localized: "section_language")) {
                 Picker(String(localized: "picker_language"), selection: $preferredLanguage) {
                     Text(String(localized: "language_system_default")).tag("")
@@ -403,15 +379,4 @@ struct SettingsView: View {
         }
     }
 
-}
-
-/// Aplica `.textContentType(.emailAddress)` apenas quando disponível (macOS 14+), mantendo compatibilidade com deployment target 13.
-struct EmailContentTypeWhenAvailableModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(macOS 14.0, *) {
-            content.textContentType(.emailAddress)
-        } else {
-            content
-        }
-    }
 }

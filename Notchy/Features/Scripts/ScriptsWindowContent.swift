@@ -14,7 +14,6 @@ extension FocusedValues {
 /// Root view for Notchy Scripts: sidebar (folder tree + script list) + editor.
 struct ScriptsWindowContent: View {
     @Binding var showScriptsSettings: Bool
-    @ObservedObject private var premiumService = PremiumService.shared
 
     @StateObject private var store = ScriptStore.shared
     @State private var selectedScriptId: UUID?
@@ -32,8 +31,6 @@ struct ScriptsWindowContent: View {
 
     var body: some View {
         content
-            .overlay { bannedOverlay }
-            .allowsHitTesting(!premiumService.isBanned)
     }
 
     private var content: some View {
@@ -94,23 +91,5 @@ struct ScriptsWindowContent: View {
             ScriptEditorSettingsView()
         }
         .preferredColorScheme(colorScheme)
-    }
-
-    @ViewBuilder
-    private var bannedOverlay: some View {
-        if premiumService.isBanned {
-            VStack(spacing: 8) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 32))
-                    .foregroundStyle(.red.opacity(0.9))
-                Text(String(localized: "account_banned"))
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 24)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.ultraThinMaterial)
-        }
     }
 }
