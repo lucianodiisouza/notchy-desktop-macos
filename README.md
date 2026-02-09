@@ -1,11 +1,10 @@
-# Notchy
+# Notchy [![Download Notchy](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge)](https://github.com/oprimodev/notchy-desktop-macos/releases)
 
 A minimal teleprompter for Mac that lives in the notch. Your script scrolls when you speak and pauses when you stop—no buttons, no fuss.
 
 **Free and open source.** No subscriptions, no accounts, no backend. Use it forever.
 
-[![Download Notchy](https://img.shields.io/badge/Download-DMG-blue?style=for-the-badge)](https://github.com/oprimodev/notchy-desktop-macos/releases)
-
+ [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/oprimodev)
 ---
 
 ## What is Notchy?
