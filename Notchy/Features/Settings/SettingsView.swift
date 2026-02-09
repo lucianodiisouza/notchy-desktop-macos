@@ -13,6 +13,7 @@ struct SettingsView: View {
     @AppStorage(NotchyKeys.buttonOpacity) private var buttonOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
     @AppStorage(NotchyKeys.notchBackgroundColorHex) private var notchBackgroundColorHex = "000000"
+    @AppStorage(NotchyKeys.collapsedBarLabel) private var collapsedBarLabel = ""
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled: Bool = true
     @AppStorage(NotchyKeys.micSensitivity) private var micSensitivity: Double = 50
     @AppStorage(NotchyKeys.preferredMicrophoneUID) private var preferredMicrophoneUID: String = ""
@@ -156,6 +157,16 @@ struct SettingsView: View {
                     set: { notchBackgroundColorHex = hexFromColor($0) }
                 ))
                 Text(String(localized: "notch_background_help"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                TextField(String(localized: "label_collapsed_bar"), text: $collapsedBarLabel, prompt: Text("Notchy"))
+                    .textFieldStyle(.roundedBorder)
+                    .onChange(of: collapsedBarLabel) { newValue in
+                        if newValue.count > 20 {
+                            collapsedBarLabel = String(newValue.prefix(20))
+                        }
+                    }
+                Text(String(localized: "collapsed_bar_help"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

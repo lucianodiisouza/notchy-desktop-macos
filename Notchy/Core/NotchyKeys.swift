@@ -40,6 +40,8 @@ enum NotchyKeys {
     static let buttonOpacity = "buttonOpacity"
     /// Cor de fundo da barra quando recolhida na faixa do notch (hex); útil para combinar com o wallpaper no screenshot.
     static let notchBackgroundColorHex = "notchBackgroundColorHex"
+    /// Texto exibido na barra quando recolhida (ex.: nome do usuário). Vazio = "Notchy ▼"; máx. 20 caracteres.
+    static let collapsedBarLabel = "collapsedBarLabel"
 
     // Voice & behavior
     static let voiceControlEnabled = "voiceControlEnabled"

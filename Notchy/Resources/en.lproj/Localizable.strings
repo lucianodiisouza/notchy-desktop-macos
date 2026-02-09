@@ -108,6 +108,8 @@
 "window_opacity_help" = "Notchy window transparency (0–100%).";
 "picker_notch_background" = "Notch bar background (collapsed)";
 "notch_background_help" = "Background color of the bar when collapsed in the notch strip. Use to match your wallpaper for screenshots.";
+"label_collapsed_bar" = "Label when collapsed";
+"collapsed_bar_help" = "Text shown in the bar when Notchy is collapsed (e.g. your name). Up to 20 characters. Leave empty for \"Notchy\".";
 "picker_button_color" = "Button color";
 "button_color_help" = "Bar icon color (mic, play, collapse, drag).";
 "label_button_opacity" = "Button opacity";

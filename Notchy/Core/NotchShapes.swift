@@ -1,9 +1,9 @@
 import SwiftUI
 
 /// Bottom edge is always rounded (docked into the top of the screen).
-/// When collapsed, top corners are also rounded and an optional cutout avoids covering the camera notch.
+/// When collapsed, top edge is flat (no radius); only the bottom corners are rounded.
 struct NotchBarShape: Shape {
-    /// When true (collapsed), top-left and top-right are rounded so the strip doesn't exceed the notch cutout.
+    /// When true (collapsed), top edge is straight; only bottom corners use radius.
     var roundTopCorners: Bool = false
     /// When set (collapsed + notch), a rounded rect is cut out at the top center so the bar doesn't cover the camera.
     var notchCutoutWidth: CGFloat?
@@ -12,39 +12,37 @@ struct NotchBarShape: Shape {
     private static let maxCornerRadius: CGFloat = 10
     private static let minCornerRadius: CGFloat = 4
     private static let collapsedBottomCornerRadius: CGFloat = 8
+    /// On non-notch displays (no cutout), collapsed bar uses this radius so it stays rounded-rectangle, not pill-shaped.
+    private static let collapsedNoNotchCornerRadius: CGFloat = 10
     /// Raio mínimo dos cantos inferiores quando recolhido, para não ficarem “quadrados” na faixa do notch.
     func path(in rect: CGRect) -> Path {
+        let hasNotchCutout = (notchCutoutWidth ?? 0) > 0 && (notchCutoutHeight ?? 0) > 0
         var r = effectiveCornerRadius(for: rect)
         if roundTopCorners {
-            let maxRByHeight = max(1, rect.height / 2 - 1)
-            r = min(maxRByHeight, rect.width / 2 - 1)
-            r = max(r, min(Self.collapsedBottomCornerRadius, rect.height - 1, rect.width / 2 - 1))
+            if hasNotchCutout {
+                let maxRByHeight = max(1, rect.height / 2 - 1)
+                r = min(maxRByHeight, rect.width / 2 - 1)
+                r = max(r, min(Self.collapsedBottomCornerRadius, rect.height - 1, rect.width / 2 - 1))
+            } else {
+                // No notch: keep rounded-rectangle corners (squared with rounded corners), not pill-shaped.
+                r = min(r, Self.collapsedNoNotchCornerRadius)
+                r = min(r, rect.width / 2 - 1, rect.height - 1)
+            }
         }
         var path = Path()
         if roundTopCorners {
-            let rTop = min(Self.maxCornerRadius, rect.width / 2 - 1, rect.height / 2 - 1)
+            // Recolhido: topo reto (sem radius), só os cantos de baixo arredondados.
             if let cw = notchCutoutWidth, let ch = notchCutoutHeight, cw > 0, ch > 0 {
-                // Um único path em forma de moldura: contorno da barra com o recorte do notch integrado (sem winding).
-                path = pathCollapsedBarWithNotchCutout(rect: rect, r: r, rTop: rTop, cutoutWidth: cw, cutoutHeight: ch)
+                path = pathCollapsedBarWithNotchCutout(rect: rect, r: r, cutoutWidth: cw, cutoutHeight: ch)
             } else {
-                // Início: topo esquerdo (após o raio do canto superior-esquerdo)
-                path.move(to: CGPoint(x: rTop, y: 0))
-                // Borda superior (até o canto superior-direito)
-                path.addLine(to: CGPoint(x: rect.maxX - rTop, y: 0))
-                // Canto superior-direito
-                path.addArc(center: CGPoint(x: rect.maxX - rTop, y: rTop), radius: rTop, startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 0), clockwise: false)
-                // Borda direita (até o canto inferior-direito)
+                // Topo reto, base com cantos arredondados
+                path.move(to: CGPoint(x: 0, y: 0))
+                path.addLine(to: CGPoint(x: rect.maxX, y: 0))
                 path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - r))
-                // Canto inferior-direito
                 path.addArc(center: CGPoint(x: rect.maxX - r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
-                // Borda inferior (até o canto inferior-esquerdo)
                 path.addLine(to: CGPoint(x: r, y: rect.maxY))
-                // Canto inferior-esquerdo
                 path.addArc(center: CGPoint(x: r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
-                // Borda esquerda (até o canto superior-esquerdo)
-                path.addLine(to: CGPoint(x: 0, y: rTop))
-                // Canto superior-esquerdo
-                path.addArc(center: CGPoint(x: rTop, y: rTop), radius: rTop, startAngle: Angle(degrees: 180), endAngle: Angle(degrees: 270), clockwise: false)
+                path.addLine(to: CGPoint(x: 0, y: 0))
                 path.closeSubpath()
             }
         } else {
@@ -59,19 +57,17 @@ struct NotchBarShape: Shape {
         return path
     }
 
-    /// Barra recolhida com contorno fechado suave (rounded rect, sem recorte do notch para evitar glitches).
-    private func pathCollapsedBarWithNotchCutout(rect: CGRect, r: CGFloat, rTop: CGFloat, cutoutWidth cw: CGFloat, cutoutHeight ch: CGFloat) -> Path {
+    /// Barra recolhida com contorno fechado (topo reto, base com cantos arredondados).
+    private func pathCollapsedBarWithNotchCutout(rect: CGRect, r: CGFloat, cutoutWidth cw: CGFloat, cutoutHeight ch: CGFloat) -> Path {
         var path = Path()
-        // Mesmo path da barra recolhida sem cutout: contorno fechado suave (topo e base arredondados).
-        path.move(to: CGPoint(x: rTop, y: 0))
-        path.addLine(to: CGPoint(x: rect.maxX - rTop, y: 0))
-        path.addArc(center: CGPoint(x: rect.maxX - rTop, y: rTop), radius: rTop, startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 0), clockwise: false)
+        // Topo reto, só a base com radius
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: rect.maxX, y: 0))
         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - r))
         path.addArc(center: CGPoint(x: rect.maxX - r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 0), endAngle: Angle(degrees: 90), clockwise: false)
         path.addLine(to: CGPoint(x: r, y: rect.maxY))
         path.addArc(center: CGPoint(x: r, y: rect.maxY - r), radius: r, startAngle: Angle(degrees: 90), endAngle: Angle(degrees: 180), clockwise: false)
-        path.addLine(to: CGPoint(x: 0, y: rTop))
-        path.addArc(center: CGPoint(x: rTop, y: rTop), radius: rTop, startAngle: Angle(degrees: 180), endAngle: Angle(degrees: 270), clockwise: false)
+        path.addLine(to: CGPoint(x: 0, y: 0))
         path.closeSubpath()
         return path
     }

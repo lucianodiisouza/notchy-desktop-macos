@@ -38,6 +38,7 @@ struct ContentView: View {
     @AppStorage(NotchyKeys.buttonOpacity) private var buttonOpacity: Double = 1
     @AppStorage(NotchyKeys.buttonColorHex) private var buttonColorHex = "FFFFFF"
     @AppStorage(NotchyKeys.notchBackgroundColorHex) private var notchBackgroundColorHex = "000000"
+    @AppStorage(NotchyKeys.collapsedBarLabel) private var collapsedBarLabel = ""
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled = true
     @AppStorage(NotchyKeys.autoScrollPlaying) private var autoScrollPlaying = false
     @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover = true
@@ -53,6 +54,13 @@ struct ContentView: View {
     @State private var frozenBarHeight: CGFloat?
     @State private var isHoveringOverText = false
     @State private var showOnboarding = false
+
+    /// Texto na barra recolhida: customizado em Settings ou "Notchy ▼".
+    private var collapsedBarDisplayText: String {
+        let custom = collapsedBarLabel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if custom.isEmpty { return String(localized: "notchy_collapsed") }
+        return custom + " ▼"
+    }
     @State private var keyMonitorToken: Any?
 
     /// Opacidade mínima para o fundo garante que a janela continue recebendo cliques quando o usuário escolhe 0%.
@@ -124,9 +132,9 @@ struct ContentView: View {
             }
             .animation(.easeInOut(duration: 0.15), value: windowController.isExpanded)
 
-            // Recolhido: indicador mínimo para saber onde está o app (hover para expandir)
+            // Recolhido: indicador mínimo (texto customizável em Settings; hover para expandir)
             if !windowController.isExpanded {
-                Text(String(localized: "notchy_collapsed"))
+                Text(collapsedBarDisplayText)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(buttonColorFromHex(buttonColorHex).opacity(0.7 * buttonOpacity))
             }
@@ -276,10 +284,13 @@ struct ContentView: View {
         .overlay(alignment: .top) {
             // Qualquer ponto da faixa do notch (que não seja botão/área de texto) serve para arrastar a janela.
             if windowController.isExpanded {
+                // Only drag/drop and expand on enter here. Do not set onMouseExit: collapse must happen
+                // only when the mouse leaves the entire window (handled by WindowAccessor), not when
+                // moving from the strip to buttons/content.
                 DragHandleRepresentable(
                     windowController: windowController,
                     onMouseEnter: { windowController.setExpanded(true) },
-                    onMouseExit: { windowController.setExpanded(false) }
+                    onMouseExit: nil
                 )
                 .frame(height: notchTopPadding)
                 .frame(maxWidth: .infinity)

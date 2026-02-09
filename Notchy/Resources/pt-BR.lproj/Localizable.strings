@@ -108,6 +108,8 @@
 "window_opacity_help" = "Transparência da janela do Notchy (0–100%).";
 "picker_notch_background" = "Fundo da barra no notch (recolhida)";
 "notch_background_help" = "Cor de fundo da barra quando recolhida na faixa do notch. Use para combinar com o wallpaper no screenshot.";
+"label_collapsed_bar" = "Texto quando recolhido";
+"collapsed_bar_help" = "Texto exibido na barra quando o Notchy está recolhido (ex.: seu nome). Até 20 caracteres. Deixe em branco para \"Notchy\".";
 "picker_button_color" = "Cor dos botões";
 "button_color_help" = "Cor dos ícones da barra (mic, play, recolher, arrastar).";
 "label_button_opacity" = "Opacidade dos ícones";
