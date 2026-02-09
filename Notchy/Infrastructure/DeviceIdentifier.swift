@@ -2,7 +2,6 @@ import Foundation
 import IOKit
 
 /// Provides a stable hardware identifier for this Mac (IOPlatformUUID).
-/// Used to validate premium status with the backend.
 enum DeviceIdentifier {
     /// Returns the platform UUID string, or a fallback if unavailable.
     static var deviceId: String {
