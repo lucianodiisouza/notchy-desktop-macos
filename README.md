@@ -1,6 +1,8 @@
 # Notchy
 
-A minimal teleprompter for Mac that lives in the notch (menu bar strip). Text scrolls when you speak and pauses when you stop. On Macs without a notch, it uses a thin strip at the top.
+**Free and open source.** A minimal teleprompter for Mac that lives in the notch (menu bar strip). Text scrolls when you speak and pauses when you stop. On Macs without a notch, it uses a thin strip at the top.
+
+No subscriptions, no accounts, no backend—Notchy is free to use, forever.
 
 ## Features
 
@@ -37,6 +39,34 @@ When you use both **Notchy** and **Notchy Scripts**, the system may show a permi
 - **Cmd+V** — Paste
 - **Shift+Up / Shift+Down** — Decrease / increase scroll speed
 - **Cmd+0** — Reset scroll to top
+
+## Contributing
+
+Contributions are welcome. To contribute:
+
+1. **Fork** the repository and clone it locally.
+2. **Create a branch** for your change (e.g. `fix/scroll-speed` or `feature/new-shortcut`).
+3. **Make your changes** and ensure the project builds (Xcode, Notchy + Notchy Scripts schemes).
+4. **Open a pull request** with a clear description of what you changed and why.
+
+We’re happy to consider bug fixes, improvements to docs or localization, and small feature ideas. For larger features, open an issue first to discuss.
+
+## Opening issues
+
+Use [GitHub Issues](https://github.com/oprimodev/notchy/issues) to:
+
+- **Report bugs** — Include macOS version, steps to reproduce, and what you expected.
+- **Suggest features or improvements** — Describe the use case and why it would help.
+
+Please search existing issues first to avoid duplicates. The more detail you provide, the easier it is to help.
+
+## Code of conduct
+
+This project expects respectful, constructive behavior. Be kind to others; no harassment, trolling, or spam. Maintainers may remove or lock content that violates this.
+
+## License
+
+This project is open source. See the [LICENSE](LICENSE) file in the repository for the exact terms.
 
 ## Technical notes
 
