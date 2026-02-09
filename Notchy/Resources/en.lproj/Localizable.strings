@@ -142,7 +142,7 @@
 
 /* Onboarding */
 "onboarding_title" = "Quick start";
-"onboarding_trial" = "You have 3 days of free trial with full access. After that, you can keep using Notchy Scripts; the Teleprompter will require Premium.";
+"onboarding_subtitle" = "Notchy is free. Here’s how to get started.";
 "onboarding_email_label" = "Your email (for support)";
 "onboarding_email_placeholder" = "you@example.com";
 "onboarding_paste" = "Paste your script with Cmd+V or type directly.";
