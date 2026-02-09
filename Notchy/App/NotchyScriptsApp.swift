@@ -17,7 +17,6 @@ struct NotchyScriptsApp: App {
             UserDefaults.standard.removeObject(forKey: "AppleLanguages")
         }
         PreferredLanguageBundle.installIfNeeded()
-        PremiumService.shared.start()
     }
 
     var body: some Scene {
