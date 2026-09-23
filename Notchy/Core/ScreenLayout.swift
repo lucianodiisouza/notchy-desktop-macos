@@ -31,31 +31,26 @@ extension NSScreen {
     }
 }
 
-/// List of (displayID, displayName) for all screens, for picker/submenu. Option 0 = main; then one per screen.
+/// The screen with the menu bar. `NSScreen.main` is the one with the key window instead, which is often the prompter.
+var menuBarScreen: NSScreen? { NSScreen.screens.first }
+
+/// List of (displayID, displayName) for all screens, for picker/submenu. Option 0 = the menu bar screen; then one per screen.
 func screensForSelection() -> [(id: Int, name: String)] {
-    var list: [(id: Int, name: String)] = [(0, "Principal (tela do menu)")]
-    let screens = NSScreen.screens
-    let main = NSScreen.main
-    for screen in screens {
+    var list: [(id: Int, name: String)] = [(0, NSLocalizedString("display_menu_bar_screen", comment: ""))]
+    let primary = menuBarScreen
+    for screen in NSScreen.screens {
         guard let did = screen.displayID else { continue }
         let id = Int(did)
-        let name: String
-        if #available(macOS 10.15, *) {
-            name = screen.localizedName
-        } else {
-            name = "Display \(id)"
-        }
-        let isMain = screen === main
-        list.append((id: id, name: isMain ? "\(name) (principal)" : name))
+        let name = screen.localizedName
+        list.append((id: id, name: screen === primary ? String(format: NSLocalizedString("display_primary_format", comment: ""), name) : name))
     }
     return list
 }
 
-/// Resolve NSScreen from stored preferred display ID (0 = main).
+/// Resolve NSScreen from stored preferred display ID (0 = the menu bar screen).
 func screenForPreferredDisplayID(_ preferredID: Int) -> NSScreen? {
-    if preferredID == 0 { return NSScreen.main }
-    let screens = NSScreen.screens
-    return screens.first { Int($0.displayID ?? 0) == preferredID } ?? NSScreen.main
+    if preferredID == 0 { return menuBarScreen }
+    return NSScreen.screens.first { Int($0.displayID ?? 0) == preferredID } ?? menuBarScreen
 }
 
 /// Screen that contains the window (by center point). Used to detect current monitor when docking or after drag.

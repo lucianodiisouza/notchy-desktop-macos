@@ -33,36 +33,9 @@ enum AudioDeviceList {
         return result.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
-    /// Resolve stored UID to AudioDeviceID for setting on the input unit or as system default.
+    /// Resolve stored UID to the AudioDeviceID set on the engine's input unit.
     static func deviceID(for uid: String) -> AudioDeviceID? {
         deviceIDByUID(uid)
-    }
-
-    /// Current system default input device ID (for saving/restoring when we override).
-    static func currentDefaultInputDeviceID() -> AudioDeviceID? {
-        var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwarePropertyDefaultInputDevice,
-            mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        var deviceID: AudioDeviceID = 0
-        var size = UInt32(MemoryLayout<AudioDeviceID>.size)
-        let err = AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &deviceID)
-        guard err == noErr else { return nil }
-        return deviceID
-    }
-
-    /// Set system default input device. Call restoreDefaultInputDevice() when done (e.g. on app quit).
-    static func setDefaultInputDevice(_ deviceID: AudioDeviceID) -> Bool {
-        var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwarePropertyDefaultInputDevice,
-            mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        var id = deviceID
-        let size = UInt32(MemoryLayout<AudioDeviceID>.size)
-        let err = AudioObjectSetPropertyData(AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, size, &id)
-        return err == noErr
     }
 
     private static func deviceIDByUID(_ uid: String) -> AudioDeviceID? {

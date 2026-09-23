@@ -19,11 +19,11 @@ private struct ControlBarHeightKey: PreferenceKey {
 
 struct ContentView: View {
     @EnvironmentObject var windowController: FloatingWindowController
-    @EnvironmentObject var audioMonitor: AudioMonitor
     @EnvironmentObject var scrollController: ScrollController
+    @EnvironmentObject var speechFollower: SpeechFollower
     @ObservedObject private var scriptStore = ScriptStore.shared
 
-    /// Teleprompter mostra texto puro (body). Edições no prompter atualizam o script como texto puro e limpam RTF.
+    /// The prompter shows the script as plain text. Typing here saves plain text and drops the editor's formatting.
     private var prompterText: Binding<String> {
         Binding(
             get: { scriptStore.currentScriptBody },
@@ -40,6 +40,8 @@ struct ContentView: View {
     @AppStorage(NotchyKeys.notchBackgroundColorHex) private var notchBackgroundColorHex = "000000"
     @AppStorage(NotchyKeys.collapsedBarLabel) private var collapsedBarLabel = ""
     @AppStorage(NotchyKeys.voiceControlEnabled) private var voiceControlEnabled = true
+    @AppStorage(NotchyKeys.voiceMode) private var voiceModeRaw = VoiceMode.level.rawValue
+    @AppStorage(NotchyKeys.highlightSpokenText) private var highlightSpokenText = true
     @AppStorage(NotchyKeys.autoScrollPlaying) private var autoScrollPlaying = false
     @AppStorage(NotchyKeys.pauseOnHover) private var pauseOnHover = true
     /// 0 = normal, 1 = horizontal, 2 = vertical, 3 = horizontal+vertical (para teleprompter no reflexo do iPad)
@@ -52,8 +54,31 @@ struct ContentView: View {
     /// Congelados no início do resize para evitar a barra alternar 36↔76 e a área do prompter "pular".
     @State private var frozenBarWidth: CGFloat?
     @State private var frozenBarHeight: CGFloat?
-    @State private var isHoveringOverText = false
+    /// A reference, not @State, so the scroll timer reads the live value from its closure.
+    @State private var hoverState = HoverState()
     @State private var showOnboarding = false
+
+    private var isFollowingWords: Bool {
+        voiceControlEnabled && voiceModeRaw == VoiceMode.follow.rawValue
+    }
+
+    private var listeningIcon: String {
+        guard voiceControlEnabled else { return "mic.slash.fill" }
+        return isFollowingWords ? "waveform" : "mic.fill"
+    }
+
+    private var listeningHelp: String {
+        guard voiceControlEnabled else { return String(localized: "voice_enable") }
+        switch speechFollower.status {
+        case .denied where isFollowingWords: return String(localized: "follow_status_denied")
+        case .unsupportedLanguage(let name) where isFollowingWords:
+            return String(format: String(localized: "follow_status_unsupported"), name)
+        case .downloadingLanguage(let name) where isFollowingWords:
+            return String(format: String(localized: "follow_status_downloading"), name)
+        default:
+            return isFollowingWords ? String(localized: "follow_listening_help") : String(localized: "voice_disable")
+        }
+    }
 
     /// Texto na barra recolhida: customizado em Settings ou "Notchy ▼".
     private var collapsedBarDisplayText: String {
@@ -145,26 +170,28 @@ struct ContentView: View {
                     Color.clear.frame(height: notchTopPadding)
                     TeleprompterTextView(
                         text: prompterText,
-                        scrollOffset: Binding(
-                            get: { scrollController.scrollOffset },
-                            set: { scrollController.scrollOffset = $0 }
-                        ),
+                        scrollController: scrollController,
+                        speechFollower: speechFollower,
+                        scrollOffset: scrollController.offsetValue,
                         fontSize: fontSize,
                         textColor: colorFromHex(textColorHex),
                         textOpacity: textOpacity,
-                        alignmentMode: textAlignment
+                        alignmentMode: textAlignment,
+                        showsReadingPosition: isFollowingWords && highlightSpokenText
                     )
                     .scaleEffect(x: mirrorScaleX, y: mirrorScaleY)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(CGFloat(contentPadding))
                     .contentShape(Rectangle())
-                    .onHover { isHoveringOverText = $0 }
+                    .onHover { hoverState.isHovering = $0 }
                     // Barra de controles: fundo arrastável; botões ou menu quando estreito
                     ControlBarView(
                             barWidth: effectiveBarWidth,
                             compactThreshold: controlBarCompactThreshold,
                             extraCompactThreshold: controlBarExtraCompactThreshold,
                             voiceControlEnabled: $voiceControlEnabled,
+                            listeningIcon: listeningIcon,
+                            listeningHelp: listeningHelp,
                             autoScrollPlaying: $autoScrollPlaying,
                             mirrorMode: $mirrorMode,
                             textAlignment: $textAlignment,
@@ -188,7 +215,7 @@ struct ContentView: View {
                     })
                     .onPreferenceChange(ControlBarWidthKey.self) { barWidth = $0 }
                     .onPreferenceChange(ControlBarHeightKey.self) { controlBarHeight = $0 }
-                    .onChange(of: windowController.isWindowResizing) { resizing in
+                    .onChange(of: windowController.isWindowResizing) { _, resizing in
                         if resizing {
                             frozenBarWidth = barWidth
                             frozenBarHeight = controlBarHeight
@@ -214,71 +241,44 @@ struct ContentView: View {
         .onAppear {
             windowController.setHasPrompterText(!scriptStore.currentScriptBody.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             DispatchQueue.main.async {
-                scrollController.isSpeakingBinding = Binding(
-                    get: {
-                        let voiceOn = (UserDefaults.standard.object(forKey: NotchyKeys.voiceControlEnabled) as? Bool) ?? true
-                        return voiceOn && audioMonitor.isSpeaking
-                    },
-                    set: { _ in }
-                )
-                scrollController.autoScrollPlayingBinding = Binding(
-                    get: { UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying) },
-                    set: { UserDefaults.standard.set($0, forKey: NotchyKeys.autoScrollPlaying) }
-                )
-                scrollController.pauseWhenHoveringBinding = Binding(
-                    get: { pauseOnHover && isHoveringOverText },
-                    set: { _ in }
-                )
+                let hover = hoverState
+                scrollController.isPaused = {
+                    let pauseOnHover = UserDefaults.standard.object(forKey: NotchyKeys.pauseOnHover) as? Bool ?? true
+                    return pauseOnHover && hover.isHovering
+                }
                 if !UserDefaults.standard.bool(forKey: NotchyKeys.onboardingCompleted) {
                     showOnboarding = true
                 }
-                // Atalhos de teclado (Space = play/pause, ↑/↓ = passo) quando a janela do teleprompter é a key window.
+                // Space = play/pause, ↑/↓ = step, while the prompter window is key and you are not typing in the text.
                 let ourWindow = windowController.window
-                keyMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak scrollController] event in
-                    guard event.window === ourWindow else { return event }
+                let scrollController = self.scrollController
+                keyMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                    guard event.window === ourWindow, !(ourWindow?.firstResponder is NSTextView) else { return event }
                     switch event.keyCode {
                     case 49: // Space
                         let current = UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying)
                         UserDefaults.standard.set(!current, forKey: NotchyKeys.autoScrollPlaying)
                         return nil
                     case 126: // Up
-                        if let sc = scrollController {
-                            sc.scrollOffset = max(0, sc.scrollOffset - ScrollController.keyboardScrollStep)
-                        }
+                        scrollController.scrollOffset = max(0, scrollController.scrollOffset - ScrollController.keyboardScrollStep)
                         return nil
                     case 125: // Down
-                        scrollController?.scrollOffset += ScrollController.keyboardScrollStep
+                        scrollController.scrollOffset += ScrollController.keyboardScrollStep
                         return nil
                     default:
                         return event
                     }
                 }
-                // Só pede permissão de microfone quando o controle por voz está ligado (evita prompt a cada abertura).
-                if voiceControlEnabled {
-                    audioMonitor.start()
-                }
+                NotchyState.shared.prompterDidAppear()
             }
         }
-        .onChange(of: voiceControlEnabled) { enabled in
-            if enabled {
-                audioMonitor.start()
-            } else {
-                audioMonitor.stop()
-            }
-        }
-        .onChange(of: scriptStore.currentScriptBody) { newValue in
+        .onChange(of: scriptStore.currentScriptBody) { _, newValue in
             windowController.setHasPrompterText(!newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
         .onReceive(NotificationCenter.default.publisher(for: .teleprompterDidPaste)) { notification in
             guard let pasted = notification.userInfo?["pastedText"] as? String, !pasted.isEmpty else { return }
-            _ = scriptStore.createScript(fromPaste: pasted)
-            scrollController.resetScroll()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name(NotchyKeys.preferredMicrophoneDidChangeNotification))) { _ in
-            audioMonitor.stop()
-            if voiceControlEnabled {
-                audioMonitor.start()
-            }
+            scriptStore.createScript(fromPaste: pasted)
+            NotchyState.shared.resetReading()
         }
         .overlay(WindowAccessor(windowController: windowController))
         .overlay(alignment: .top) {
@@ -307,10 +307,8 @@ struct ContentView: View {
                 keyMonitorToken = nil
             }
             DispatchQueue.main.async {
-                audioMonitor.stop()
-                scrollController.isSpeakingBinding = nil
-                scrollController.autoScrollPlayingBinding = nil
-                scrollController.pauseWhenHoveringBinding = nil
+                scrollController.isPaused = { false }
+                NotchyState.shared.prompterDidDisappear()
             }
         }
         .sheet(isPresented: $showOnboarding) {
@@ -320,6 +318,11 @@ struct ContentView: View {
             }
         }
     }
+}
+
+/// Whether the pointer is over the text, shared with the scroll timer.
+private final class HoverState {
+    var isHovering = false
 }
 
 // MARK: - Onboarding

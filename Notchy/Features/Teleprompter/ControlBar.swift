@@ -231,6 +231,8 @@ struct ControlBarView: View {
     let compactThreshold: CGFloat
     let extraCompactThreshold: CGFloat
     @Binding var voiceControlEnabled: Bool
+    let listeningIcon: String
+    let listeningHelp: String
     @Binding var autoScrollPlaying: Bool
     @Binding var mirrorMode: Int
     @Binding var textAlignment: Int
@@ -264,10 +266,10 @@ struct ControlBarView: View {
     private var fullBar: some View {
         HStack(alignment: .center, spacing: 12) {
             DragWindowButton(windowController: windowController)
-            ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
+            ControlBarButton(icon: listeningIcon, active: voiceControlEnabled) {
                 voiceControlEnabled.toggle()
             }
-            .help(voiceControlEnabled ? String(localized: "voice_disable") : String(localized: "voice_enable"))
+            .help(listeningHelp)
             ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
                 autoScrollPlaying.toggle()
             }
@@ -281,8 +283,12 @@ struct ControlBarView: View {
             }
             .help(alignmentHelp)
             Spacer(minLength: 0)
+            ControlBarButton(icon: "doc.text", active: true) {
+                AppDelegate.shared?.showScriptsWindow()
+            }
+            .help(String(localized: "menu_scripts"))
             ControlBarButton(icon: "gearshape", active: true) {
-                NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil)
+                AppDelegate.shared?.showSettingsWindow()
             }
             .help(String(localized: "open_settings"))
             ControlBarButton(icon: "chevron.up", active: true) {
@@ -296,10 +302,10 @@ struct ControlBarView: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .center, spacing: 10) {
                 DragWindowButton(windowController: windowController)
-                ControlBarButton(icon: voiceControlEnabled ? "mic.fill" : "mic.slash.fill", active: voiceControlEnabled) {
+                ControlBarButton(icon: listeningIcon, active: voiceControlEnabled) {
                     voiceControlEnabled.toggle()
                 }
-                .help(voiceControlEnabled ? String(localized: "voice_disable") : String(localized: "voice_enable"))
+                .help(listeningHelp)
                 ControlBarButton(icon: autoScrollPlaying ? "pause.fill" : "play.fill", active: autoScrollPlaying) {
                     autoScrollPlaying.toggle()
                 }
@@ -315,8 +321,12 @@ struct ControlBarView: View {
             }
             HStack(alignment: .center, spacing: 10) {
                 Spacer(minLength: 0)
+                ControlBarButton(icon: "doc.text", active: true) {
+                    AppDelegate.shared?.showScriptsWindow()
+                }
+                .help(String(localized: "menu_scripts"))
                 ControlBarButton(icon: "gearshape", active: true) {
-                    NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil)
+                    AppDelegate.shared?.showSettingsWindow()
                 }
                 .help(String(localized: "open_settings"))
                 ControlBarButton(icon: "chevron.up", active: true) {
@@ -332,7 +342,7 @@ struct ControlBarView: View {
             DragWindowButton(windowController: windowController)
             Menu {
                 Button(action: { voiceControlEnabled.toggle() }) {
-                    Label(voiceControlEnabled ? String(localized: "voice_off") : String(localized: "voice_on"), systemImage: voiceControlEnabled ? "mic.fill" : "mic.slash.fill")
+                    Label(voiceControlEnabled ? String(localized: "voice_off") : String(localized: "voice_on"), systemImage: listeningIcon)
                 }
                 Button(action: { autoScrollPlaying.toggle() }) {
                     Label(autoScrollPlaying ? String(localized: "scroll_pause_short") : String(localized: "scroll_auto_short"), systemImage: autoScrollPlaying ? "pause.fill" : "play.fill")
@@ -351,7 +361,10 @@ struct ControlBarView: View {
                     Button(String(localized: "align_justified")) { textAlignment = 3 }
                 }
                 Divider()
-                Button(action: { NSApplication.shared.sendAction(#selector(AppDelegate.openSettings), to: NSApplication.shared.delegate, from: nil) }) {
+                Button(action: { AppDelegate.shared?.showScriptsWindow() }) {
+                    Label(String(localized: "menu_scripts"), systemImage: "doc.text")
+                }
+                Button(action: { AppDelegate.shared?.showSettingsWindow() }) {
                     Label(String(localized: "settings"), systemImage: "gearshape")
                 }
                 Button(action: { windowController.collapseNow() }) {

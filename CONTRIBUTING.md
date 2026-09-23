@@ -7,50 +7,93 @@ Guide for anyone building the app or contributing code.
 ## Build and run
 
 1. Open **Notchy.xcodeproj** in Xcode.
-2. Select the **Notchy** scheme and run (**Cmd+R**).
+2. Select the **Notchy** scheme and run (⌘R).
 
-Build and run both **Notchy** and **Notchy Scripts** schemes when working on shared behavior (scripts, App Group).
+Or `./scripts/run.sh`. The project uses a synchronized folder, so new files under `Notchy/` are picked up without
+editing the project.
 
 ---
 
 ## Development notes
 
-### Microphone permission
+### Sandbox and data
 
-When running from Xcode, macOS may ask for microphone access every time you open the teleprompter; the system often doesn’t persist the choice for debug builds. To avoid that:
+Notchy runs in the App Sandbox (required by the Mac App Store).
 
-- Allow Notchy in **System Settings → Privacy & Security → Microphone**, or  
-- Run the built app from the Products folder instead of using Run.
+- **Settings** live in `~/Library/Containers/dev.oprimo.notchyPrompter`. On the first sandboxed launch, macOS moves
+  the settings of versions before 1.0 there (`Notchy/Resources/container-migration.plist`).
+- **Scripts** live in the App Group container `~/Library/Group Containers/TJ7XUV6VQ9.com.notchy/Scripts`, one JSON
+  file per script, where earlier versions (and the old Notchy Scripts app) kept them.
 
-The app only requests microphone permission when voice-controlled scroll is enabled.
+`./scripts/wipe.sh` removes both, plus the microphone and speech recognition permissions.
 
-### App Group / “access data from other apps”
+### Microphone and speech recognition
 
-Notchy and Notchy Scripts share data via an App Group (scripts and language). The system may show a permission dialog. In development this can appear every time you launch one or both apps.
+The app asks for the microphone when voice is on and the prompter is open, and for speech recognition the first time
+"Follow my words" starts. Debug builds are signed with your Apple Development certificate, so macOS remembers the
+answers between runs.
 
-- The main app only accesses the shared container after launch (not immediately) to reduce prompts.
-- If the dialog keeps appearing, allow the apps in **System Settings → Privacy & Security**, or run the release build from the Products folder (the system tends to persist the choice there).
+"Follow my words" (`Features/Teleprompter/SpeechFollower.swift`) uses SpeechAnalyzer + SpeechTranscriber on macOS 26
+and SFSpeechRecognizer (on-device only) before that. The matching lines up the last few recognized words with a
+window of the script around the current position.
 
-### Signing (no paid Apple account needed)
+A Debug-only launch argument opens a window on launch, handy for screenshots:
 
-The project uses your Xcode **Team** (any Apple ID, including free) to form a macOS-style App Group so the system does not show the dialog.
+```bash
+open Notchy.app --args -NotchyDebugOpen settings.voice   # or settings.<page>, or scripts
+```
 
-- Set **Signing & Capabilities → Team** for **both targets** to your Apple ID.
-- If you don’t set a Team, the app falls back to `group.com.notchy` and the permission prompt may appear.
-- No developer.apple.com or paid account is required for local development.
+### Icon and DMG artwork
+
+Both are drawn in code; change the Swift and run again from the repo root:
+
+```bash
+swift scripts/generate-icon.swift             # app icon, menu bar icon, docs/icon.png
+swift scripts/generate-dmg-background.swift   # scripts/dmg/background.tiff
+```
 
 ---
 
-## Creating a DMG (release build)
+## Releasing
 
-From the repo root:
+### Direct download (Developer ID, notarized)
+
+One-time setup:
 
 ```bash
-./scripts/create-dmg.sh          # → Notchy.dmg
-./scripts/create-dmg.sh 1.0.0    # → Notchy-1.0.0.dmg
+brew install create-dmg
+xcrun notarytool store-credentials <profile-name>   # Apple ID, team, app-specific password
 ```
 
-The script builds both apps in Release, stages them with an Applications symlink, and creates a compressed DMG. Locally it also arranges the Finder icon layout; in CI that step is skipped.
+Then create `.env.local` at the repo root (git-ignored):
+
+```bash
+NOTCHY_SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)"
+NOTCHY_NOTARY_PROFILE="<profile-name>"
+```
+
+and run:
+
+```bash
+./scripts/create-dmg.sh
+```
+
+It builds Release, signs with the hardened runtime and `Notchy.entitlements`, notarizes and staples the app, wraps it
+in a DMG with the install background, then notarizes and staples the DMG. Output: `build/Notchy-<version>.dmg`.
+Without the two variables it still produces a DMG, ad-hoc signed, for local tests only.
+
+The version comes from `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` in the project. Tag the release `vX.Y.Z` and
+upload the DMG to GitHub Releases; the update check reads the latest release.
+
+### Mac App Store
+
+```bash
+./scripts/appstore.sh            # archive and export a signed .pkg into build/appstore (nothing is uploaded)
+./scripts/appstore.sh --upload   # archive and upload to App Store Connect
+```
+
+The App Store build compiles with `APPSTORE` (no GitHub update check) and uses `Notchy-AppStore.entitlements` (no
+network). Store listing text and review notes are in [appstore/LISTING.md](appstore/LISTING.md).
 
 ---
 
@@ -58,32 +101,26 @@ The script builds both apps in Release, stages them with an Applications symlink
 
 1. **Fork** the repository and clone it locally.
 2. **Create a branch** for your change (e.g. `fix/scroll-speed` or `feature/new-shortcut`).
-3. **Make your changes** and ensure the project builds (Notchy and Notchy Scripts schemes).
+3. **Make your changes** and make sure the project builds.
 4. **Open a pull request** with a clear description of what you changed and why.
 
-We’re happy to consider bug fixes, improvements to docs or localization, and small feature ideas. For larger features, open an issue first to discuss.
+Bug fixes, docs, translations and small features are welcome. For larger features, open an issue first.
+
+### Translations
+
+Strings are in `Notchy/Resources/<language>.lproj/Localizable.strings`. English and Brazilian Portuguese are
+complete. The other languages have a block at the end marked "Not translated yet" with English text; translating
+those lines is an easy first contribution.
 
 ---
 
 ## Opening issues
 
-Use [GitHub Issues](https://github.com/oprimodev/notchy/issues) to:
-
-- **Report bugs** — Include macOS version, steps to reproduce, and what you expected.
-- **Suggest features or improvements** — Describe the use case and why it would help.
-
-Please search existing issues first to avoid duplicates. The more detail you provide, the easier it is to help.
+Use [GitHub Issues](https://github.com/lucianodiisouza/notchy-desktop-macos/issues) to report bugs (macOS version,
+steps to reproduce, what you expected) or suggest features. Please search existing issues first.
 
 ---
 
 ## Code of conduct
 
-This project expects respectful, constructive behavior. Be kind to others; no harassment, trolling, or spam. Maintainers may remove or lock content that violates this.
-
----
-
-## Technical notes
-
-- **Notch:** Uses `NSScreen.safeAreaInsets` (macOS 12+) to size and position the window in the notch strip; fallback height when there is no notch. Window level is status bar so it sits in the menu bar layer.
-- **Audio:** `AVAudioEngine` tap on the input node; simple level threshold with silence timeout for start/stop.
-- **Window:** `sharingType = .none`, high window level (assistive tech), all spaces, stationary.
+Be kind and constructive; no harassment, trolling or spam. Maintainers may remove or lock content that breaks this.

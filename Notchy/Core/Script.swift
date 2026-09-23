@@ -31,7 +31,7 @@ struct Script: Identifiable, Codable, Equatable {
     }
 
     /// Title derived from first line of body (max 50 chars), or fallback.
-    static func titleFromFirstLine(_ body: String, fallback: String = "Sem título") -> String {
+    static func titleFromFirstLine(_ body: String, fallback: String = NSLocalizedString("script_untitled", comment: "")) -> String {
         let line = body
             .split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false)
             .first
@@ -43,11 +43,11 @@ struct Script: Identifiable, Codable, Equatable {
         return String(trimmed.prefix(47)) + "..."
     }
 
-    /// Fallback title for pasted content, e.g. "Colar em 07/02/25".
+    /// Fallback title for pasted content, e.g. "Pasted 07/02/25".
     static func titleFromPasteDate() -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .none
-        return "Colar em \(formatter.string(from: Date()))"
+        return String(format: NSLocalizedString("paste_title_format", comment: ""), formatter.string(from: Date()))
     }
 }

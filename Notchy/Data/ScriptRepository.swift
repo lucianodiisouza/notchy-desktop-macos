@@ -11,6 +11,7 @@ protocol ScriptRepositoryProtocol: AnyObject {
     func deleteFolder(path: String) throws
     func moveScript(id: UUID, newFolderPath: String) throws
     func renameFolder(oldPath: String, newPath: String) throws
+    var scriptsFolderURL: URL? { get }
 }
 
 /// Persists scripts in the App Group container. Flat storage: Scripts/{id}.json with folderPath inside JSON.
@@ -45,31 +46,13 @@ final class ScriptRepository: ScriptRepositoryProtocol {
         }
         if !fileManager.fileExists(atPath: url.path) {
             try fileManager.createDirectory(at: url, withIntermediateDirectories: true)
-            runMigrationFromLegacyGroupContainerIfNeeded(to: url)
         }
     }
 
-    /// One-time migration: when using a team-prefixed App Group (e.g. TEAM.com.notchy), copy scripts from the old container (group.com.notchy) so the user doesn’t lose data.
-    private func runMigrationFromLegacyGroupContainerIfNeeded(to newScriptsDir: URL) {
-        let key = "NotchyKeys.appGroupMigrationFromGroupComNotchy"
-        if UserDefaults.standard.bool(forKey: key) { return }
-        guard NotchyKeys.appGroupIdentifier != "group.com.notchy" else { return }
-        guard let legacyContainer = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.notchy") else { return }
-        let legacyScripts = legacyContainer.appendingPathComponent(scriptsDirectoryName, isDirectory: true)
-        guard fileManager.fileExists(atPath: legacyScripts.path) else {
-            UserDefaults.standard.set(true, forKey: key)
-            return
-        }
-        do {
-            let items = try fileManager.contentsOfDirectory(at: legacyScripts, includingPropertiesForKeys: nil)
-            for item in items {
-                let dest = newScriptsDir.appendingPathComponent(item.lastPathComponent)
-                if !fileManager.fileExists(atPath: dest.path) {
-                    try fileManager.copyItem(at: item, to: dest)
-                }
-            }
-        } catch { }
-        UserDefaults.standard.set(true, forKey: key)
+    /// The folder holding one JSON file per script, for "Show in Finder".
+    var scriptsFolderURL: URL? {
+        try? ensureScriptsDirectory()
+        return scriptsDirectoryURL
     }
 
     private func loadFolderPaths() throws -> [String] {
@@ -98,9 +81,11 @@ final class ScriptRepository: ScriptRepositoryProtocol {
         let contents = try fileManager.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
         var scripts: [Script] = []
         for url in contents where url.pathExtension == "json" && url.lastPathComponent != foldersFileName {
-            if let data = try? Data(contentsOf: url),
-               let script = try? decoder.decode(Script.self, from: data) {
-                scripts.append(script)
+            do {
+                let data = try Data(contentsOf: url)
+                scripts.append(try decoder.decode(Script.self, from: data))
+            } catch {
+                AppLogger.error("Could not read script \(url.lastPathComponent): \(error)")
             }
         }
         return scripts
@@ -120,7 +105,7 @@ final class ScriptRepository: ScriptRepositoryProtocol {
         try ensureScriptsDirectory()
         guard let url = scriptFileURL(id: script.id) else { throw ScriptRepositoryError.noContainer }
         let data = try encoder.encode(script)
-        try data.write(to: url)
+        try data.write(to: url, options: .atomic)
     }
 
     func update(_ script: Script) throws {

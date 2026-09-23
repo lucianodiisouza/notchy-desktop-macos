@@ -1,0 +1,5 @@
+/* Shown when Notchy asks for the microphone. */
+"NSMicrophoneUsageDescription" = "Notchy listens to the microphone so the script scrolls while you speak and stops when you pause. Audio never leaves your Mac.";
+
+/* Shown when Notchy asks for speech recognition. */
+"NSSpeechRecognitionUsageDescription" = "Notchy recognizes your words on this Mac to keep the script on the line you are reading. Nothing is sent anywhere.";

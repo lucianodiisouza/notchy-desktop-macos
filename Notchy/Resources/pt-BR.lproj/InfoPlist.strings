@@ -1,0 +1,5 @@
+/* Shown when Notchy asks for the microphone. */
+"NSMicrophoneUsageDescription" = "O Notchy escuta o microfone para rolar o roteiro enquanto você fala e parar quando você pausa. O áudio nunca sai do seu Mac.";
+
+/* Shown when Notchy asks for speech recognition. */
+"NSSpeechRecognitionUsageDescription" = "O Notchy reconhece suas palavras neste Mac para manter o roteiro na linha que você está lendo. Nada é enviado para lugar nenhum.";

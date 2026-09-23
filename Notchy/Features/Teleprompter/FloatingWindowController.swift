@@ -219,7 +219,8 @@ final class FloatingWindowController: ObservableObject {
         window.backgroundColor = .clear
         window.contentView?.wantsLayer = true
         window.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
-        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        // fullScreenAuxiliary keeps the prompter over full-screen apps such as Keynote or a Zoom call.
+        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         // Nível será ajustado em updateWindowFrame: recolhido = acima da menu bar para hover; expandido = mesmo nível.
         applySharingType()
         // Precisamos receber mouse moved mesmo quando a janela não é key (ex.: após diálogo do mic)

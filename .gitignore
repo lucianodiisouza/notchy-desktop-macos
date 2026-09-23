@@ -15,8 +15,8 @@ xcuserdata/
 build/
 DerivedData/
 
-# DMG build (staging, temp e artefato final)
-build-dmg-staging/
-.dmg-mount/
-*-temp.dmg
+# DMG build output
 *.dmg
+
+# Signing settings for scripts/create-dmg.sh
+.env.local

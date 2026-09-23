@@ -159,6 +159,7 @@ struct RichParagraphEditorView: NSViewRepresentable {
         textView.minSize = NSSize(width: 0, height: 24)
         textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         textView.usesFindBar = false
+        textView.textContainerInset = NSSize(width: 14, height: 12)
 
         scroll.documentView = textView
         context.coordinator.textView = textView

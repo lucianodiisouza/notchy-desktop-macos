@@ -15,7 +15,8 @@ func buttonColorFromHex(_ hex: String) -> Color {
 
 /// SwiftUI Color to hex string "RRGGBB" (no alpha).
 func hexFromColor(_ color: Color) -> String {
-    let ns = NSColor(color)
+    // The picker can hand back grayscale or catalog colors, whose RGB components throw; convert first.
+    let ns = NSColor(color).usingColorSpace(.sRGB) ?? .white
     let r = Int((ns.redComponent * 255).rounded())
     let g = Int((ns.greenComponent * 255).rounded())
     let b = Int((ns.blueComponent * 255).rounded())
@@ -31,4 +32,16 @@ private func componentsFromHex(_ hex: String) -> (r: Double, g: Double, b: Doubl
     let g = Double((int >> 8) & 0xFF) / 255
     let b = Double(int & 0xFF) / 255
     return (r, g, b, a)
+}
+
+extension Color {
+    /// "#RRGGBB" or "RRGGBB".
+    init(hex: String) {
+        self = buttonColorFromHex(hex)
+    }
+}
+
+extension String {
+    /// The string for this key in Localizable.strings.
+    var localized: String { NSLocalizedString(self, comment: "") }
 }

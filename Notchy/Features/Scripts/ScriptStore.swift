@@ -3,8 +3,8 @@ import Combine
 import AppKit
 import UniformTypeIdentifiers
 
-/// Shared store for scripts and folder tree. Uses App Group for persistence.
-/// Used by both Notchy (read/write for teleprompter + paste) and Notchy Scripts (full UI).
+/// Scripts and their folder tree, saved in the App Group container. The teleprompter and the Scripts window both read
+/// and write through this one instance.
 final class ScriptStore: ObservableObject {
     static let shared = ScriptStore()
 
@@ -76,32 +76,18 @@ final class ScriptStore: ObservableObject {
 
     func selectScript(id: UUID?) {
         persistSelectedScriptId(id)
-        DistributedNotificationCenter.default().post(name: Notification.Name(NotchyKeys.selectedScriptDidChangeNotification), object: nil)
     }
 
-    /// Re-read scripts and selectedScriptId from App Group / disk (e.g. when Notchy Scripts changed selection). Call from main app when it receives selectedScriptDidChangeNotification.
-    func syncFromSharedStorage() {
-        load()
+    /// Puts the script on the prompter, from the top, and brings the prompter up.
+    @MainActor
+    func showInTeleprompter(id: UUID) {
+        selectScript(id: id)
+        NotchyState.shared.resetReading()
+        AppDelegate.shared?.openTeleprompter()
     }
 
-    /// Call from Notchy Scripts when user chooses "Usar no Teleprompter". Opens the main Notchy app and shows the teleprompter (via notchy:// URL). Prefer opening with the parent app when Scripts is embedded so the URL is delivered reliably.
-    static func openTeleprompterInMainApp() {
-        guard let url = URL(string: NotchyKeys.openTeleprompterURLString) else { return }
-        // When Scripts is embedded (Notchy.app/Contents/Applications/Notchy Scripts.app), open the URL with the parent app so it receives application(_:open:).
-        let bundleURL = Bundle.main.bundleURL
-        let app = bundleURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-        let notchyAppName = "Notchy.app"
-        if app.lastPathComponent == notchyAppName, FileManager.default.fileExists(atPath: app.path) {
-            let config = NSWorkspace.OpenConfiguration()
-            NSWorkspace.shared.open([url], withApplicationAt: app, configuration: config) { _, error in
-                if error != nil {
-                    NSWorkspace.shared.open(url)
-                }
-            }
-            return
-        }
-        NSWorkspace.shared.open(url)
-    }
+    /// The folder on disk that holds the scripts, for "Show in Finder".
+    var scriptsFolderURL: URL? { repository.scriptsFolderURL }
 
     // MARK: - CRUD
 
@@ -118,9 +104,26 @@ final class ScriptStore: ObservableObject {
         }
     }
 
-    /// Create a script from pasted text (e.g. in teleprompter). Title from first line or date; folderPath = "".
+    /// Pasting into an empty prompter starts a script with the pasted text. An empty script that is already selected
+    /// takes the text (and a title from its first line) instead of leaving an empty one behind.
+    @discardableResult
     func createScript(fromPaste pastedText: String) -> Script? {
         let title = Script.titleFromFirstLine(pastedText, fallback: Script.titleFromPasteDate())
+        if var current = currentScript, current.body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            if current.title.isEmpty || current.title == NSLocalizedString("script_untitled", comment: "") {
+                current.title = title
+            }
+            current.body = pastedText
+            current.bodyRTF = nil
+            do {
+                try repository.update(current)
+                load()
+                return current
+            } catch {
+                AppLogger.error("Could not save the pasted script: \(error)")
+                return nil
+            }
+        }
         let script = Script(title: title, body: pastedText, folderPath: "")
         do {
             try repository.create(script)
@@ -128,6 +131,7 @@ final class ScriptStore: ObservableObject {
             persistSelectedScriptId(script.id)
             return script
         } catch {
+            AppLogger.error("Could not create a script from the paste: \(error)")
             return nil
         }
     }
@@ -146,13 +150,23 @@ final class ScriptStore: ObservableObject {
         script.updatedAt = Date()
         do {
             try repository.update(script)
-            load()
-        } catch {}
+            // Only this script changed; no need to read every file back on each keystroke.
+            if let index = scripts.firstIndex(where: { $0.id == id }) { scripts[index] = script }
+        } catch {
+            AppLogger.error("Could not save script \(id): \(error)")
+        }
     }
 
-    /// Atualiza o corpo do script selecionado (ex.: colar no teleprompter). Limpa RTF para manter corpo como texto puro.
+    /// Text typed in the prompter. Plain text, so any rich formatting from the editor is dropped. Typing with no script
+    /// selected starts a new one, so the words are never thrown away.
     func updateCurrentScriptBody(_ body: String) {
-        guard let id = selectedScriptId else { return }
+        guard let id = selectedScriptId, scripts.contains(where: { $0.id == id }) else {
+            guard !body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            if let id = createScript(title: Script.titleFromFirstLine(body, fallback: Script.titleFromPasteDate()), body: body) {
+                persistSelectedScriptId(id)
+            }
+            return
+        }
         updateScript(id: id, title: nil, body: body, bodyRTF: nil, clearRTF: true)
     }
 
@@ -289,29 +303,38 @@ final class ScriptStore: ObservableObject {
         panel.canCreateDirectories = true
         panel.prompt = NSLocalizedString("export_choose_folder", comment: "")
         guard panel.runModal() == .OK, let baseURL = panel.url else { return false }
-        let exportFolder = baseURL.appendingPathComponent("Notchy Scripts Export", isDirectory: true)
         let fileManager = FileManager.default
+        // A new folder each time, so an earlier export is never overwritten.
+        var exportFolder = baseURL.appendingPathComponent("Notchy Scripts", isDirectory: true)
+        var attempt = 2
+        while fileManager.fileExists(atPath: exportFolder.path) {
+            exportFolder = baseURL.appendingPathComponent("Notchy Scripts \(attempt)", isDirectory: true)
+            attempt += 1
+        }
         do {
-            if fileManager.fileExists(atPath: exportFolder.path) {
-                try fileManager.removeItem(at: exportFolder)
-            }
             try fileManager.createDirectory(at: exportFolder, withIntermediateDirectories: true)
             for script in scripts {
-                let folderPath = script.folderPath
                 let targetDir: URL
-                if folderPath.isEmpty {
+                if script.folderPath.isEmpty {
                     targetDir = exportFolder
                 } else {
-                    let subpath = folderPath.split(separator: "/").map(String.init).joined(separator: "/")
-                    targetDir = exportFolder.appendingPathComponent(subpath, isDirectory: true)
+                    targetDir = exportFolder.appendingPathComponent(script.folderPath, isDirectory: true)
                     try fileManager.createDirectory(at: targetDir, withIntermediateDirectories: true)
                 }
-                let fileName = sanitizedFileName(for: script.title) + ".txt"
-                let fileURL = targetDir.appendingPathComponent(fileName, isDirectory: false)
+                // Two scripts with the same title get "Title 2.txt" and so on instead of replacing each other.
+                let base = sanitizedFileName(for: script.title)
+                var fileURL = targetDir.appendingPathComponent(base + ".txt", isDirectory: false)
+                var n = 2
+                while fileManager.fileExists(atPath: fileURL.path) {
+                    fileURL = targetDir.appendingPathComponent("\(base) \(n).txt", isDirectory: false)
+                    n += 1
+                }
                 try script.body.write(to: fileURL, atomically: true, encoding: .utf8)
             }
+            NSWorkspace.shared.activateFileViewerSelecting([exportFolder])
             return true
         } catch {
+            AppLogger.error("Export failed: \(error)")
             return false
         }
     }

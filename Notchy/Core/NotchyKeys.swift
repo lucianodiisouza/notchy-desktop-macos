@@ -3,16 +3,10 @@ import Foundation
 /// Centralized UserDefaults keys for Notchy. Use these everywhere so we have a single place to see
 /// what is persisted — useful for future sync/backend when scripts are synced.
 enum NotchyKeys {
-    /// App Group identifier for sharing scripts and selectedScriptId between Notchy and Notchy Scripts. macOS-style (Team ID prefix) = no "access data from other apps" prompt.
+    /// App Group holding the scripts. Earlier versions shared it between Notchy and the separate Notchy Scripts app; it stays so their scripts carry over. The Team ID prefix avoids the "access data from other apps" prompt.
     static let appGroupIdentifier = "TJ7XUV6VQ9.com.notchy"
-    /// Distributed notification posted by Notchy Scripts when selected script changes; Notchy (main app) observes it to refresh.
-    static let selectedScriptDidChangeNotification = "com.notchy.selectedScriptDidChange"
     /// Posted when preferred microphone changes so the audio monitor can restart with the new device.
     static let preferredMicrophoneDidChangeNotification = "com.notchy.preferredMicrophoneDidChange"
-    /// URL to open the main app’s teleprompter (used by Notchy Scripts so “Usar no Teleprompter” opens the window).
-    static let openTeleprompterURLString = "notchy://openTeleprompter"
-    /// Main Notchy app bundle IDs (menu bar / teleprompter). Used by Scripts to restart both apps when changing language.
-    static let mainAppBundleIdentifiers = ["com.notchy.app", "dev.oprimo.notchy"]
     // Scroll & teleprompter
     static let scrollSpeed = "scrollSpeed"
     static let prompterText = "prompterText"
@@ -52,6 +46,12 @@ enum NotchyKeys {
     static let preferredMicrophoneUID = "preferredMicrophoneUID"
     /// True after we have asked for microphone permission once; avoids showing the system dialog again.
     static let micPermissionRequestedOnce = "micPermissionRequestedOnce"
+    /// How the voice drives the scroll: "level" (scroll while you make sound) or "follow" (track the words you say).
+    static let voiceMode = "voiceMode"
+    /// Locale identifier for "follow my words"; empty = pick from the script's language.
+    static let speechLocale = "speechLocale"
+    /// In "follow my words", fade the lines already read and mark the current one.
+    static let highlightSpokenText = "highlightSpokenText"
 
     // Layout
     static let mirrorMode = "mirrorMode"
@@ -60,16 +60,12 @@ enum NotchyKeys {
     /// Padding (pt) around script content in the teleprompter (0–40).
     static let contentPadding = "contentPadding"
 
-    // Language (in-app override; empty = system default)
-    static let preferredLanguage = "preferredLanguage"
-
     // Onboarding (first run)
     static let onboardingCompleted = "onboardingCompleted"
 
-    // Scripts editor (Notchy Scripts app; use App Group if shared with main app)
+    // Script editor window
     static let scriptEditorFontSize = "scriptEditorFontSize"
     static let scriptEditorTheme = "scriptEditorTheme"  // 0 = system, 1 = light, 2 = dark
     static let scriptEditorLineSpacing = "scriptEditorLineSpacing"
     static let scriptEditorFontName = "scriptEditorFontName"  // empty = system default
-    static let scriptEditorShowPreview = "scriptEditorShowPreview"  // show Markdown preview pane
 }

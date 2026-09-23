@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Versions before 1.0 ran outside the sandbox. On the first sandboxed launch macOS moves their settings into the
+	     container, so font, colors, window size and the rest carry over. Scripts already live in the App Group. -->
+	<key>Move</key>
+	<array>
+		<string>${Library}/Preferences/dev.oprimo.notchyPrompter.plist</string>
+	</array>
+</dict>
+</plist>

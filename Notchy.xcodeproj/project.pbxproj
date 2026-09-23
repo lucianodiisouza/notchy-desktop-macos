@@ -3,785 +3,259 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		A1000001 /* NotchyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000001 /* NotchyApp.swift */; };
-		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000002 /* ContentView.swift */; };
-		A1000003 /* FloatingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000003 /* FloatingWindowController.swift */; };
-		A1000004 /* AudioMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000004 /* AudioMonitor.swift */; };
-		A1000005 /* ScrollController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000005 /* ScrollController.swift */; };
-		A1000006 /* TeleprompterTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000006 /* TeleprompterTextView.swift */; };
-		A1000007 /* WindowBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000007 /* WindowBackgroundView.swift */; };
-		A1000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
-		A1000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000009 /* SettingsView.swift */; };
-		A1000010 /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000010 /* WindowAccessor.swift */; };
-		A1000011 /* NotchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000011 /* NotchWindow.swift */; };
-		A1000012 /* NotchyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000012 /* NotchyState.swift */; };
-		A1000013 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000013 /* AppDelegate.swift */; };
-		A1000014 /* NotchyKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014 /* NotchyKeys.swift */; };
-		A1000015 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000015 /* Color+Hex.swift */; };
-		A1000016 /* ScreenLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000016 /* ScreenLayout.swift */; };
-		A1000017 /* NotchShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000017 /* NotchShapes.swift */; };
-		A1000018 /* ControlBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000018 /* ControlBar.swift */; };
-		A1000019 /* AudioDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000019 /* AudioDeviceList.swift */; };
-		B1000001 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Script.swift */; };
-		B1000002 /* ScriptRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000002 /* ScriptRepository.swift */; };
-		B1000003 /* ScriptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000003 /* ScriptStore.swift */; };
-		B1000010 /* Notchy Scripts.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = B2000000 /* Notchy Scripts.app */; };
-		C1000001 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000001 /* Script.swift */; };
-		C1000002 /* NotchyKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000014 /* NotchyKeys.swift */; };
-		C1000003 /* ScriptRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000002 /* ScriptRepository.swift */; };
-		C1000004 /* ScriptStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000003 /* ScriptStore.swift */; };
-		C1000005 /* NotchyScriptsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000007 /* NotchyScriptsApp.swift */; };
-		C1000006 /* ScriptsWindowContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000004 /* ScriptsWindowContent.swift */; };
-		C1000007 /* FolderTreeSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000005 /* FolderTreeSidebarView.swift */; };
-		C1000008 /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000006 /* ScriptEditorView.swift */; };
-		C1000009 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000008 /* Assets.xcassets */; };
-		C1000010 /* ScriptEditorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000002 /* ScriptEditorSettingsView.swift */; };
-		C1000012 /* RichParagraphEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000012 /* RichParagraphEditorView.swift */; };
-		C1000013 /* InlineMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2000001 /* InlineMarkdown.swift */; };
-		D1000001 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
-		D1000002 /* MarkdownHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2000001 /* MarkdownHelpers.swift */; };
-		E1000001 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
-		E1000002 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2000001 /* AppLogger.swift */; };
-		L1000001 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* L10n.swift */; };
-		L1000002 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = L2000001 /* L10n.swift */; };
-		L1000003 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = L3000001 /* Localizable.strings */; };
-		L1000004 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = L3000001 /* Localizable.strings */; };
-		M1000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = M2000001 /* main.swift */; };
-		P1000001 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
-		P1000002 /* PreferredLanguageBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = P2000001 /* PreferredLanguageBundle.swift */; };
-		G1000001 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* LiquidGlassModifier.swift */; };
-		G1000002 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = G2000001 /* LiquidGlassModifier.swift */; };
-		V1000001 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = V2000001 /* AppVersion.swift */; };
-		V1000002 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = V2000001 /* AppVersion.swift */; };
-		Q1000001 /* DeviceIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000001 /* DeviceIdentifier.swift */; };
-		Q1000002 /* PremiumService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000002 /* PremiumService.swift */; };
-		Q1000003 /* DeviceIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000001 /* DeviceIdentifier.swift */; };
-		Q1000004 /* PremiumService.swift in Sources */ = {isa = PBXBuildFile; fileRef = Q2000002 /* PremiumService.swift */; };
-		I1000001 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = I2000001 /* IOKit.framework */; };
-		I1000002 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = I2000001 /* IOKit.framework */; };
-/* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		A9000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7000001 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B5000001;
-			remoteInfo = "Notchy Scripts";
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A5000004 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Contents/Applications;
-			dstSubfolderSpec = 6;
-			files = (
-				B1000010 /* Notchy Scripts.app in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		A2000000 /* Notchy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notchy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A2000001 /* NotchyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyApp.swift; sourceTree = "<group>"; };
-		A2000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		A2000003 /* FloatingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingWindowController.swift; sourceTree = "<group>"; };
-		A2000004 /* AudioMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMonitor.swift; sourceTree = "<group>"; };
-		A2000005 /* ScrollController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollController.swift; sourceTree = "<group>"; };
-		A2000006 /* TeleprompterTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeleprompterTextView.swift; sourceTree = "<group>"; };
-		A2000007 /* WindowBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowBackgroundView.swift; sourceTree = "<group>"; };
-		A2000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A2000009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		A2000010 /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
-		A2000011 /* NotchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchWindow.swift; sourceTree = "<group>"; };
-		A2000012 /* NotchyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyState.swift; sourceTree = "<group>"; };
-		A2000013 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A2000014 /* NotchyKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyKeys.swift; sourceTree = "<group>"; };
-		A2000015 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
-		A2000016 /* ScreenLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLayout.swift; sourceTree = "<group>"; };
-		A2000017 /* NotchShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShapes.swift; sourceTree = "<group>"; };
-		A2000018 /* ControlBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBar.swift; sourceTree = "<group>"; };
-		A2000019 /* AudioDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDeviceList.swift; sourceTree = "<group>"; };
-		B2000000 /* Notchy Scripts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Notchy Scripts.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B2000001 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
-		B2000002 /* ScriptRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptRepository.swift; sourceTree = "<group>"; };
-		B2000003 /* ScriptStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptStore.swift; sourceTree = "<group>"; };
-		B2000004 /* ScriptsWindowContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptsWindowContent.swift; sourceTree = "<group>"; };
-		B2000005 /* FolderTreeSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTreeSidebarView.swift; sourceTree = "<group>"; };
-		B2000006 /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
-		B2000007 /* NotchyScriptsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchyScriptsApp.swift; sourceTree = "<group>"; };
-		B2000008 /* NotchyScripts-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NotchyScripts-Info.plist"; sourceTree = "<group>"; };
-		B2000009 /* Notchy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notchy.entitlements; sourceTree = "<group>"; };
-		B2000010 /* NotchyScripts.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotchyScripts.entitlements; sourceTree = "<group>"; };
-		B2000012 /* RichParagraphEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichParagraphEditorView.swift; sourceTree = "<group>"; };
-		D2000001 /* MarkdownHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownHelpers.swift; sourceTree = "<group>"; };
-		D2000002 /* ScriptEditorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorSettingsView.swift; sourceTree = "<group>"; };
-		E2000001 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
-		F2000001 /* InlineMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineMarkdown.swift; sourceTree = "<group>"; };
-		L2000001 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
-		L2000002 /* en.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000003 /* pt-BR.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		L2000004 /* zh-Hans.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		L2000005 /* ja.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000006 /* ru.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000007 /* es.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000008 /* fr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000009 /* hi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = hi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000010 /* de.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000011 /* he.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000012 /* ar.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000013 /* el.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = el.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000014 /* uk.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000015 /* nb.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000016 /* da.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000017 /* it.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000018 /* sk.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000019 /* sr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000020 /* sv.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000021 /* cs.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000022 /* ko.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000023 /* hu.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000024 /* tr.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000025 /* pl.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000026 /* vi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000027 /* af.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = af.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000028 /* fi.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000029 /* nl.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000030 /* ro.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
-		L2000031 /* ca.lproj/Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
-		M2000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		P2000001 /* PreferredLanguageBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferredLanguageBundle.swift; sourceTree = "<group>"; };
-		G2000001 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
-		V2000001 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
-		Q2000001 /* DeviceIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceIdentifier.swift; sourceTree = "<group>"; };
-		Q2000002 /* PremiumService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumService.swift; sourceTree = "<group>"; };
-		I2000001 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		AA00000000000000000010 /* Notchy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notchy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		A3000001 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				I1000001 /* IOKit.framework in Frameworks */,
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AA00000000000000000020 /* Notchy */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA00000000000000000080 /* Exceptions */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			path = Notchy;
+			sourceTree = "<group>";
 		};
-		B3000001 /* Frameworks */ = {
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA00000000000000000080 /* Exceptions */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/Notchy-AppStore.entitlements",
+				Resources/Info.plist,
+				Resources/Notchy.entitlements,
+			);
+			target = AA00000000000000000040 /* Notchy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA00000000000000000030 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				I1000002 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A4000000 = {
+		AA00000000000000000001 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				A4000001 /* Notchy */,
-				A4000002 /* Products */,
+				AA00000000000000000020 /* Notchy */,
+				AA00000000000000000002 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A4000001 /* Notchy */ = {
+		AA00000000000000000002 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A4000010 /* App */,
-				A4000011 /* Core */,
-				A4000012 /* Data */,
-				A4000013 /* Features */,
-				A4000017 /* Infrastructure */,
-				A4000018 /* Resources */,
-			);
-			path = Notchy;
-			sourceTree = "<group>";
-		};
-		A4000002 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A2000000 /* Notchy.app */,
-				B2000000 /* Notchy Scripts.app */,
+				AA00000000000000000010 /* Notchy.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		A4000010 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				M2000001 /* main.swift */,
-				A2000001 /* NotchyApp.swift */,
-				A2000013 /* AppDelegate.swift */,
-				B2000007 /* NotchyScriptsApp.swift */,
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
-		A4000011 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				A2000012 /* NotchyState.swift */,
-				A2000014 /* NotchyKeys.swift */,
-				A2000015 /* Color+Hex.swift */,
-				F2000001 /* InlineMarkdown.swift */,
-				G2000001 /* LiquidGlassModifier.swift */,
-				V2000001 /* AppVersion.swift */,
-				B2000001 /* Script.swift */,
-				A2000016 /* ScreenLayout.swift */,
-				A2000017 /* NotchShapes.swift */,
-				D2000001 /* MarkdownHelpers.swift */,
-				E2000001 /* AppLogger.swift */,
-				L2000001 /* L10n.swift */,
-				P2000001 /* PreferredLanguageBundle.swift */,
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
-		A4000012 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				B2000002 /* ScriptRepository.swift */,
-			);
-			path = Data;
-			sourceTree = "<group>";
-		};
-		A4000013 /* Features */ = {
-			isa = PBXGroup;
-			children = (
-				A4000014 /* Teleprompter */,
-				A4000015 /* Settings */,
-				A4000016 /* Scripts */,
-			);
-			path = Features;
-			sourceTree = "<group>";
-		};
-		A4000014 /* Teleprompter */ = {
-			isa = PBXGroup;
-			children = (
-				A2000002 /* ContentView.swift */,
-				A2000018 /* ControlBar.swift */,
-				A2000003 /* FloatingWindowController.swift */,
-				A2000011 /* NotchWindow.swift */,
-				A2000005 /* ScrollController.swift */,
-				A2000006 /* TeleprompterTextView.swift */,
-				A2000007 /* WindowBackgroundView.swift */,
-				A2000010 /* WindowAccessor.swift */,
-			);
-			path = Teleprompter;
-			sourceTree = "<group>";
-		};
-		A4000015 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				A2000009 /* SettingsView.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		A4000016 /* Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				B2000003 /* ScriptStore.swift */,
-				B2000004 /* ScriptsWindowContent.swift */,
-				B2000005 /* FolderTreeSidebarView.swift */,
-				B2000006 /* ScriptEditorView.swift */,
-				B2000012 /* RichParagraphEditorView.swift */,
-				D2000002 /* ScriptEditorSettingsView.swift */,
-			);
-			path = Scripts;
-			sourceTree = "<group>";
-		};
-		A4000017 /* Infrastructure */ = {
-			isa = PBXGroup;
-			children = (
-				A2000004 /* AudioMonitor.swift */,
-				A2000019 /* AudioDeviceList.swift */,
-				Q2000001 /* DeviceIdentifier.swift */,
-				Q2000002 /* PremiumService.swift */,
-			);
-			path = Infrastructure;
-			sourceTree = "<group>";
-		};
-		A4000018 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				A2000008 /* Assets.xcassets */,
-				L3000001 /* Localizable.strings */,
-				B2000008 /* NotchyScripts-Info.plist */,
-				B2000009 /* Notchy.entitlements */,
-				B2000010 /* NotchyScripts.entitlements */,
-			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A5000001 /* Notchy */ = {
+		AA00000000000000000040 /* Notchy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A6000003 /* Build configuration list for PBXNativeTarget "Notchy" */;
+			buildConfigurationList = AA00000000000000000051 /* Build configuration list for PBXNativeTarget "Notchy" */;
 			buildPhases = (
-				A5000002 /* Sources */,
-				A3000001 /* Frameworks */,
-				A5000003 /* Resources */,
-				A5000004 /* CopyFiles */,
+				AA00000000000000000031 /* Sources */,
+				AA00000000000000000030 /* Frameworks */,
+				AA00000000000000000032 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A5000005 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA00000000000000000020 /* Notchy */,
 			);
 			name = Notchy;
 			productName = Notchy;
-			productReference = A2000000 /* Notchy.app */;
-			productType = "com.apple.product-type.application";
-		};
-		B5000001 /* Notchy Scripts */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B6000001 /* Build configuration list for PBXNativeTarget "Notchy Scripts" */;
-			buildPhases = (
-				B5000002 /* Sources */,
-				B3000001 /* Frameworks */,
-				B5000003 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Notchy Scripts";
-			productName = "Notchy Scripts";
-			productReference = B2000000 /* Notchy Scripts.app */;
+			productReference = AA00000000000000000010 /* Notchy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A7000001 /* Project object */ = {
+		AA00000000000000000000 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 2620;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					AA00000000000000000040 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+				};
 			};
-			buildConfigurationList = A6000001 /* Build configuration list for PBXProject "Notchy" */;
-			compatibilityVersion = "Xcode 14.0";
+			buildConfigurationList = AA00000000000000000050 /* Build configuration list for PBXProject "Notchy" */;
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
-				"pt-BR",
-				"zh-Hans",
-				ja,
-				ru,
-				es,
-				fr,
-				hi,
-				de,
-				he,
+				af,
 				ar,
-				el,
-				uk,
-				nb,
+				ca,
+				cs,
 				da,
+				de,
+				el,
+				es,
+				fi,
+				fr,
+				he,
+				hi,
+				hu,
 				it,
+				ja,
+				ko,
+				nb,
+				nl,
+				pl,
+				"pt-BR",
+				ro,
+				ru,
 				sk,
 				sr,
 				sv,
-				cs,
-				ko,
-				hu,
 				tr,
-				pl,
+				uk,
 				vi,
-				af,
-				fi,
-				nl,
-				ro,
-				ca,
+				"zh-Hans",
 			);
-			mainGroup = A4000000;
-			productRefGroup = A4000002 /* Products */;
+			mainGroup = AA00000000000000000001 /* Main */;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AA00000000000000000002 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A5000001 /* Notchy */,
-				B5000001 /* Notchy Scripts */,
+				AA00000000000000000040 /* Notchy */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A5000003 /* Resources */ = {
+		AA00000000000000000032 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1000008 /* Assets.xcassets in Resources */,
-				L1000003 /* Localizable.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B5000003 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C1000009 /* Assets.xcassets in Resources */,
-				L1000004 /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A5000002 /* Sources */ = {
+		AA00000000000000000031 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				M1000001 /* main.swift in Sources */,
-				A1000001 /* NotchyApp.swift in Sources */,
-				A1000002 /* ContentView.swift in Sources */,
-				A1000003 /* FloatingWindowController.swift in Sources */,
-				A1000004 /* AudioMonitor.swift in Sources */,
-				A1000019 /* AudioDeviceList.swift in Sources */,
-				A1000005 /* ScrollController.swift in Sources */,
-				A1000006 /* TeleprompterTextView.swift in Sources */,
-				A1000007 /* WindowBackgroundView.swift in Sources */,
-				A1000009 /* SettingsView.swift in Sources */,
-				A1000010 /* WindowAccessor.swift in Sources */,
-				A1000011 /* NotchWindow.swift in Sources */,
-				A1000012 /* NotchyState.swift in Sources */,
-				A1000013 /* AppDelegate.swift in Sources */,
-				A1000014 /* NotchyKeys.swift in Sources */,
-				A1000015 /* Color+Hex.swift in Sources */,
-				A1000016 /* ScreenLayout.swift in Sources */,
-				A1000017 /* NotchShapes.swift in Sources */,
-				A1000018 /* ControlBar.swift in Sources */,
-				B1000001 /* Script.swift in Sources */,
-				B1000002 /* ScriptRepository.swift in Sources */,
-				B1000003 /* ScriptStore.swift in Sources */,
-				D1000001 /* MarkdownHelpers.swift in Sources */,
-				E1000001 /* AppLogger.swift in Sources */,
-				L1000001 /* L10n.swift in Sources */,
-				P1000001 /* PreferredLanguageBundle.swift in Sources */,
-				G1000001 /* LiquidGlassModifier.swift in Sources */,
-				V1000001 /* AppVersion.swift in Sources */,
-				Q1000001 /* DeviceIdentifier.swift in Sources */,
-				Q1000002 /* PremiumService.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B5000002 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C1000001 /* Script.swift in Sources */,
-				C1000002 /* NotchyKeys.swift in Sources */,
-				C1000003 /* ScriptRepository.swift in Sources */,
-				C1000004 /* ScriptStore.swift in Sources */,
-				C1000005 /* NotchyScriptsApp.swift in Sources */,
-				C1000006 /* ScriptsWindowContent.swift in Sources */,
-				C1000007 /* FolderTreeSidebarView.swift in Sources */,
-				C1000008 /* ScriptEditorView.swift in Sources */,
-				C1000012 /* RichParagraphEditorView.swift in Sources */,
-				C1000010 /* ScriptEditorSettingsView.swift in Sources */,
-				C1000013 /* InlineMarkdown.swift in Sources */,
-				D1000002 /* MarkdownHelpers.swift in Sources */,
-				E1000002 /* AppLogger.swift in Sources */,
-				L1000002 /* L10n.swift in Sources */,
-				P1000002 /* PreferredLanguageBundle.swift in Sources */,
-				G1000002 /* LiquidGlassModifier.swift in Sources */,
-				V1000002 /* AppVersion.swift in Sources */,
-				Q1000003 /* DeviceIdentifier.swift in Sources */,
-				Q1000004 /* PremiumService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		A5000005 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B5000001 /* Notchy Scripts */;
-			targetProxy = A9000001 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		L3000001 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				L2000002 /* en.lproj/Localizable.strings */,
-				L2000003 /* pt-BR.lproj/Localizable.strings */,
-				L2000004 /* zh-Hans.lproj/Localizable.strings */,
-				L2000005 /* ja.lproj/Localizable.strings */,
-				L2000006 /* ru.lproj/Localizable.strings */,
-				L2000007 /* es.lproj/Localizable.strings */,
-				L2000008 /* fr.lproj/Localizable.strings */,
-				L2000009 /* hi.lproj/Localizable.strings */,
-				L2000010 /* de.lproj/Localizable.strings */,
-				L2000011 /* he.lproj/Localizable.strings */,
-				L2000012 /* ar.lproj/Localizable.strings */,
-				L2000013 /* el.lproj/Localizable.strings */,
-				L2000014 /* uk.lproj/Localizable.strings */,
-				L2000015 /* nb.lproj/Localizable.strings */,
-				L2000016 /* da.lproj/Localizable.strings */,
-				L2000017 /* it.lproj/Localizable.strings */,
-				L2000018 /* sk.lproj/Localizable.strings */,
-				L2000019 /* sr.lproj/Localizable.strings */,
-				L2000020 /* sv.lproj/Localizable.strings */,
-				L2000021 /* cs.lproj/Localizable.strings */,
-				L2000022 /* ko.lproj/Localizable.strings */,
-				L2000023 /* hu.lproj/Localizable.strings */,
-				L2000024 /* tr.lproj/Localizable.strings */,
-				L2000025 /* pl.lproj/Localizable.strings */,
-				L2000026 /* vi.lproj/Localizable.strings */,
-				L2000027 /* af.lproj/Localizable.strings */,
-				L2000028 /* fi.lproj/Localizable.strings */,
-				L2000029 /* nl.lproj/Localizable.strings */,
-				L2000030 /* ro.lproj/Localizable.strings */,
-				L2000031 /* ca.lproj/Localizable.strings */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
-		A8000001 /* Debug */ = {
+		AA00000000000000000060 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				CURRENT_PROJECT_VERSION = 1;
-				MARKETING_VERSION = 0.1.0;
 			};
 			name = Debug;
 		};
-		A8000002 /* Release */ = {
+		AA00000000000000000061 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				CURRENT_PROJECT_VERSION = 1;
-				MARKETING_VERSION = 0.1.0;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
 		};
-		A8000003 /* Debug */ = {
+		AA00000000000000000070 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Notchy/Resources/Notchy.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = TJ7XUV6VQ9;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Notchy/Resources/Info.plist;
-				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notchy uses the microphone to detect when you are speaking so it can scroll the teleprompter automatically and pause when you stop.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyPrompter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
+								SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		A8000004 /* Release */ = {
+		AA00000000000000000071 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Notchy/Resources/Notchy.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "";
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = TJ7XUV6VQ9;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Notchy/Resources/Info.plist;
-				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Notchy uses the microphone to detect when you are speaking so it can scroll the teleprompter automatically and pause when you stop.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyPrompter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		B8000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Notchy/Resources/NotchyScripts.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
-				CODE_SIGN_STYLE = Manual;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Notchy/Resources/NotchyScripts-Info.plist";
-				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyScripts;
-				PRODUCT_NAME = "Notchy Scripts";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		B8000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Notchy/Resources/NotchyScripts.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = TJ7XUV6VQ9;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "Notchy/Resources/NotchyScripts-Info.plist";
-				INFOPLIST_KEY_AppGroupIdentifier = "$(DEVELOPMENT_TEAM).com.notchy";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.oprimo.notchyScripts;
-				PRODUCT_NAME = "Notchy Scripts";
-				SWIFT_EMIT_LOC_STRINGS = YES;
+								SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -789,34 +263,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A6000001 /* Build configuration list for PBXProject "Notchy" */ = {
+		AA00000000000000000050 /* Build configuration list for PBXProject "Notchy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A8000001 /* Debug */,
-				A8000002 /* Release */,
+				AA00000000000000000060 /* Debug */,
+				AA00000000000000000061 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A6000003 /* Build configuration list for PBXNativeTarget "Notchy" */ = {
+		AA00000000000000000051 /* Build configuration list for PBXNativeTarget "Notchy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				A8000003 /* Debug */,
-				A8000004 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B6000001 /* Build configuration list for PBXNativeTarget "Notchy Scripts" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B8000001 /* Debug */,
-				B8000002 /* Release */,
+				AA00000000000000000070 /* Debug */,
+				AA00000000000000000071 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = A7000001 /* Project object */;
+	rootObject = AA00000000000000000000 /* Project object */;
 }

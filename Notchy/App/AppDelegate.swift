@@ -1,104 +1,108 @@
 import AppKit
 import SwiftUI
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private var notchWindow: NotchWindow?
-    /// Usamos NSWindowController para evitar referência direta à NSWindow (evita EXC_BAD_ACCESS ao reabrir configs).
-    private var settingsWindowController: NSWindowController?
-    private var statusItem: NSStatusItem?
-    private var menu: NSMenu?
-    private var pinToNotchItem: NSMenuItem?
-    private var showOnSubmenu: NSMenu?
-    private var selectedScriptObserver: NSObjectProtocol?
+    /// The running delegate. `NSApp.delegate` is SwiftUI's adaptor, not this class, so views that open a window reach
+    /// it through here.
+    private(set) static weak var shared: AppDelegate?
 
-    func applicationWillFinishLaunching(_ notification: Notification) {
-        // AppleLanguages is set in main.swift before any UI runs. Install bundle override for NSLocalizedString.
-        PreferredLanguageBundle.installIfNeeded()
+    private var notchWindow: NotchWindow?
+    private var settingsController: SettingsWindowController?
+    private var scriptsController: ScriptsWindowController?
+    private var statusItem: NSStatusItem?
+    private var pinToNotchItem: NSMenuItem?
+    private var toggleItem: NSMenuItem?
+    private var updateItem: NSMenuItem?
+    private var showOnSubmenu: NSMenu?
+
+    /// Settings and Scripts windows currently open. While any is up the app is `.regular`, so the window has a Dock
+    /// icon, a menu bar and a place in ⌘Tab; with none it goes back to living in the notch.
+    private var userWindowCount = 0
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        Self.shared = self
+        NSApp.setActivationPolicy(.accessory)
+        setupStatusBar()
+        openTeleprompter()
+        UpdateChecker.shared.checkForUpdates()
+        #if DEBUG
+        // `-NotchyDebugOpen settings.voice` or `-NotchyDebugOpen scripts` opens a window on launch, for screenshots.
+        if let target = UserDefaults.standard.string(forKey: "NotchyDebugOpen") {
+            if target == "scripts" {
+                showScriptsWindow()
+            } else if target.hasPrefix("settings") {
+                showSettingsWindow(SettingsPageID(rawValue: String(target.dropFirst("settings.".count))))
+            }
+        }
+        #endif
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        // Flush UserDefaults so preferred language and other settings persist before quit.
-        UserDefaults.standard.synchronize()
+        NotchyState.shared.audioMonitor.stop()
     }
 
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        // Sync language with App Group here (not in main.swift) so the system permission
-        // "access data from other apps" is not triggered before the app is ready.
-        syncPreferredLanguageWithAppGroup()
-        setupStatusBar()
-        observeSelectedScriptChanges()
+    /// Opening the app again from Finder or Spotlight while it runs brings the prompter back.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         openTeleprompter()
+        return false
     }
 
-    /// Syncs preferred language with the App Group (so Notchy and Notchy Scripts stay in sync).
-    /// Call only after the app is running to avoid triggering the permission dialog at startup.
-    private func syncPreferredLanguageWithAppGroup() {
-        let suite = UserDefaults(suiteName: NotchyKeys.appGroupIdentifier)
-        if let prefFromGroup = suite?.string(forKey: NotchyKeys.preferredLanguage), !prefFromGroup.isEmpty {
-            UserDefaults.standard.set(prefFromGroup, forKey: NotchyKeys.preferredLanguage)
-            UserDefaults.standard.set([prefFromGroup, "en"], forKey: "AppleLanguages")
-            PreferredLanguageBundle.installIfNeeded()
+    func application(_ application: NSApplication, open urls: [URL]) {
+        if urls.contains(where: { $0.scheme == "notchy" }) {
+            openTeleprompter()
         }
-        let pref = UserDefaults.standard.string(forKey: NotchyKeys.preferredLanguage) ?? ""
-        suite?.set(pref, forKey: NotchyKeys.preferredLanguage)
     }
 
-    private func observeSelectedScriptChanges() {
-        selectedScriptObserver = DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name(NotchyKeys.selectedScriptDidChangeNotification),
-            object: nil,
-            queue: .main
-        ) { _ in
-            ScriptStore.shared.syncFromSharedStorage()
-        }
-    }
+    // MARK: - Menu bar
 
     private func setupStatusBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
 
-        if let customImage = NSImage(named: "16") {
-            customImage.isTemplate = true
-            customImage.accessibilityDescription = NSLocalizedString("menu_tooltip", comment: "")
-            button.image = customImage
-        } else if #available(macOS 11.0, *) {
-            button.image = NSImage(systemSymbolName: "rectangle.topthird.inset.filled", accessibilityDescription: NSLocalizedString("menu_tooltip", comment: ""))
+        if let image = NSImage(named: "MenuBarIcon") {
+            image.isTemplate = true
+            image.accessibilityDescription = String(localized: "menu_tooltip")
+            button.image = image
         } else {
-            button.title = NSLocalizedString("menu_bar_title", comment: "")
+            button.image = NSImage(systemSymbolName: "text.aligncenter", accessibilityDescription: String(localized: "menu_tooltip"))
         }
-        button.toolTip = NSLocalizedString("menu_tooltip", comment: "")
+        button.toolTip = String(localized: "menu_tooltip")
 
-        menu = NSMenu()
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_toggle_prompter", comment: ""), action: #selector(toggleTeleprompter), keyEquivalent: "t"))
-        menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        pinToNotchItem = NSMenuItem(title: NSLocalizedString("menu_pin_to_notch", comment: ""), action: #selector(pinToNotch), keyEquivalent: "d")
-        pinToNotchItem?.keyEquivalentModifierMask = [.command, .shift]
-        menu?.addItem(pinToNotchItem!)
-        let showOnItem = NSMenuItem(title: NSLocalizedString("menu_show_on", comment: ""), action: nil, keyEquivalent: "")
-        showOnSubmenu = NSMenu()
-        showOnItem.submenu = showOnSubmenu
-        menu?.addItem(showOnItem)
-        menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_settings", comment: ""), action: #selector(openSettings), keyEquivalent: ","))
-        menu?.items.last?.keyEquivalentModifierMask = .command
-        menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_open_scripts", comment: ""), action: #selector(openScripts), keyEquivalent: "r"))
-        menu?.items.last?.keyEquivalentModifierMask = [.command, .shift]
-        menu?.addItem(NSMenuItem.separator())
-        menu?.addItem(NSMenuItem(title: NSLocalizedString("menu_quit", comment: ""), action: #selector(quit), keyEquivalent: "q"))
+        let menu = NSMenu()
+        let toggle = NSMenuItem(title: String(localized: "menu_toggle_prompter"), action: #selector(toggleTeleprompter), keyEquivalent: "t")
+        toggle.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(toggle)
+        toggleItem = toggle
+        let pin = NSMenuItem(title: String(localized: "menu_pin_to_notch"), action: #selector(pinToNotch), keyEquivalent: "d")
+        pin.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(pin)
+        pinToNotchItem = pin
+        let showOn = NSMenuItem(title: String(localized: "menu_show_on"), action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+        showOn.submenu = submenu
+        showOnSubmenu = submenu
+        menu.addItem(showOn)
+        menu.addItem(.separator())
+        let scripts = NSMenuItem(title: String(localized: "menu_scripts"), action: #selector(openScripts), keyEquivalent: "r")
+        scripts.keyEquivalentModifierMask = [.command, .shift]
+        menu.addItem(scripts)
+        menu.addItem(NSMenuItem(title: String(localized: "menu_settings"), action: #selector(openSettings), keyEquivalent: ","))
+        menu.addItem(.separator())
+        let update = NSMenuItem(title: "", action: #selector(openUpdate), keyEquivalent: "")
+        update.isHidden = true
+        menu.addItem(update)
+        updateItem = update
+        menu.addItem(NSMenuItem(title: String(localized: "menu_quit"), action: #selector(quit), keyEquivalent: "q"))
 
-        for item in menu?.items ?? [] {
+        for item in menu.items {
             item.target = self
         }
-        menu?.delegate = self
+        menu.delegate = self
         statusItem?.menu = menu
-        updateMenuVisibility()
     }
 
-    func updateMenuVisibility() {
-        let hasWindow = notchWindow != nil
-        pinToNotchItem?.isEnabled = hasWindow
-    }
+    // MARK: - Teleprompter
 
     private func ensureTeleprompterWindow() {
         if notchWindow != nil { return }
@@ -107,89 +111,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .environmentObject(state.windowController)
             .environmentObject(state.audioMonitor)
             .environmentObject(state.scrollController)
+            .environmentObject(state.speechFollower)
         let window = NotchWindow()
         window.contentView = NSHostingView(rootView: contentView)
         state.windowController.setWindow(window)
         notchWindow = window
     }
 
-    @objc private func toggleTeleprompter() {
-        let isVisible = notchWindow?.isVisible ?? false
-        if isVisible {
-            notchWindow?.orderOut(nil)
-        } else {
-            ensureTeleprompterWindow()
-            NotchyState.shared.windowController.showTeleprompter()
-            notchWindow?.makeKeyAndOrderFront(nil)
-        }
-        updateMenuVisibility()
-    }
-
-    @objc private func openTeleprompter() {
+    func openTeleprompter() {
         ensureTeleprompterWindow()
         NotchyState.shared.windowController.showTeleprompter()
         notchWindow?.makeKeyAndOrderFront(nil)
-        updateMenuVisibility()
     }
 
-    @objc private func openScripts() {
-        Self.launchScriptsApp()
-    }
-
-    /// Launches the Notchy Scripts app (embedded, sibling in dev, or by bundle id). Call from menu or SwiftUI commands.
-    static func launchScriptsApp() {
-        let scriptsAppName = "Notchy Scripts.app"
-        let fileManager = FileManager.default
-
-        // 1) Embedded (release/archive): Notchy.app/Contents/Applications/Notchy Scripts.app
-        let embeddedURL = Bundle.main.bundleURL
-            .appendingPathComponent("Contents/Applications")
-            .appendingPathComponent(scriptsAppName)
-        if fileManager.fileExists(atPath: embeddedURL.path) {
-            NSWorkspace.shared.open(embeddedURL)
-            return
-        }
-
-        // 2) Dev (Xcode): Notchy Scripts.app as sibling in Build/Products/Debug or Build/Products/Release
-        let siblingURL = Bundle.main.bundleURL
-            .deletingLastPathComponent()
-            .appendingPathComponent(scriptsAppName)
-        if fileManager.fileExists(atPath: siblingURL.path) {
-            NSWorkspace.shared.open(siblingURL)
-            return
-        }
-
-        // 3) Installed app by bundle id (e.g. /Applications)
-        if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.notchy.scripts") {
-            NSWorkspace.shared.open(url)
-        }
-    }
-
-    @objc func openSettings() {
-        // Se a janela foi fechada, o controller foi nulado no delegate → criamos uma nova.
-        if settingsWindowController == nil {
-            let content = SettingsView()
-            let win = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 520, height: 480),
-                styleMask: [.titled, .closable],
-                backing: .buffered,
-                defer: false
-            )
-            win.minSize = NSSize(width: 480, height: 420)
-            win.title = NSLocalizedString("window_title_settings", comment: "")
-            win.contentView = NSHostingView(rootView: content)
-            win.center()
-            win.delegate = self
-            settingsWindowController = NSWindowController(window: win)
-        }
-        guard let wc = settingsWindowController, let win = wc.window else { return }
-        if notchWindow != nil {
-            win.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.statusWindow)) + 2)
+    @objc private func toggleTeleprompter() {
+        if notchWindow?.isVisible ?? false {
+            notchWindow?.orderOut(nil)
         } else {
-            win.level = .normal
+            openTeleprompter()
         }
-        NSApp.activate(ignoringOtherApps: true)
-        wc.showWindow(nil)
     }
 
     @objc private func pinToNotch() {
@@ -199,45 +139,85 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func selectScreenForNotchy(_ sender: NSMenuItem) {
-        let displayID = sender.tag
-        NotchyState.shared.windowController.setPreferredDisplayID(displayID)
+        NotchyState.shared.windowController.setPreferredDisplayID(sender.tag)
         if notchWindow != nil {
             NotchyState.shared.windowController.pinWindowToNotch()
             notchWindow?.makeKeyAndOrderFront(nil)
         }
     }
 
+    // MARK: - Windows
+
+    @objc func openSettings() {
+        showSettingsWindow()
+    }
+
+    @objc private func openScripts() {
+        showScriptsWindow()
+    }
+
+    func showSettingsWindow(_ page: SettingsPageID? = nil) {
+        if settingsController == nil {
+            let controller = SettingsWindowController()
+            controller.onClose = { [weak self] in
+                self?.settingsController = nil
+                self?.userWindowDidClose()
+            }
+            settingsController = controller
+            userWindowDidOpen()
+        }
+        settingsController?.show(page)
+    }
+
+    /// Opens the Scripts window. `newScript` starts an untitled script in it, for ⌘N.
+    func showScriptsWindow(newScript: Bool = false, select id: UUID? = nil) {
+        if scriptsController == nil {
+            let controller = ScriptsWindowController()
+            controller.onClose = { [weak self] in
+                self?.scriptsController = nil
+                self?.userWindowDidClose()
+            }
+            scriptsController = controller
+            userWindowDidOpen()
+        }
+        scriptsController?.show(newScript: newScript, select: id)
+    }
+
+    private func userWindowDidOpen() {
+        userWindowCount += 1
+        if userWindowCount == 1 {
+            NSApp.setActivationPolicy(.regular)
+        }
+    }
+
+    private func userWindowDidClose() {
+        userWindowCount = max(0, userWindowCount - 1)
+        if userWindowCount == 0 {
+            NSApp.setActivationPolicy(.accessory)
+        }
+    }
+
+    @objc private func openUpdate() {
+        UpdateChecker.shared.openReleasePage()
+    }
+
     @objc private func quit() {
         NSApp.terminate(nil)
     }
-
-    func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls where url.scheme == "notchy" && url.host == "openTeleprompter" {
-            NSApp.activate(ignoringOtherApps: true)
-            openTeleprompter()
-            return
-        }
-    }
-}
-
-extension AppDelegate: NSWindowDelegate {
-    func windowDidClose(_ notification: Notification) {
-        guard let closedWindow = notification.object as? NSWindow,
-              let wc = settingsWindowController,
-              closedWindow === wc.window else { return }
-        closedWindow.delegate = nil
-        settingsWindowController = nil
-    }
-
-    // Stubs to satisfy optional NSWindowDelegate requirements and avoid "nearly matches" warnings
-    func windowDidExpose(_ notification: Notification) {}
-    func windowDidMove(_ notification: Notification) {}
-    func windowWillClose(_ notification: Notification) {}
 }
 
 extension AppDelegate: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
-        updateMenuVisibility()
+        pinToNotchItem?.isEnabled = notchWindow != nil
+        toggleItem?.title = (notchWindow?.isVisible ?? false)
+            ? String(localized: "menu_close_teleprompter")
+            : String(localized: "menu_open_teleprompter")
+        if let update = UpdateChecker.shared.availableUpdate {
+            updateItem?.title = String(format: String(localized: "menu_update_available"), update.version)
+            updateItem?.isHidden = false
+        } else {
+            updateItem?.isHidden = true
+        }
         rebuildShowOnSubmenu()
     }
 
