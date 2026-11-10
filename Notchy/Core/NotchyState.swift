@@ -43,12 +43,50 @@ final class NotchyState: ObservableObject {
             .sink { [weak self] body in self?.speechFollower.setScript(body) }
             .store(in: &cancellables)
 
-        // Voice on/off, mode, microphone and language all live in UserDefaults; bring the listeners in line whenever
-        // they change.
+        // Voice on/off, mode, microphone, language and play all live in UserDefaults. Every write to defaults posts the
+        // same notification (window drags and sliders write many a second), so act only when one of these changed.
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .receive(on: RunLoop.main)
+            .map { _ in VoiceSettings.current }
+            .removeDuplicates()
             .sink { [weak self] _ in self?.applyVoiceSettings() }
             .store(in: &cancellables)
+
+        // "Voice level" only moves the text while there is sound; keep the frame timer off through the silences.
+        audioMonitor.$isSpeaking
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                DispatchQueue.main.async { self?.updateScrollActivity() }
+            }
+            .store(in: &cancellables)
+
+        // Folded into the notch the script is out of sight: stop listening until it opens again.
+        windowController.$isExpanded
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                DispatchQueue.main.async { self?.applyVoiceSettings() }
+            }
+            .store(in: &cancellables)
+    }
+
+    /// The settings that decide whether the microphone, the word follower and the scroll timer run.
+    private struct VoiceSettings: Equatable {
+        let listen: Bool
+        let mode: String?
+        let microphone: String?
+        let locale: String?
+        let playing: Bool
+
+        static var current: VoiceSettings {
+            let d = UserDefaults.standard
+            return VoiceSettings(
+                listen: d.object(forKey: NotchyKeys.voiceControlEnabled) as? Bool ?? true,
+                mode: d.string(forKey: NotchyKeys.voiceMode),
+                microphone: d.string(forKey: NotchyKeys.preferredMicrophoneUID),
+                locale: d.string(forKey: NotchyKeys.speechLocale),
+                playing: d.bool(forKey: NotchyKeys.autoScrollPlaying))
+        }
     }
 
     var isListening: Bool {
@@ -74,13 +112,15 @@ final class NotchyState: ObservableObject {
         applyVoiceSettings()
     }
 
-    /// Starts or stops the microphone and the word follower to match Settings.
+    /// Starts or stops the microphone, the word follower and the scroll timer to match Settings and what is on screen.
     func applyVoiceSettings() {
         let defaults = UserDefaults.standard
-        let listen = isPrompterActive && isListening
+        let onScreen = isPrompterActive && windowController.isExpanded
+        let listen = onScreen && isListening
         let mode = voiceMode
         let microphone = defaults.string(forKey: NotchyKeys.preferredMicrophoneUID) ?? ""
         let locale = defaults.string(forKey: NotchyKeys.speechLocale) ?? ""
+        updateScrollActivity()
 
         guard listen else {
             speechFollower.stop()
@@ -103,6 +143,15 @@ final class NotchyState: ObservableObject {
         }
         appliedMode = mode
         appliedLocale = locale
+    }
+
+    /// Runs the scroll timer only while something can move the text: play, speech in "voice level", or "follow my words".
+    private func updateScrollActivity() {
+        let onScreen = isPrompterActive && windowController.isExpanded
+        let listen = onScreen && isListening
+        let playing = UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying)
+        let voiceMoves = listen && (voiceMode == .follow || audioMonitor.isSpeaking)
+        scrollController.isActive = onScreen && (playing || voiceMoves)
     }
 
     /// Back to the top of the script (⌘0).

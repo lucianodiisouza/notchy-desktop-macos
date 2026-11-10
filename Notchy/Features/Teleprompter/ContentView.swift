@@ -19,7 +19,9 @@ private struct ControlBarHeightKey: PreferenceKey {
 
 struct ContentView: View {
     @EnvironmentObject var windowController: FloatingWindowController
-    @EnvironmentObject var scrollController: ScrollController
+    /// Not observed: the offset changes every frame while scrolling, and the text view follows it on its own. Observing
+    /// it here rebuilt this whole view (control bar, shapes, colors) 60 times a second.
+    private var scrollController: ScrollController { NotchyState.shared.scrollController }
     @EnvironmentObject var speechFollower: SpeechFollower
     @ObservedObject private var scriptStore = ScriptStore.shared
 
@@ -172,7 +174,6 @@ struct ContentView: View {
                         text: prompterText,
                         scrollController: scrollController,
                         speechFollower: speechFollower,
-                        scrollOffset: scrollController.offsetValue,
                         fontSize: fontSize,
                         textColor: colorFromHex(textColorHex),
                         textOpacity: textOpacity,
@@ -255,6 +256,11 @@ struct ContentView: View {
                 keyMonitorToken = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
                     guard event.window === ourWindow, !(ourWindow?.firstResponder is NSTextView) else { return event }
                     switch event.keyCode {
+                    case 126 where event.modifierFlags.contains(.shift), 125 where event.modifierFlags.contains(.shift): // ⇧↑ / ⇧↓: faster / slower
+                        let key = NotchyKeys.scrollSpeed
+                        let speed = UserDefaults.standard.object(forKey: key) as? Double ?? 40
+                        UserDefaults.standard.set(event.keyCode == 126 ? min(120, speed + 10) : max(10, speed - 10), forKey: key)
+                        return nil
                     case 49: // Space
                         let current = UserDefaults.standard.bool(forKey: NotchyKeys.autoScrollPlaying)
                         UserDefaults.standard.set(!current, forKey: NotchyKeys.autoScrollPlaying)

@@ -12,6 +12,8 @@ struct NotchyApp: App {
             EmptyView()
         }
         .commands {
+            // Format menu, so ⌘B / ⌘I / ⌘U work in the script editor.
+            TextFormattingCommands()
             CommandGroup(replacing: .appSettings) {
                 Button(String(localized: "menu_settings")) {
                     AppDelegate.shared?.showSettingsWindow()
@@ -48,11 +50,9 @@ struct NotchyApp: App {
                 Button(String(localized: "menu_faster")) {
                     scrollSpeed = min(120, scrollSpeed + 10)
                 }
-                .keyboardShortcut(.upArrow, modifiers: .shift)
                 Button(String(localized: "menu_slower")) {
                     scrollSpeed = max(10, scrollSpeed - 10)
                 }
-                .keyboardShortcut(.downArrow, modifiers: .shift)
             }
         }
     }

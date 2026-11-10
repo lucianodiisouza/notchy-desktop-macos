@@ -91,6 +91,10 @@ struct ScriptEditorView: View {
             .onChange(of: editingRTF) { _, _ in commitBody() }
             // Switching scripts or closing the window saves what the 400 ms wait had not saved yet.
             .onDisappear { commitNow() }
+            // Quitting from the menu bar never calls onDisappear; save what is still waiting.
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
+                commitNow()
+            }
             .preferredColorScheme(colorScheme)
         } else {
             VStack(spacing: 12) {

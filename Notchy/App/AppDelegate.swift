@@ -119,14 +119,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func openTeleprompter() {
+        let isNew = notchWindow == nil
         ensureTeleprompterWindow()
         NotchyState.shared.windowController.showTeleprompter()
         notchWindow?.makeKeyAndOrderFront(nil)
+        // A new window reports itself from ContentView.onAppear; a window brought back after Close does not.
+        if !isNew { NotchyState.shared.prompterDidAppear() }
     }
 
     @objc private func toggleTeleprompter() {
         if notchWindow?.isVisible ?? false {
             notchWindow?.orderOut(nil)
+            // Ordering the window out never runs SwiftUI's onDisappear, so stop the microphone here.
+            NotchyState.shared.prompterDidDisappear()
         } else {
             openTeleprompter()
         }
@@ -208,6 +213,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
+        // Notchy runs for weeks at a time; check again now and then, not only at launch (throttled to every 6 hours).
+        UpdateChecker.shared.checkForUpdates()
         pinToNotchItem?.isEnabled = notchWindow != nil
         toggleItem?.title = (notchWindow?.isVisible ?? false)
             ? String(localized: "menu_close_teleprompter")

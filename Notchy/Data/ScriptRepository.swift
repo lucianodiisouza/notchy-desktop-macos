@@ -135,9 +135,10 @@ final class ScriptRepository: ScriptRepositoryProtocol {
         }
     }
 
+    /// Removes the folder and every folder inside it, so none of them comes back in the tree.
     func deleteFolder(path: String) throws {
         var paths = try loadFolderPaths()
-        paths.removeAll { $0 == path }
+        paths.removeAll { $0 == path || $0.hasPrefix(path + "/") }
         try saveFolderPaths(paths)
     }
 

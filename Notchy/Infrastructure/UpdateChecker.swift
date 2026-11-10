@@ -57,10 +57,10 @@ final class UpdateChecker: ObservableObject {
     /// simply leaves the menu in its "up to date" state.
     func checkForUpdates(force: Bool = false) {
         guard Self.isEnabled else { return }
+        guard !isChecking else { return }
         if !force, let last = lastCheck, Date().timeIntervalSince(last) < minInterval {
             return
         }
-        lastCheck = Date()
 
         guard let url = URL(string: "https://api.github.com/repos/\(repo)/releases/latest") else { return }
         var request = URLRequest(url: url)
@@ -77,6 +77,8 @@ final class UpdateChecker: ObservableObject {
             do {
                 let (data, response) = try await URLSession.shared.data(for: request)
                 guard let http = response as? HTTPURLResponse, http.statusCode == 200 else { return }
+                // Only a check that got an answer counts toward the wait; offline, the next one tries again.
+                self.lastCheck = Date()
                 let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
                 self.apply(release)
             } catch {

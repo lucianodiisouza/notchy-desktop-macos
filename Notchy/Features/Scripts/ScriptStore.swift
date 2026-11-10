@@ -204,11 +204,20 @@ final class ScriptStore: ObservableObject {
     }
 
     func deleteFolder(path: String, moveScriptsToParent: Bool) {
+        // Reload even when a step fails, so the sidebar shows what is really on disk.
+        defer { load() }
         do {
             if moveScriptsToParent {
+                // Move the folder's contents up one level, keeping its subfolders: "A/B/x" becomes "B/x" under A's parent.
                 let parentPath = parentPath(of: path)
                 for script in scripts where script.folderPath == path || script.folderPath.hasPrefix(path + "/") {
-                    try repository.moveScript(id: script.id, newFolderPath: parentPath)
+                    let rest = String(script.folderPath.dropFirst(path.count)).drop { $0 == "/" }
+                    let newPath = [parentPath, String(rest)].filter { !$0.isEmpty }.joined(separator: "/")
+                    try repository.moveScript(id: script.id, newFolderPath: newPath)
+                }
+                for sub in folderPaths where sub.hasPrefix(path + "/") {
+                    let rest = String(sub.dropFirst(path.count + 1))
+                    try repository.createFolder(path: [parentPath, rest].filter { !$0.isEmpty }.joined(separator: "/"))
                 }
             } else {
                 for script in scripts where script.folderPath == path || script.folderPath.hasPrefix(path + "/") {
@@ -219,8 +228,9 @@ final class ScriptStore: ObservableObject {
                 }
             }
             try repository.deleteFolder(path: path)
-            load()
-        } catch {}
+        } catch {
+            AppLogger.error("Could not delete folder \(path): \(error)")
+        }
     }
 
     func moveScript(id: UUID, newFolderPath: String) {

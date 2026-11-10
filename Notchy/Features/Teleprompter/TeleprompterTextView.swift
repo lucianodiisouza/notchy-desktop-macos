@@ -38,8 +38,6 @@ struct TeleprompterTextView: NSViewRepresentable {
     @Binding var text: String
     let scrollController: ScrollController
     let speechFollower: SpeechFollower
-    /// Where the controller wants the text; passed in so a change re-renders this view.
-    var scrollOffset: CGFloat
     var fontSize: Double
     var textColor: Color
     var textOpacity: Double = 1
@@ -134,10 +132,11 @@ struct TeleprompterTextView: NSViewRepresentable {
                 textView.textStorage?.addAttribute(.paragraphStyle, value: paragraphStyle, range: fullRange)
             }
             coordinator.invalidateReadingPosition()
+            textView.needsDisplay = true
         }
-        textView.needsDisplay = true
         coordinator.showReadingPosition(showsReadingPosition ? speechFollower.currentWordRange : nil)
-        coordinator.apply(offset: scrollOffset)
+        // The size or text may have changed: put the text back where the controller has it.
+        coordinator.apply(offset: scrollController.scrollOffset)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -218,7 +217,14 @@ struct TeleprompterTextView: NSViewRepresentable {
                 }
             }
 
-            // The controller moved the text: scroll the view.
+            // The controller moved the text: scroll the view directly, without a SwiftUI update per frame.
+            scrollController.$offsetValue
+                .dropFirst()
+                .sink { [weak self] offset in
+                    MainActor.assumeIsolated { self?.apply(offset: offset) }
+                }
+                .store(in: &cancellables)
+
             // A new word was heard: aim the scroll at its line.
             follower.$currentWordRange
                 .receive(on: RunLoop.main)

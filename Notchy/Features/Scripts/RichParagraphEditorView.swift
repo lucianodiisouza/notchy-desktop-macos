@@ -20,15 +20,8 @@ final class RichParagraphNSTextView: NSTextView {
     var onContentDidChange: ((String, Data?) -> Void)?
     var baseFont: NSFont = .systemFont(ofSize: NSFont.systemFontSize)
     var textColorValue: NSColor = .labelColor
-    /// Quando true, o próximo didChangeText não reporta (evita commit ao carregar conteúdo).
-    var skipNextReport = false
-
     override func didChangeText() {
         super.didChangeText()
-        if skipNextReport {
-            skipNextReport = false
-            return
-        }
         reportContent()
     }
 
@@ -81,47 +74,69 @@ final class RichParagraphNSTextView: NSTextView {
     private func applyFormat(_ format: ScriptEditorFormat, pointSize: Int?) {
         guard let storage = textStorage else { return }
         let range = selectedRange()
-        let effectiveRange = range.length > 0 ? range : NSRange(location: 0, length: storage.length)
-        guard effectiveRange.length > 0 else { return }
-
+        // Nothing selected: the format applies to what is typed next, never to the whole document.
+        guard range.length > 0 else {
+            applyToTypingAttributes(format, pointSize: pointSize)
+            return
+        }
+        if case .fontSize = format, pointSize.map({ $0 < 6 || $0 > 200 }) ?? true { return }
+        // Going through shouldChangeText/didChangeText makes the change undoable and saves it like any edit.
+        guard shouldChangeText(in: range, replacementString: nil) else { return }
         storage.beginEditing()
-        defer { storage.endEditing() }
-
         switch format {
-        case .bold:
-            storage.enumerateAttribute(.font, in: effectiveRange) { value, range, _ in
+        case .bold, .italic:
+            let mask: NSFontTraitMask = format == .bold ? .boldFontMask : .italicFontMask
+            let trait: NSFontDescriptor.SymbolicTraits = format == .bold ? .bold : .italic
+            storage.enumerateAttribute(.font, in: range) { value, sub, _ in
                 let font = (value as? NSFont) ?? baseFont
-                let traits = font.fontDescriptor.symbolicTraits
-                let newFont = traits.contains(.bold)
-                    ? NSFontManager.shared.convert(font, toNotHaveTrait: .boldFontMask)
-                    : NSFontManager.shared.convert(font, toHaveTrait: .boldFontMask)
-                storage.addAttribute(.font, value: newFont, range: range)
-            }
-        case .italic:
-            storage.enumerateAttribute(.font, in: effectiveRange) { value, range, _ in
-                let font = (value as? NSFont) ?? baseFont
-                let traits = font.fontDescriptor.symbolicTraits
-                let newFont = traits.contains(.italic)
-                    ? NSFontManager.shared.convert(font, toNotHaveTrait: .italicFontMask)
-                    : NSFontManager.shared.convert(font, toHaveTrait: .italicFontMask)
-                storage.addAttribute(.font, value: newFont, range: range)
+                let newFont = font.fontDescriptor.symbolicTraits.contains(trait)
+                    ? NSFontManager.shared.convert(font, toNotHaveTrait: mask)
+                    : NSFontManager.shared.convert(font, toHaveTrait: mask)
+                storage.addAttribute(.font, value: newFont, range: sub)
             }
         case .underline:
             var hasUnderline = false
-            storage.enumerateAttribute(.underlineStyle, in: effectiveRange) { value, _, stop in
+            storage.enumerateAttribute(.underlineStyle, in: range) { value, _, stop in
                 if (value as? Int) == NSUnderlineStyle.single.rawValue { hasUnderline = true; stop.pointee = true }
             }
             if hasUnderline {
-                storage.removeAttribute(.underlineStyle, range: effectiveRange)
+                storage.removeAttribute(.underlineStyle, range: range)
             } else {
-                storage.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: effectiveRange)
+                storage.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: range)
+            }
+        case .fontSize:
+            // Keep bold and italic: only the size changes.
+            let size = CGFloat(pointSize ?? Int(baseFont.pointSize))
+            storage.enumerateAttribute(.font, in: range) { value, sub, _ in
+                let font = (value as? NSFont) ?? baseFont
+                storage.addAttribute(.font, value: NSFontManager.shared.convert(font, toSize: size), range: sub)
+            }
+        }
+        storage.endEditing()
+        didChangeText()
+    }
+
+    private func applyToTypingAttributes(_ format: ScriptEditorFormat, pointSize: Int?) {
+        var attributes = typingAttributes
+        let font = (attributes[.font] as? NSFont) ?? baseFont
+        switch format {
+        case .bold, .italic:
+            let mask: NSFontTraitMask = format == .bold ? .boldFontMask : .italicFontMask
+            let trait: NSFontDescriptor.SymbolicTraits = format == .bold ? .bold : .italic
+            attributes[.font] = font.fontDescriptor.symbolicTraits.contains(trait)
+                ? NSFontManager.shared.convert(font, toNotHaveTrait: mask)
+                : NSFontManager.shared.convert(font, toHaveTrait: mask)
+        case .underline:
+            if (attributes[.underlineStyle] as? Int) == NSUnderlineStyle.single.rawValue {
+                attributes[.underlineStyle] = nil
+            } else {
+                attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
             }
         case .fontSize:
             guard let size = pointSize, size >= 6, size <= 200 else { return }
-            let newFont = NSFont(descriptor: baseFont.fontDescriptor, size: CGFloat(size)) ?? baseFont
-            storage.addAttribute(.font, value: newFont, range: effectiveRange)
+            attributes[.font] = NSFontManager.shared.convert(font, toSize: CGFloat(size))
         }
-        reportContent()
+        typingAttributes = attributes
     }
 
     deinit {
@@ -176,16 +191,19 @@ struct RichParagraphEditorView: NSViewRepresentable {
 
         let contentMatch = context.coordinator.lastBoundBody == body && context.coordinator.lastBoundRTF == bodyRTF
         if !contentMatch {
-            textView.skipNextReport = true
+            // Loading never goes through didChangeText, so nothing here is reported back as an edit.
             if let rtf = bodyRTF, !rtf.isEmpty,
                let att = NSAttributedString(rtf: rtf, documentAttributes: nil) {
-                textView.textStorage?.setAttributedString(att)
+                // Keep the script's own fonts (bold, italic, sizes). Only the color follows the appearance, since
+                // RTF stores it as a fixed RGB value.
+                let styled = NSMutableAttributedString(attributedString: att)
+                styled.addAttribute(.foregroundColor, value: color, range: NSRange(location: 0, length: styled.length))
+                textView.textStorage?.setAttributedString(styled)
             } else {
                 let att = NSAttributedString(string: body, attributes: [.font: font, .foregroundColor: color])
                 textView.textStorage?.setAttributedString(att)
             }
-            textView.font = font
-            textView.textColor = color
+            textView.typingAttributes = [.font: font, .foregroundColor: color]
             context.coordinator.lastBoundBody = body
             context.coordinator.lastBoundRTF = bodyRTF
         }

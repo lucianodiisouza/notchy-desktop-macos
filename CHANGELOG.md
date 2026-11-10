@@ -44,6 +44,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - *(display)* "Screen with the menu bar" now means that screen, not the one with the key window
 - *(app)* The "Open Scripts" menu item works in release builds
 - *(l10n)* Every language has every string (English where a translation is missing)
+- *(scripts)* The first edit after opening a script is no longer dropped
+- *(scripts)* Opening a formatted script keeps its bold, italic and sizes; changing the size of a selection keeps them too
+- *(scripts)* Formatting with nothing selected applies to what you type next, not the whole script, and can be undone
+- *(scripts)* ⌘B, ⌘I and ⌘U work in the editor (Format menu)
+- *(scripts)* Quitting right after typing no longer loses the last edits
+- *(scripts)* Deleting a folder removes its subfolders too; moving its scripts up keeps their subfolders
+- *(voice)* The microphone turns off when the prompter is closed or folded into the notch
+- *(prompter)* ⇧↑ / ⇧↓ change the speed only in the prompter, so Shift-selection works in text fields again
+- *(performance)* No full redraw of the prompter on every frame while scrolling; the scroll timer runs only while
+  something moves (0% CPU at rest, App Nap friendly) and keeps the same speed on 120 Hz displays
+- *(performance)* Dragging the window or moving a slider no longer re-applies the voice settings on every event
+- *(app)* The update check retries after a failed (offline) check and runs again while Notchy stays open
 
 ## [0.1.0] - 2026-02-09
 
